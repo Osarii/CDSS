@@ -1,1 +1,0 @@
-# Stitch Visual Mappings

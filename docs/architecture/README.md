@@ -1,1 +1,0 @@
-# CDSS-CR Architecture Documentation
