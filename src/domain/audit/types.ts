@@ -1,7 +1,2 @@
-export interface AuditEvent {
-  id: string
-  action: string
-  userId: string
-  timestamp: string
-  payloadSummary?: string
-}
+export type { AuditEvent } from './schema'
+export { auditEventSchema } from './schema'

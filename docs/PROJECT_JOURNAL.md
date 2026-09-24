@@ -315,11 +315,44 @@ El sistema de diseño CDSS-CR cuenta con una base visual coherente, determiníst
 
 ---
 
+## 2026-09-24 — Phase 1: Domain Model v1
+
+**Phase:** Phase 1
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.6 Medium
+
+**Objective**
+
+Establecer la base del modelo de dominio clínico tipado y validado mediante esquemas Zod canónicos para las entidades `Patient`, `Medication`, `Allergy`, `Condition`, `Observation`, `ClinicalContext`, `RuleDefinition`, `Finding` y `AuditEvent`, garantizando la serializabilidad JSON y preservando estrictamente la invariante de seguridad clínica `UNKNOWN / MISSING / STALE / UNAVAILABLE !== NORMAL`.
+
+**Important decisions & Changes**
+
+- **Canonical Domain Models:** Se consolidaron esquemas Zod e inquiridos TypeScript para todas las entidades clínicas fundamentales sin acoplar infraestructura externa ni FHIR/EDUS.
+- **Canonical Severity Model:** Se unificó el modelo de severidad del dominio (`critical`, `warning`, `low`, `info`). La etiqueta visual `safe`/`confirmed` se desacopló de los hallazgos de alerta (`Finding`).
+- **Required Data Gate Enhancement:** Se mejoró `evaluateDataGate` para preservar exactamente qué dato requerido falló y su estado de disponibilidad (`failedRequirements: Array<{ key, status }>`).
+- **ClinicalContext Snapshot:** Se definió la estructura serializable `ClinicalContext` compuesta por datos tipados del paciente, medicamentos, alergias, condiciones, observaciones y dataPoints.
+- **RuleDefinition & Finding Traceability:** Se consolidó `RuleDefinition` como metadato estructural con versión y llaves de datos requeridos, y `Finding` como resultado determinístico trazable con metadatos de reglas y llaves de soporte/faltantes.
+- **DEC-010:** Se registró el modelo canónico de severidad del dominio y fallas detalladas de disponibilidad de datos en `docs/architecture/DECISIONS.md`.
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS (0 errors, 0 warnings)
+- npm run test: PASS (5 files, 23 tests passed)
+- npm run build: PASS (Vite & TypeScript compilation)
+- domain test suite: PASS (`src/domain/domain.test.ts`)
+
+**Result**
+
+El repositorio cuenta con una base de modelo de dominio clínico tipada, validada y totalmente probada para soportar escenarios sintéticos y evaluación determinística en fases posteriores.
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:
 
-- Domain Model v1.
 - Synthetic Clinical Scenarios v1.
 - Clinical Context Builder.
 - Required Data Gate v1.

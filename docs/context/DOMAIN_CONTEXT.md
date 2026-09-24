@@ -6,26 +6,30 @@ Compact orientation for working within the CDSS-CR clinical domain models and bo
 
 ### Patient
 - **CURRENT:** `src/domain/patient/schema.ts` defines `patientSchema` (`id`, `syntheticIdentifier`, `age`, `gender`).
-- **TARGET:** Domain aggregates linking conditions and allergies to patient entity.
+- **TARGET:** Synthetic patient fixture factory and scenario linkage.
 
 ### Medication
 - **CURRENT:** `src/domain/medication/schema.ts` defines `medicationSchema` (`id`, `code`, `name`, `dosage`, `route`).
-- **TARGET:** Extended pharmacology structures (ATC code classifications, dosage frequencies, duration).
+- **TARGET:** Extended pharmacology structures (ATC classifications, dosage frequencies, active ingredients).
+
+### Allergy, Condition & Observation
+- **CURRENT:** `src/domain/allergy/schema.ts` (`allergySchema`), `src/domain/condition/schema.ts` (`conditionSchema`), `src/domain/observation/schema.ts` (`observationSchema`).
+- **TARGET:** Synthetic clinical scenario generation for testing deterministic rule sets.
 
 ### Clinical Context & Data Gate
-- **CURRENT:** `src/domain/clinical-context/types.ts` defines `DataAvailabilityState` (`AVAILABLE`, `MISSING`, `UNKNOWN`, `STALE`, `UNAVAILABLE`) and `ClinicalDataPoint<T>`. `requiredDataGate.ts` implements `isDataPointAvailable` and `evaluateDataGate` (returns `{ canProceed, blockedReasons }`).
-- **TARGET:** Full `ClinicalContext` aggregator class assembling patient, medication, observation facts into an evaluation snapshot.
+- **CURRENT:** `src/domain/clinical-context/schema.ts` defines `clinicalContextSchema` (serializable snapshot of patient, medications, allergies, conditions, observations, dataPoints, timestamp) and `clinicalDataPointSchema`. `requiredDataGate.ts` evaluates data readiness preserving `failedRequirements` (`key`, `status`).
+- **TARGET:** Pipeline integration assembling clinical context snapshots for deterministic rule engine execution.
 
 ### Rules Engine
-- **CURRENT:** `src/domain/rules/schema.ts` (`ruleDefinitionSchema`) and `src/domain/rules/engine.ts` (`createRuleEngine` returning `Engine` from `json-rules-engine`).
-- **TARGET:** Clinically validated rule sets (drug-drug interactions, dosing alerts).
+- **CURRENT:** `src/domain/rules/schema.ts` (`ruleDefinitionSchema`: `id`, `version`, `name`, `description`, `severity`, `enabled`, `requiredDataKeys`) and `src/domain/rules/engine.ts` (`createRuleEngine` returning `Engine` from `json-rules-engine`).
+- **TARGET:** Synthetic demo rule definitions for drug-drug interactions and dosage alerts.
 
 ### Findings
-- **CURRENT:** `src/domain/findings/schema.ts` defines `clinicalFindingSchema` (`id`, `ruleId`, `severity: 'critical'|'warning'|'safe'|'low'`, `title`, `detail`, `timestamp`, `isDeterministic: true`).
-- **TARGET:** Structured evidence citations, related entity references, and downstream AI explanation metadata.
+- **CURRENT:** `src/domain/findings/schema.ts` defines `clinicalFindingSchema` (`id`, `patientId`, `ruleId`, `ruleVersion`, `severity: 'critical'|'warning'|'low'|'info'`, `title`, `detail`, `supportingDataKeys`, `missingDataKeys`, `timestamp`, `isDeterministic: true`).
+- **TARGET:** Finding generator converting rule evaluation events into structured finding instances during Phase 2.
 
 ### Audit
-- **CURRENT:** `src/domain/audit/types.ts` (`AuditEvent` interface).
+- **CURRENT:** `src/domain/audit/schema.ts` defines `auditEventSchema` (`id`, `action`, `userId`, `timestamp`, `payloadSummary`).
 
 ---
 

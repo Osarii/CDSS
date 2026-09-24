@@ -71,3 +71,11 @@ Compact registry of durable project decisions and invariants. These IDs (`DEC-XX
 **Canonical references:**
 - `PROMPT_CONTRACT.md`
 - `.agents/rules/01-prompt-gate.md`
+
+## DEC-010 — Canonical Domain Severity & Data Readiness Failure Model
+**Status:** ACTIVE
+**Decision:** Clinical finding alerts and rule definitions share a single canonical domain severity model (`critical`, `warning`, `low`, `info`). Visual status semantics such as `safe`/`confirmed` are not used as finding alert severities. Required Data Gate evaluations preserve detailed failure metadata (`failedRequirements: Array<{ key, status }>`) ensuring that non-ready evaluations retain traceability of which required datum failed and its availability status.
+**Canonical references:**
+- `src/domain/common/schema.ts`
+- `src/domain/clinical-context/requiredDataGate.ts`
+- `src/domain/findings/schema.ts`

@@ -1,13 +1,4 @@
-export type DataAvailabilityState =
-  | 'AVAILABLE'
-  | 'MISSING'
-  | 'UNKNOWN'
-  | 'STALE'
-  | 'UNAVAILABLE'
-
-export interface ClinicalDataPoint<T> {
-  value: T | null
-  status: DataAvailabilityState
-  timestamp?: string
-  source?: string
-}
+export type { DataAvailabilityState } from '../common/schema'
+export { dataAvailabilityStateSchema } from '../common/schema'
+export type { ClinicalDataPoint, ClinicalContext } from './schema'
+export { clinicalDataPointSchema, clinicalContextSchema } from './schema'

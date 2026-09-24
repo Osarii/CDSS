@@ -7,9 +7,9 @@
 ---
 
 ## 1. Execution Coordinates
-- **Current Phase:** Phase 0.6 Design System Alignment Complete -> Next: Phase 1 (Domain Model v1)
+- **Current Phase:** Phase 1 Domain Model v1 Complete -> Next: Synthetic Clinical Scenarios v1
 - **Current Branch:** `main`
-- **Last Important Commit:** `e76a7cf` (`feat: complete phase 0.6 design system alignment`)
+- **Last Important Commit:** `d8b3de7` (`fix: finalize phase 0.6 design system wiring`)
 - **Last Update Date:** 2026-09-24
 
 ## 2. Phase Status
@@ -20,9 +20,10 @@
   - Prompt Gate & Curated Journal Setup (`bc0969b`)
   - Context & Token Optimization Infrastructure (`d7d7037`, `f1f7c89`)
   - Context & Documentation Integrity (`bb8c8e3`, `b92cd86`)
-  - Phase 0.6: Design System Alignment (Graphite + Bone + Aubergine & Inter + Source Serif 4) (`e76a7cf`)
-- **Current Work:** Phase 0.6 Design System Alignment Complete
-- **Next Allowed Phase / Task:** Phase 1 — Domain Model v1 (consolidate clinical schemas & data models)
+  - Phase 0.6: Design System Alignment (`e76a7cf`, `d8b3de7`)
+  - Phase 1: Domain Model v1 (canonical Zod schemas, ClinicalContext snapshot, severity model, AuditEvent)
+- **Current Work:** Phase 1 Domain Model v1 Complete
+- **Next Allowed Phase / Task:** Synthetic Clinical Scenarios v1 (generate synthetic patient fixtures & evaluation test cases)
 - **Explicit Tasks NOT to Start Yet:**
   - DO NOT implement final clinical screens (Dashboard, Medication Review).
   - DO NOT implement final clinical rule sets or invent unvalidated guidance.
