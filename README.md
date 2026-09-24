@@ -108,7 +108,7 @@ Para habilitar Serena en Antigravity:
      }
    }
    ```
-3. Consultar las instrucciones detalladas en [docs/setup/SERENA_ANTIGRAVITY.md](file:///Users/osariii/Documents/proyecto_final/docs/setup/SERENA_ANTIGRAVITY.md).
+3. Consultar las instrucciones detalladas en [docs/setup/SERENA_ANTIGRAVITY.md](docs/setup/SERENA_ANTIGRAVITY.md).
 4. Primera instrucción tras iniciar sesión con el agente:
    > *"Activate the current project using Serena's activation tool."*
 

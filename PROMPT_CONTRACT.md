@@ -17,9 +17,11 @@ Do not infer missing fields.
 Do not silently repair an invalid prompt.
 Do not begin repository exploration before validation.
 
+---
+
 ## Required prompt format
 
-Every execution prompt must contain all six fields:
+Every execution prompt must contain all six mandatory fields:
 
 TASK: <single clear objective>
 RULESET: <valid ruleset alias or combined aliases>
@@ -28,89 +30,118 @@ ACCEPTANCE: <observable completion criteria>
 STOP: <boundary / what must not be continued automatically>
 DOC: <AUTO | YES | NO>
 
-Optional:
+Optional fields:
 
 REFS: <design files, URLs, screenshots, commits, issue IDs, or other references>
 GIT: <NONE | COMMIT | PUSH>
+TOOLS: <AUTO | MINIMAL | DEEP | list of tool overrides>
+CONTEXT: <AUTO | MINIMAL | DEEP>
+BUDGET: <AUTO | list of planning limits>
+VERIFY: <AUTO | DOCS | TARGETED | UI | DOMAIN | FULL>
+PRESERVE: <list of DEC-XXX decision IDs>
+
+Defaults when optional fields are omitted:
+- `GIT: NONE`
+- `TOOLS: AUTO`
+- `CONTEXT: AUTO`
+- `BUDGET: AUTO`
+- `VERIFY: AUTO`
+
+---
 
 ## Valid RULESET values
 
-DOMAIN
-UI
-DATA
-FORMS
-TABLES
-RULES
-TEST
-ROUTING
-LAYOUT
-AGENT
-REPO
-CORE
-DOCS
+DOMAIN | UI | DATA | FORMS | TABLES | RULES | TEST | ROUTING | LAYOUT | AGENT | REPO | CORE | DOCS
 
-Rulesets may be combined with `+`.
+Rulesets may be combined with `+` (e.g. `RULESET:DOMAIN+DATA`). The agent router deduplicates shared files.
 
-Examples:
-
-RULESET:DOMAIN+DATA
-RULESET:UI+TEST
+---
 
 ## Field rules
 
 ### TASK
-Must describe one coherent task.
-Avoid combining unrelated phases.
+Must describe one coherent task. Avoid combining unrelated phases.
 
 ### RULESET
 Must contain only aliases supported by `.agents/rules/00-rule-router.md`.
 
 ### SCOPE
-Use repository paths when known.
-Use `AUTO` only when Serena should discover the smallest relevant scope.
+Use repository paths when known. Use `AUTO` only when Serena should discover the smallest relevant scope.
 
 ### ACCEPTANCE
 Must define how the agent knows the task is complete.
-May contain multiple bullet points.
 
 ### STOP
-Must define the execution boundary.
-Example: `Stop after tests and report. Do not continue to the next phase.`
+Must define the execution boundary (e.g., `Stop after tests and report. Do not continue to UI.`).
 
 ### DOC
-
-`AUTO`
-Document only if the result qualifies as an important project milestone.
-
-`YES`
-Always append an entry to `docs/PROJECT_JOURNAL.md`.
-
-`NO`
-Do not append a journal entry.
-
-Documentation rules are defined in:
-`docs/agent-rules/workflows/documentation.md`
+- `AUTO`: Document only if the result qualifies as an important project milestone.
+- `YES`: Always append an entry to `docs/PROJECT_JOURNAL.md`.
+- `NO`: Do not append a journal entry.
+Detailed criteria in `docs/agent-rules/workflows/documentation.md`.
 
 ### GIT
+If omitted, treat as `NONE`. `COMMIT` creates a focused commit after verification. `PUSH` commits and pushes after verification.
 
-If omitted, treat as `NONE`.
+### TOOLS
+Optional tool configuration. Presets:
+- `AUTO`: `SERENA=AUTO`, `RTK=AUTO`, `PONYTAIL=AUTO`, `CONTEXT_BUDGET=STRICT` (Default)
+- `MINIMAL`: `SERENA=NO`, `RTK=AUTO`, `PONYTAIL=YES`, `CONTEXT_BUDGET=STRICT`
+- `DEEP`: `SERENA=YES`, `RTK=YES`, `PONYTAIL=AUTO`, `CONTEXT_BUDGET=NORMAL`
 
-`NONE`
-Do not commit or push.
+Granular overrides:
+- `SERENA: AUTO | YES | NO` (`YES` resolves doc and uses symbol tools first; `NO` disables Serena entirely).
+- `RTK: AUTO | YES | NO` (`YES` filters shell output; `NO` skips RTK).
+- `PONYTAIL: AUTO | YES | NO` (`YES` loads ponytail guide; `NO` avoids loading optional guide).
+- `CONTEXT_BUDGET: STRICT | NORMAL | OFF` (`STRICT` = minimal reads; `OFF` = exceptional debug only).
 
-`COMMIT`
-Create a focused commit only after verification.
+Tool documentation resolves exclusively via `docs/agent-rules/TOOL_INDEX.md`. Invalid tool values reject the prompt.
 
-`PUSH`
-Commit and push only after verification.
+### CONTEXT
+- `AUTO`: Smallest sufficient context mode (Default).
+- `MINIMAL`: `PROJECT_STATE.md` + active ruleset context pack(s) from `docs/context/CONTEXT_INDEX.md` + targeted exploration. No historical journal.
+- `DEEP`: Permits broader architecture and context inspection when required for complex refactors.
 
-Never rewrite Git history unless explicitly requested.
+### BUDGET
+Planning budget. `AUTO` (Default) or explicit limits:
+- `FILES: <integer>` (max distinct files to inspect)
+- `FULL_READS: <integer>` (max complete-file reads; prefer symbol/slice reads)
+- `COMMANDS: <integer>` (max terminal commands)
+If a budget limit is reached, pause, explain reason, and record escalation in report.
+
+### VERIFY
+Verification profile: `AUTO` (Default), `DOCS`, `TARGETED`, `DOMAIN`, `UI`, `FULL`. Specifications in `docs/agent-rules/VERIFY_PROFILES.md`.
+
+### PRESERVE
+Optional reminder list of decision IDs from `docs/architecture/DECISIONS.md` (e.g., `PRESERVE: DEC-001, DEC-007`). Mandatory decisions apply even if omitted.
+
+---
+
+## Context Architecture & Optimization Rules
+
+### Stable vs. Changing Context
+- **Stable Context:** `AGENTS.md`, `PROMPT_CONTRACT.md`, `.agents/rules/`, `DESIGN.md`, `docs/architecture/DECISIONS.md`. Durable principles and invariants.
+- **Changing Context:** `PROJECT_STATE.md`, active blockers, current phase, implementation status.
+Agents must read `PROJECT_STATE.md` for current state rather than rereading historical documentation.
+
+### Context Receipt Rule
+Maintain an internal conceptual Context Receipt during execution. Track files read, symbols inspected, and context packs loaded. Never reread unchanged files or reload identical documentation packs within the same task. Do NOT persist or create receipt files.
+
+### File Size Limits
+- `AGENTS.md` <= 150 lines
+- `PROJECT_STATE.md` <= 150 lines
+- `docs/agent-rules/TOOL_INDEX.md` <= 150 lines
+- `docs/context/CONTEXT_INDEX.md` <= 100 lines
+- Each context pack <= 120 lines
+- `docs/design/VISUAL_INDEX.md` <= 150 lines
+
+**Non-Overridable Core:** Prompt Gate, clinical safety invariants (`AGENTS.md`), and `PROMPT_CONTRACT.md` can NEVER be disabled.
+
+---
 
 ## Invalid prompt behavior
 
-If any required field is absent or invalid, do not execute the task.
-
-Respond only with a compact validation message:
+If any required field is absent or invalid, or an invalid tool value is specified:
 
 PROMPT REJECTED — FORMAT INVALID
 
@@ -125,18 +156,15 @@ ACCEPTANCE: ...
 STOP: ...
 DOC: AUTO|YES|NO
 
-No commands, tools, repository reads, edits, installs, tests or Git actions were executed.
+No commands, tools, repository reads (other than PROMPT_CONTRACT.md), edits, installs, tests or Git actions were executed.
 
 Then stop.
 
+---
+
 ## Meta-help exception
 
-The following prompt is allowed without the full format:
-
-PROMPT_HELP
-
-For `PROMPT_HELP`, display the required template and stop.
-Do not execute project work.
+`PROMPT_HELP` displays the canonical template and stops without executing work.
 
 ## Canonical short template
 
@@ -147,15 +175,16 @@ ACCEPTANCE:
 STOP:
 DOC: AUTO
 
-## Example
+## Canonical full template
 
-TASK: Align the CDSS design tokens with the approved visual baseline.
-RULESET: UI
-SCOPE: DESIGN.md, src/index.css, src/styles/
+TASK:
+RULESET:
+SCOPE:
 ACCEPTANCE:
-- Approved Graphite + Bone + Aubergine tokens are authoritative.
-- Duplicate shadcn defaults no longer override them.
-- Lint and build pass.
-STOP: Stop after verification and report. Do not implement screens.
-DOC: YES
+STOP:
+DOC: AUTO
+TOOLS: AUTO
+CONTEXT: AUTO
+BUDGET: AUTO
+VERIFY: AUTO
 GIT: NONE

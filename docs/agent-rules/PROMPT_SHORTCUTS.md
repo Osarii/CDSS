@@ -4,8 +4,11 @@ All execution prompts must comply with `PROMPT_CONTRACT.md`. Raw single-line pro
 
 Use `PROMPT_HELP` to display the blank template.
 
-## Canonical Template
+---
 
+## Canonical Templates
+
+### Minimal Template
 ```text
 TASK: <single clear objective>
 RULESET: <alias from 00-rule-router.md>
@@ -15,53 +18,62 @@ STOP: <execution boundary>
 DOC: <AUTO | YES | NO>
 ```
 
+### Full Optimization Template
+```text
+TASK: <single clear objective>
+RULESET: <alias from 00-rule-router.md>
+SCOPE: <paths or AUTO>
+ACCEPTANCE: <observable criteria>
+STOP: <execution boundary>
+DOC: <AUTO | YES | NO>
+TOOLS: <AUTO | MINIMAL | DEEP | list of tool overrides>
+CONTEXT: <AUTO | MINIMAL | DEEP>
+BUDGET: <AUTO | list of limits>
+VERIFY: <AUTO | DOCS | TARGETED | UI | DOMAIN | FULL>
+PRESERVE: <optional DEC-XXX IDs>
+GIT: <NONE | COMMIT | PUSH>
+```
+
 ---
 
-## Example: Domain
+## Canonical Examples
 
+### Example A — Minimal Task (Documentation / Trivial Fix)
 ```text
-TASK: Implement validation schema and types for patient allergies.
-RULESET: DOMAIN
-SCOPE: src/domain/patient/
+TASK: Fix repository-relative documentation links.
+RULESET: DOCS
+SCOPE: README.md
+ACCEPTANCE: All affected repository links are relative and valid.
+STOP: Stop after diff verification.
+DOC: NO
+```
+
+### Example B — Normal AUTO Task (Inspection / UI Assessment)
+```text
+TASK: Inspect the current design-system implementation and report conflicts.
+RULESET: REPO+UI
+SCOPE: DESIGN.md, src/index.css, src/styles/
+ACCEPTANCE: Report conflicts and affected files without edits.
+STOP: Stop after report.
+DOC: NO
+TOOLS: AUTO
+CONTEXT: MINIMAL
+VERIFY: DOCS
+```
+
+### Example C — Deep Complex Task (Domain Architecture Refactor)
+```text
+TASK: Refactor ClinicalContext while preserving public behavior.
+RULESET: DOMAIN+DATA+TEST
+SCOPE: src/domain/clinical-context/, src/services/adapters/
 ACCEPTANCE:
-- Zod schema matches domain requirements.
-- Unknown/missing data handled explicitly without assuming normal.
-- Domain unit tests pass.
-STOP: Stop after tests and report. Do not create UI components.
-DOC: NO
+- Existing behavior preserved.
+- Domain tests pass.
+- Build passes.
+STOP: Stop after verification. Do not continue to UI.
+DOC: AUTO
+TOOLS: DEEP
+CONTEXT: DEEP
+VERIFY: DOMAIN
+PRESERVE: DEC-001, DEC-006
 ```
-
----
-
-## Example: UI
-
-```text
-TASK: Align patient allergy badge styling with DESIGN.md.
-RULESET: UI
-SCOPE: src/components/ui/, src/styles/
-ACCEPTANCE:
-- Adheres to Graphite + Bone + Aubergine tokens.
-- Clinical semantic colors are decoupled from brand colors.
-- Lint and build pass.
-STOP: Stop after verification and report. Do not modify domain logic.
-DOC: NO
-```
-
----
-
-## Example: Repository Inspection
-
-```text
-TASK: Inspect the current domain architecture and report risks.
-RULESET: REPO+DOMAIN
-SCOPE: src/domain/
-ACCEPTANCE: Return findings and recommended next step without modifying files.
-STOP: Stop after the inspection report.
-DOC: NO
-```
-
----
-
-## Multi-ruleset Combinations
-
-Rulesets can be combined with `+` (e.g., `RULESET:DOMAIN+DATA`, `RULESET:UI+TEST`). `.agents/rules/00-rule-router.md` automatically deduplicates shared integration files.

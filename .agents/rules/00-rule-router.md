@@ -15,11 +15,12 @@ The following files are permanently active and apply unconditionally across all 
 5. `.agents/rules/ponytail.md` (Minimal engineering, YAGNI, reuse checklist)
 6. `docs/agent-rules/core/context-budget.md` (Token and context conservation policy)
 
-### Core Operating Principles
-- **Prompt Gate First**: Validate prompt against `PROMPT_CONTRACT.md` before using Serena, RTK, file exploration, or execution tools.
-- **Serena First**: Prefer Serena semantic and symbol tools (`find_symbol`, `get_symbols_overview`, etc.) for repository exploration and targeted symbol edits before reading full files.
-- **RTK Preferred**: Always prefix verbose shell commands (`git`, `npm test`, `npm run build`, `npm run lint`) with `rtk` to filter redundant tokens.
-- **Ponytail / YAGNI**: Never create speculative abstractions, dead code, or add unneeded dependencies. Reuse existing code first.
+### Canonical System Indices & Policies
+- **Tool Index (`docs/agent-rules/TOOL_INDEX.md`):** Resolves all tool and integration documentation paths. Never search the repository manually for tool guidelines.
+- **Context Index (`docs/context/CONTEXT_INDEX.md`):** Resolves domain and technical context packs per ruleset.
+- **Verification Profiles (`docs/agent-rules/VERIFY_PROFILES.md`):** Resolves execution verification tiers (`DOCS`, `TARGETED`, `DOMAIN`, `UI`, `FULL`, `AUTO`).
+- **Escalation Policy (`docs/agent-rules/core/escalation-policy.md`):** Governs context expansion levels when encountering failures.
+- **Diff-First Workflow (`docs/agent-rules/workflows/diff-first.md`):** Mandatory inspection order for review, checkpoint, and regression tasks.
 
 ---
 
@@ -39,7 +40,7 @@ When a prompt specifies a ruleset alias (e.g. `RULESET:DOMAIN`), load **only** t
 | `RULESET:ROUTING` | `docs/agent-rules/workflows/ui.md` | `docs/agent-rules/integrations/react-router.md` |
 | `RULESET:LAYOUT` | `docs/agent-rules/workflows/ui.md` | `docs/agent-rules/integrations/react-resizable-panels.md`<br>`docs/agent-rules/integrations/tailwind.md`<br>`docs/agent-rules/integrations/shadcn-ui.md` |
 | `RULESET:AGENT` | *(None)* | `docs/agent-rules/integrations/serena.md`<br>`docs/agent-rules/integrations/rtk.md`<br>`docs/agent-rules/integrations/ponytail.md` |
-| `RULESET:REPO` | *(None)* | `docs/agent-rules/integrations/git-github.md`<br>`docs/agent-rules/integrations/serena.md` |
+| `RULESET:REPO` | `docs/agent-rules/workflows/diff-first.md` | `docs/agent-rules/integrations/git-github.md`<br>`docs/agent-rules/integrations/serena.md` |
 | `RULESET:CORE` | *(None)* | `docs/agent-rules/integrations/vite-react-typescript.md` |
 | `RULESET:DOCS` | `docs/agent-rules/workflows/documentation.md` | `docs/agent-rules/integrations/git-github.md` |
 
@@ -51,10 +52,7 @@ Prompts may combine ruleset aliases using the `+` operator, for example:
 - `RULESET:DOMAIN+DATA`
 - `RULESET:UI+FORMS`
 - `RULESET:RULES+TEST`
+- `RULESET:AGENT+DOCS+REPO`
 
 ### Deduplication Rule
-When combining rulesets, union the target files and **deduplicate** common references. Each file must be loaded at most once.
-
-*Example (`RULESET:DOMAIN+DATA`)*:
-- Workflow files: `docs/agent-rules/workflows/domain.md`, `docs/agent-rules/workflows/data.md`
-- Integration files: `docs/agent-rules/integrations/zod.md` (deduplicated), `docs/agent-rules/integrations/tanstack-query.md`, `docs/agent-rules/integrations/json-server.md`
+When combining rulesets, union the target files and **deduplicate** common references. Each file must be loaded at most once per task.

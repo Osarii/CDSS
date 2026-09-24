@@ -152,11 +152,133 @@ La capa base de optimización de agentes quedó conectada al flujo normal del re
 
 ---
 
+## 2026-09-24 — Prompt Contract + Documentation Gate
+
+**Phase:** Agent Infrastructure
+**Status:** COMPLETE
+**Commit:** `bc0969b`
+**Agent/model:** Antigravity / Gemini 3.8 High
+
+**Objective**
+
+Implementar un Prompt Gate estricto y un Project Journal curado para garantizar que todo prompt de ejecución futuro cumpla con un contrato validable antes de realizar cualquier acción sobre el repositorio.
+
+**Important decisions**
+
+- Todo prompt de ejecución requiere 6 campos obligatorios: `TASK`, `RULESET`, `SCOPE`, `ACCEPTANCE`, `STOP` y `DOC`.
+- `PROMPT_CONTRACT.md` es la única lectura del repositorio permitida antes de la validación.
+- Si el prompt es inválido, el agente cancela la tarea inmediatamente sin ejecutar llamadas posteriores a herramientas ni exploración.
+- Excepción meta: `PROMPT_HELP` muestra la plantilla canónica sin ejecutar trabajo.
+- Incorporación de `RULESET:DOCS` para documentar decisiones e hitos en `docs/PROJECT_JOURNAL.md`.
+- Política de tokens: el Journal no se precarga en tareas normales; solo se consulta o actualiza cuando `DOC=YES` o `DOC=AUTO` con hito calificado.
+
+**Verification**
+
+- contract validation: PASS
+- reference integrity: PASS (36 manifest files, 53 router references)
+- git diff --check: PASS
+
+**Result**
+
+El repositorio cuenta con una barrera permanente de validación de prompts (`01-prompt-gate.md`) y un historial curado de arquitectura y decisiones (`PROJECT_JOURNAL.md`).
+
+---
+
+## 2026-09-24 — Canonical Tool Documentation Index
+
+**Phase:** Agent Infrastructure
+**Status:** COMPLETE
+**Commit:** pending
+**Agent/model:** Antigravity / Gemini 3.8 High
+
+**Objective**
+
+Crear un índice canónico de documentación de herramientas (`docs/agent-rules/TOOL_INDEX.md`) y conectarlo al Prompt Contract y al enrutador de agentes, permitiendo la resolución determinística de paths de integración sin búsquedas en el repositorio.
+
+**Important decisions**
+
+- Mapeo canónico en `docs/agent-rules/TOOL_INDEX.md` para todas las herramientas e integraciones del proyecto (`SERENA`, `RTK`, `PONYTAIL`, `CONTEXT_BUDGET`, `GIT`, `CORE`, `ROUTER`, `TAILWIND`, `SHADCN`, `SHADCN_LINT`, `LUCIDE`, `RESIZABLE_PANELS`, `TANSTACK_QUERY`, `TANSTACK_TABLE`, `ZOD`, `RHF`, `JSON_SERVER`, `MSW`, `RULES_ENGINE`, `VITEST`, `RTL`, `PLAYWRIGHT`, `STORYBOOK`).
+- Las herramientas solicitadas en los prompts se resuelven exclusivamente mediante `TOOL_INDEX.md` en lugar de exploración libre del repositorio.
+- Estados de herramienta: `NO` (no cargar MD de integración), `AUTO` (cargar solo si la tarea lo exige), `YES` (cargar MD antes de usar la herramienta).
+- Las reglas de seguridad clínica en `AGENTS.md` y el Prompt Gate permanecen obligatorios e inhabilitables.
+- `.agents/rules/00-rule-router.md` y `RULES_MANIFEST.json` incorporan `TOOL_INDEX.md`.
+
+**Verification**
+
+- reference integrity: PASS
+- git diff --check: PASS
+
+**Result**
+
+Los agentes pueden resolver la documentación de herramientas de manera token-eficiente y determinística sin explorar el árbol del repositorio.
+
+---
+
+## 2026-09-24 — Context & Token Optimization Infrastructure
+
+**Phase:** Agent Infrastructure
+**Status:** COMPLETE
+**Commit:** pending
+**Agent/model:** Antigravity / Gemini 3.8 High
+
+**Objective**
+
+Construir la infraestructura completa de optimización de contexto y tokens sobre el Prompt Contract, Rule Router, Serena, RTK, Ponytail y Project Journal.
+
+**Accepted prompt**
+
+<details>
+<summary>Prompt utilizado</summary>
+
+```text
+TASK: Build the complete CDSS-CR context and token optimization infrastructure on top of the existing Prompt Contract, Rule Router, Serena, RTK, Ponytail and Project Journal.
+RULESET: AGENT+DOCS+REPO
+SCOPE: PROMPT_CONTRACT.md, PROJECT_STATE.md, AGENTS.md, RULES_MANIFEST.json, .agents/rules/, docs/agent-rules/, docs/context/, docs/architecture/, docs/design/, docs/PROJECT_JOURNAL.md
+ACCEPTANCE: Context packs, tool index, optimization profiles, verification profiles, visual index, decision IDs, diff-first, escalation policy, and line count guards.
+STOP: Stop after verification and report the exact files changed.
+DOC: YES
+TOOLS: SERENA: NO, RTK: YES, PONYTAIL: YES, CONTEXT_BUDGET: STRICT
+GIT: NONE
+```
+</details>
+
+**Important decisions**
+
+- Separación canónica entre contexto estable (`AGENTS.md`, `PROMPT_CONTRACT.md`, `.agents/rules/`, `DESIGN.md`) y contexto cambiante (`PROJECT_STATE.md`).
+- Creación de `PROJECT_STATE.md` (<= 150 líneas) como resumen canónico del estado activo para evitar releer historial.
+- Paquetes de contexto compactos (`docs/context/` para `DOMAIN`, `UI`, `DATA`, `RULES`, `TEST`) indexados vía `docs/context/CONTEXT_INDEX.md`.
+- Perfiles de herramientas configurables (`TOOLS: AUTO | MINIMAL | DEEP` y granular `SERENA`, `RTK`, `PONYTAIL`, `CONTEXT_BUDGET`).
+- Modos de contexto (`CONTEXT: AUTO | MINIMAL | DEEP`) y presupuestos de lectura planificados (`BUDGET: AUTO | FILES, FULL_READS, COMMANDS`).
+- Regla de Context Receipt conceptual interna (sin persistir ni generar archivos).
+- Flujo de inspección `diff-first` (`docs/agent-rules/workflows/diff-first.md`) para revisiones y regresiones.
+- Perfiles de verificación por tier (`docs/agent-rules/VERIFY_PROFILES.md`) y política de escalamiento (`docs/agent-rules/core/escalation-policy.md`).
+- Registro canónico de decisiones estables (`docs/architecture/DECISIONS.md`) con IDs (`DEC-001` a `DEC-009`) y referencias visuales (`docs/design/VISUAL_INDEX.md`).
+- Guardas de tamaño de archivo (límites estrictos de líneas) para evitar la degradación de contexto.
+
+**Changed/created**
+- `PROJECT_STATE.md`
+- `docs/context/` (`CONTEXT_INDEX.md`, `DOMAIN_CONTEXT.md`, `UI_CONTEXT.md`, `DATA_CONTEXT.md`, `RULES_CONTEXT.md`, `TEST_CONTEXT.md`)
+- `docs/architecture/DECISIONS.md`
+- `docs/design/VISUAL_INDEX.md`
+- `docs/agent-rules/workflows/diff-first.md`
+- `docs/agent-rules/VERIFY_PROFILES.md`
+- `docs/agent-rules/core/escalation-policy.md`
+- `PROMPT_CONTRACT.md`, `.agents/rules/00-rule-router.md`, `.agents/rules/01-prompt-gate.md`, `RULES_MANIFEST.json`, `docs/agent-rules/PROMPT_SHORTCUTS.md`
+
+**Verification**
+- reference integrity: PASS
+- line count guards: PASS
+- git diff --check: PASS
+
+**Result**
+El repositorio cuenta con una arquitectura de contexto completa, determinística y token-optimizada que previene el consumo redundante de tokens en tareas posteriores.
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:
 
-- Prompt Gate + formato contractual de prompts.
 - Alineación final del Design System.
 - Domain Model v1.
 - Synthetic Clinical Scenarios v1.
