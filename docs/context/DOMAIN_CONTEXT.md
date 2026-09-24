@@ -14,7 +14,11 @@ Compact orientation for working within the CDSS-CR clinical domain models and bo
 
 ### Allergy, Condition & Observation
 - **CURRENT:** `src/domain/allergy/schema.ts` (`allergySchema`), `src/domain/condition/schema.ts` (`conditionSchema`), `src/domain/observation/schema.ts` (`observationSchema`).
-- **TARGET:** Synthetic clinical scenario generation for testing deterministic rule sets.
+- **TARGET:** Extended ontology codes (SNOMED, RxNorm) for advanced clinical mappings.
+
+### Synthetic Scenarios
+- **CURRENT:** `src/domain/scenarios/schema.ts` (`syntheticScenarioSchema`) and `src/data/scenarios/` (`SYN-001` through `SYN-008`).
+- **TARGET:** Clinical Context Builder aggregating scenarios for evaluation pipelines.
 
 ### Clinical Context & Data Gate
 - **CURRENT:** `src/domain/clinical-context/schema.ts` defines `clinicalContextSchema` (serializable snapshot of patient, medications, allergies, conditions, observations, dataPoints, timestamp) and `clinicalDataPointSchema`. `requiredDataGate.ts` evaluates data readiness preserving `failedRequirements` (`key`, `status`).

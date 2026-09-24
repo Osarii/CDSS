@@ -349,11 +349,49 @@ El repositorio cuenta con una base de modelo de dominio clínico tipada, validad
 
 ---
 
+## 2026-09-24 — Synthetic Clinical Scenarios v1
+
+**Phase:** Synthetic Clinical Scenarios v1
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.8 Flash
+
+**Objective**
+
+Implementar el catálogo canónico tipado de 8 escenarios clínicos sintéticos (`SYN-001` a `SYN-008`), validados exhaustivamente mediante esquemas Zod del dominio, igualando o superando el caso clínico de referencia de alta complejidad médica (paciente mayor con comorbilidades cardiorrenales, polifarmacia, tratamientos agudos vs crónicos, estados múltiples de disponibilidad de datos y sin precodificar conclusiones diagnósticas o terapéuticas).
+
+**Important decisions & Changes**
+
+- **Scenario Schema & Type:** Se introdujo `syntheticScenarioSchema` en `src/domain/scenarios/schema.ts` requiriendo `scenarioId` (`SYN-XXX`), `title`, `description`, `clinicalContext` y `evaluationFocus` (separando estrictamente los focos de evaluación de los hallazgos de reglas).
+- **Synthetic Scenarios Catalog (`src/data/scenarios/index.ts`):**
+  - `SYN-001`: Contexto de evaluación basal con régimen dual ambulatorio (metformina y lisinopril) y datos de laboratorio completos.
+  - `SYN-002`: Contexto de evaluación de alergia con celulitis aguda, prescripción de amoxicilina-clavulánico e historial de hipersensibilidad a penicilina y sulfametoxazol.
+  - `SYN-003`: Contexto de evaluación de polifarmacia con hipertensión, ERC 3b, fibrilación auricular, enalapril, furosemida, espironolactona, amiodarona, bisoprolol y atorvastatina.
+  - `SYN-004`: Contexto de evaluación renal con dabigatrán y metformina donde los datos de función renal (`serum_creatinine`, `egfr`) están faltantes (`MISSING`).
+  - `SYN-005`: Contexto de evaluación renal con régimen de alopurinol y datos de laboratorio históricos (`STALE`: 18 meses de antigüedad).
+  - `SYN-006`: Contexto de evaluación de prescripciones concurrentes con múltiples AINEs (ibuprofeno + naproxeno), ISRS (escitalopram) y omeprazol.
+  - `SYN-007`: Contexto de regímenes concurrentes complejos (warfarina + amiodarona + ciprofloxacino en ERC 3b con registro de alergia a penicilina).
+  - `SYN-008`: Contexto de evaluación con datos en múltiples estados de disponibilidad simultáneos (`AVAILABLE`, `MISSING`, `STALE`, `UNKNOWN`, `UNAVAILABLE`) para paciente con insuficiencia cardíaca, ERC 4 y digoxina.
+- **Mock DB Persistence (`db.json`):** Se almacenaron registros sintéticos de entidades (`patients`, `medications`, `allergies`, `conditions`, `observations`) preservando la frontera de adaptadores; el adaptador `JsonServerAdapter` permanece como stub de desarrollo y su integración activa ocurrirá en hitos posteriores.
+- **Suite de Pruebas Automatizadas (`src/domain/scenarios/scenarios.test.ts`):** 18 pruebas verificando validación Zod completa, unicidad de IDs, benchmark de complejidad médica, compuertas de datos `evaluateDataGate`, salidas determinísticas y lenguaje de inspección neutral sin hallazgos preautorizados.
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS (0 errors, 0 warnings)
+- npm run test: PASS (6 files, 43 tests passed)
+- npm run build: PASS (Vite + TypeScript compilation)
+
+**Result**
+
+CDSS-CR cuenta con un catálogo canónico de 8 escenarios clínicos sintéticos de alta fidelidad, listo para alimentar el Clinical Context Builder y la evaluación determinística de reglas.
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:
 
-- Synthetic Clinical Scenarios v1.
 - Clinical Context Builder.
 - Required Data Gate v1.
 - Deterministic Findings v1.

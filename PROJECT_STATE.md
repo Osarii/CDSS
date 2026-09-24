@@ -7,9 +7,9 @@
 ---
 
 ## 1. Execution Coordinates
-- **Current Phase:** Phase 1 Domain Model v1 Complete -> Next: Synthetic Clinical Scenarios v1
+- **Current Phase:** Synthetic Clinical Scenarios v1 Complete -> Next: Clinical Context Builder
 - **Current Branch:** `main`
-- **Last Important Commit:** `564b7b7` (`feat: complete phase 1 domain model v1`)
+- **Last Important Commit:** `564b7b7` (Phase 1 Domain Model v1)
 - **Last Update Date:** 2026-09-24
 
 ## 2. Phase Status
@@ -22,8 +22,9 @@
   - Context & Documentation Integrity (`bb8c8e3`, `b92cd86`)
   - Phase 0.6: Design System Alignment (`e76a7cf`, `d8b3de7`)
   - Phase 1: Domain Model v1 (canonical Zod schemas, ClinicalContext snapshot, severity model, AuditEvent) (`564b7b7`)
-- **Current Work:** Phase 1 Domain Model v1 Complete
-- **Next Allowed Phase / Task:** Synthetic Clinical Scenarios v1 (generate synthetic patient fixtures & evaluation test cases)
+  - Synthetic Clinical Scenarios v1 (`SYN-001` through `SYN-008`, typed catalog, multi-state availability tests, raw synthetic fixtures stored in `db.json`)
+- **Current Work:** Synthetic Clinical Scenarios v1 Complete
+- **Next Allowed Phase / Task:** Clinical Context Builder (assemble clinical context snapshots for rule evaluation)
 - **Explicit Tasks NOT to Start Yet:**
   - DO NOT implement final clinical screens (Dashboard, Medication Review).
   - DO NOT implement final clinical rule sets or invent unvalidated guidance.
@@ -49,7 +50,8 @@
 - **Architecture & Decisions:** [docs/architecture/DECISIONS.md](./docs/architecture/DECISIONS.md)
 - **Visual Index:** [docs/design/VISUAL_INDEX.md](./docs/design/VISUAL_INDEX.md)
 - **Historical Milestones:** [docs/PROJECT_JOURNAL.md](./docs/PROJECT_JOURNAL.md)
-- **Domain Logic:** `src/domain/` (patient, medication, clinical-context, rules, findings, audit)
+- **Domain Logic:** `src/domain/` (patient, medication, clinical-context, rules, findings, scenarios, audit)
+- **Synthetic Scenarios Catalog:** `src/data/scenarios/` (`SYN-001` through `SYN-008`)
 - **Data Adapters:** `src/services/adapters/ClinicalDataAdapter.ts`
 
 ## 6. Established Decisions Summary
