@@ -388,6 +388,49 @@ CDSS-CR cuenta con un catálogo canónico de 8 escenarios clínicos sintéticos 
 
 ---
 
+### Mini-Phase: Medication Exposure & Clinical Context Source Boundary
+
+- **Fecha:** 2026-09-24
+- **Commit:** pending
+- **Ruleset activado:** DOMAIN+DATA+TEST+DOCS
+- **Context packs consultados:** `DATA_CONTEXT.md`, `DOMAIN_CONTEXT.md`
+
+**Contexto y Racionalidad**
+
+Para evitar el acoplamiento implícito entre definiciones farmacológicas puras e historiales de pacientes individuales (evitando el antipatrón de usar identificadores de medicamentos como claves foráneas implícitas de pacientes), se formalizó la distinción conceptual y arquitectónica entre:
+1. `Medication`: definición o snapshot de catálogo farmacológico (`code`, `name`, `dosage`, `route`).
+2. `MedicationExposure`: relación específica de un paciente con un medicamento (`patientId`, `medicationId`, `therapyContext`, `status`, `startedAt`, `endedAt`).
+3. `ClinicalContext`: snapshot derivado de evaluación clínica.
+
+Asimismo, se definió la frontera de entrada para el futuro Clinical Context Builder (`ClinicalContextSourceInput`) para garantizar que el contexto clínico se construya explícitamente agregando registros fuente vinculados a pacientes en lugar de copiarse de estructuras estáticas preconcebidas.
+
+**Cambios clave**
+
+- **Modelo `MedicationExposure` (`src/domain/medication/schema.ts`):** Esquema Zod mínimo y tipos TypeScript inferidos (`id`, `patientId`, `medicationId`, `therapyContext: 'chronic' | 'acute' | 'unknown'`, `status: 'active' | 'stopped' | 'unknown'`, `startedAt?`, `endedAt?`).
+- **Frontera de entrada del Context Builder (`src/domain/clinical-context/schema.ts`):** Definición de `clinicalContextSourceInputSchema` y `ClinicalContextSourceInput` (`patient`, `medications`, `medicationExposures`, `allergies`, `conditions`, `observations`, `dataPoints?`, `evaluationTimestamp`).
+- **Catálogo de Exposiciones Sintéticas (`src/data/scenarios/exposures.ts`):** 39 registros de exposición cubriendo la totalidad de medicamentos de `SYN-001` a `SYN-008`.
+- **Estructura Temporal del Caso de Referencia SYN-003:** Se preservó fielmente la clasificación médica:
+  - Enalapril → `chronic`
+  - Furosemida → `chronic`
+  - Espironolactona → `chronic`
+  - Amiodarona → `acute`
+  - Bisoprolol y Atorvastatina → `unknown` (contexto neutral por defecto).
+- **Persistencia en `db.json`:** Incorporación del arreglo `"medicationExposures"` sincronizado con el catálogo de código.
+- **Suite de Pruebas de Integridad (`src/domain/medication/exposure.test.ts`):** 24 pruebas cubriendo validación de esquemas Zod, resolución referencial completa de `patientId` y `medicationId`, cobertura de todos los medicamentos de escenarios, estructura temporal de SYN-003, detección de registros huérfanos/duplicados y validación de la frontera `clinicalContextSourceInputSchema`.
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS (0 errors, 0 warnings)
+- npm run test: PASS (7 files, 67 tests passed)
+- npm run build: PASS (Vite + TypeScript compilation)
+
+**Result**
+
+Frontera de exposición a medicamentos y entrada fuente de contexto clínico formalizada, tipada y validada. La arquitectura queda lista para la implementación del Clinical Context Builder.
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:

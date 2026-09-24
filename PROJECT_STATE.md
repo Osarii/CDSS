@@ -7,7 +7,7 @@
 ---
 
 ## 1. Execution Coordinates
-- **Current Phase:** Synthetic Clinical Scenarios v1 Complete -> Next: Clinical Context Builder
+- **Current Phase:** Medication Exposure + Clinical Context Source Boundary Complete -> Next: Clinical Context Builder
 - **Current Branch:** `main`
 - **Last Important Commit:** `564b7b7` (Phase 1 Domain Model v1)
 - **Last Update Date:** 2026-09-24
@@ -23,8 +23,10 @@
   - Phase 0.6: Design System Alignment (`e76a7cf`, `d8b3de7`)
   - Phase 1: Domain Model v1 (canonical Zod schemas, ClinicalContext snapshot, severity model, AuditEvent) (`564b7b7`)
   - Synthetic Clinical Scenarios v1 (`SYN-001` through `SYN-008`, typed catalog, multi-state availability tests, raw synthetic fixtures stored in `db.json`)
-- **Current Work:** Synthetic Clinical Scenarios v1 Complete
-- **Next Allowed Phase / Task:** Clinical Context Builder (assemble clinical context snapshots for rule evaluation)
+  - Medication Exposure + Clinical Context Source Boundary (`MedicationExposure` typed/Zod model, 39 synthetic exposures in `src/data/scenarios/exposures.ts` & `db.json`, SYN-003 physician temporal structure preserved, `clinicalContextSourceInputSchema` boundary)
+- **Current Work:** Medication Exposure + Clinical Context Source Boundary Complete
+- **Next Allowed Phase / Task:** Clinical Context Builder (assemble clinical context snapshots for rule evaluation from patient-linked source records)
+
 - **Explicit Tasks NOT to Start Yet:**
   - DO NOT implement final clinical screens (Dashboard, Medication Review).
   - DO NOT implement final clinical rule sets or invent unvalidated guidance.

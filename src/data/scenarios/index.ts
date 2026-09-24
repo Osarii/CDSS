@@ -1504,3 +1504,5 @@ export function getSyntheticScenarios(): readonly SyntheticScenario[] {
 export function getSyntheticScenarioById(scenarioId: string): SyntheticScenario | undefined {
   return syntheticScenarios.find((s) => s.scenarioId === scenarioId)
 }
+
+export * from './exposures'

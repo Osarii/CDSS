@@ -324,6 +324,281 @@
       "route": "subcutaneous"
     }
   ],
+  "medicationExposures": [
+    {
+      "id": "exp-syn-001-1",
+      "patientId": "pat-syn-001",
+      "medicationId": "med-syn-001-1",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-001-2",
+      "patientId": "pat-syn-001",
+      "medicationId": "med-syn-001-2",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-002-1",
+      "patientId": "pat-syn-002",
+      "medicationId": "med-syn-002-1",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-002-2",
+      "patientId": "pat-syn-002",
+      "medicationId": "med-syn-002-2",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-002-3",
+      "patientId": "pat-syn-002",
+      "medicationId": "med-syn-002-3",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-002-4",
+      "patientId": "pat-syn-002",
+      "medicationId": "med-syn-002-4",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-002-5",
+      "patientId": "pat-syn-002",
+      "medicationId": "med-syn-002-5",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-003-1",
+      "patientId": "pat-syn-003",
+      "medicationId": "med-syn-003-1",
+      "therapyContext": "chronic",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-003-2",
+      "patientId": "pat-syn-003",
+      "medicationId": "med-syn-003-2",
+      "therapyContext": "chronic",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-003-3",
+      "patientId": "pat-syn-003",
+      "medicationId": "med-syn-003-3",
+      "therapyContext": "chronic",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-003-4",
+      "patientId": "pat-syn-003",
+      "medicationId": "med-syn-003-4",
+      "therapyContext": "acute",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-003-5",
+      "patientId": "pat-syn-003",
+      "medicationId": "med-syn-003-5",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-003-6",
+      "patientId": "pat-syn-003",
+      "medicationId": "med-syn-003-6",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-004-1",
+      "patientId": "pat-syn-004",
+      "medicationId": "med-syn-004-1",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-004-2",
+      "patientId": "pat-syn-004",
+      "medicationId": "med-syn-004-2",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-004-3",
+      "patientId": "pat-syn-004",
+      "medicationId": "med-syn-004-3",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-004-4",
+      "patientId": "pat-syn-004",
+      "medicationId": "med-syn-004-4",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-004-5",
+      "patientId": "pat-syn-004",
+      "medicationId": "med-syn-004-5",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-005-1",
+      "patientId": "pat-syn-005",
+      "medicationId": "med-syn-005-1",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-005-2",
+      "patientId": "pat-syn-005",
+      "medicationId": "med-syn-005-2",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-005-3",
+      "patientId": "pat-syn-005",
+      "medicationId": "med-syn-005-3",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-005-4",
+      "patientId": "pat-syn-005",
+      "medicationId": "med-syn-005-4",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-005-5",
+      "patientId": "pat-syn-005",
+      "medicationId": "med-syn-005-5",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-006-1",
+      "patientId": "pat-syn-006",
+      "medicationId": "med-syn-006-1",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-006-2",
+      "patientId": "pat-syn-006",
+      "medicationId": "med-syn-006-2",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-006-3",
+      "patientId": "pat-syn-006",
+      "medicationId": "med-syn-006-3",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-006-4",
+      "patientId": "pat-syn-006",
+      "medicationId": "med-syn-006-4",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-006-5",
+      "patientId": "pat-syn-006",
+      "medicationId": "med-syn-006-5",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-007-1",
+      "patientId": "pat-syn-007",
+      "medicationId": "med-syn-007-1",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-007-2",
+      "patientId": "pat-syn-007",
+      "medicationId": "med-syn-007-2",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-007-3",
+      "patientId": "pat-syn-007",
+      "medicationId": "med-syn-007-3",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-007-4",
+      "patientId": "pat-syn-007",
+      "medicationId": "med-syn-007-4",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-007-5",
+      "patientId": "pat-syn-007",
+      "medicationId": "med-syn-007-5",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-007-6",
+      "patientId": "pat-syn-007",
+      "medicationId": "med-syn-007-6",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-008-1",
+      "patientId": "pat-syn-008",
+      "medicationId": "med-syn-008-1",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-008-2",
+      "patientId": "pat-syn-008",
+      "medicationId": "med-syn-008-2",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-008-3",
+      "patientId": "pat-syn-008",
+      "medicationId": "med-syn-008-3",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-008-4",
+      "patientId": "pat-syn-008",
+      "medicationId": "med-syn-008-4",
+      "therapyContext": "unknown",
+      "status": "active"
+    },
+    {
+      "id": "exp-syn-008-5",
+      "patientId": "pat-syn-008",
+      "medicationId": "med-syn-008-5",
+      "therapyContext": "unknown",
+      "status": "active"
+    }
+  ],
   "allergies": [
     {
       "id": "all-syn-002-1",
