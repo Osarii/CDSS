@@ -281,11 +281,44 @@ La infraestructura de contexto y tokens refleja con total veracidad el estado ac
 
 ---
 
+## 2026-09-24 — Phase 0.6: Design System Alignment
+
+**Phase:** Phase 0.6
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.6 Flash
+
+**Objective**
+
+Consolidar el sistema de diseño autoritativo CDSS-CR (Graphite + Bone + Aubergine & Inter + Source Serif 4) eliminando anulaciones por cascada CSS y estableciendo variaciones semánticas explícitas para estados clínicos (incluyendo faltante/desconocido con borde punteado ámbar).
+
+**Important decisions & Changes**
+
+- **Font Dependencies:** Se instalaron exclusivamente `@fontsource-variable/inter` y `@fontsource/source-serif-4`; se eliminó `@fontsource-variable/geist`.
+- **CSS Cascade:** Se eliminaron los bloques duplicados de `:root` y `.dark` en `src/index.css` que sobreescribían variables CDSS con valores neutros/azules de shadcn.
+- **Dark Mode:** Se alineó `.dark` a la paleta Graphite (`#151419`, `#1C1B21`, `#27252D`) con acentos Aubergine (`#B89BC4`), erradicando azul-salud.
+- **Clinical Badges:** Se extendió `src/components/ui/badge.tsx` con variantes semánticas clínicas (`critical`, `warning`, `safe`, `low`, `missing`). El estado `missing` (`#B97821` en bg `#FDF8F2`) utiliza borde punteado para cumplir `MISSING !== NORMAL`.
+- **Linter Enforcer:** Se activaron las reglas `'shadcn/no-raw-colors'` y `'shadcn/no-inline-styles'` en `eslint.config.js`.
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS (0 errors, 0 warnings)
+- npm run test: PASS (4 files, 8 tests passed)
+- npm run build: PASS (Vite bundled Inter & Source Serif 4)
+- npm run build-storybook: PASS (Storybook build success)
+- domain/data changes: NONE
+
+**Result**
+
+El sistema de diseño CDSS-CR cuenta con una base visual coherente, determinística y libre de conflictos antes de la implementación de pantallas clínicas en la Fase 1.
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:
 
-- Alineación final del Design System (Fase 0.6).
 - Domain Model v1.
 - Synthetic Clinical Scenarios v1.
 - Clinical Context Builder.

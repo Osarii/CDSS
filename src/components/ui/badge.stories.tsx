@@ -28,3 +28,29 @@ export const Destructive: Story = {
 export const Outline: Story = {
   args: { children: 'Información', variant: 'outline' },
 }
+
+export const ClinicalCritical: Story = {
+  args: { children: 'Crítico — Alerta Grave', variant: 'critical' },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText('Crítico — Alerta Grave')).toBeVisible()
+  },
+}
+
+export const ClinicalWarning: Story = {
+  args: { children: 'Precaución — Dosis', variant: 'warning' },
+}
+
+export const ClinicalSafe: Story = {
+  args: { children: 'Verificado — Seguro', variant: 'safe' },
+}
+
+export const ClinicalLow: Story = {
+  args: { children: 'Leve — Informativo', variant: 'low' },
+}
+
+export const ClinicalMissing: Story = {
+  args: { children: 'Faltante — Creatinina Requerida', variant: 'missing' },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText('Faltante — Creatinina Requerida')).toBeVisible()
+  },
+}

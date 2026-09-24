@@ -1,55 +1,63 @@
 /* CDSS-CR Design Tokens: Graphite + Bone + Aubergine & Clinical Semantics */
 
 @theme {
-  --color-graphite: #1F242D;
-  --color-graphite-light: #333945;
-  --color-graphite-muted: #5C6473;
+  --font-sans: 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Source Serif 4', Georgia, Cambria, 'Times New Roman', Times, serif;
 
-  --color-bone: #F8F7F4;
-  --color-bone-surface: #FFFFFF;
-  --color-bone-border: #E5E2DA;
-  --color-bone-muted: #EDEAE1;
+  --color-graphite: #151419;
+  --color-graphite-1: #151419;
+  --color-graphite-2: #1C1B21;
+  --color-graphite-3: #27252D;
+  --color-graphite-4: #35323C;
+  --color-graphite-muted: #6D6672;
 
-  --color-aubergine: #4A154B;
-  --color-aubergine-deep: #320E33;
-  --color-aubergine-light: #732B74;
-  --color-aubergine-muted: #F3EAF4;
+  --color-bone-canvas: #FAF7F1;
+  --color-bone-surface: #F4EFE7;
+  --color-bone-border: #E9E1D7;
 
-  --color-clinical-critical: #C53030;
-  --color-clinical-critical-bg: #FDE8E8;
-  --color-clinical-warning: #B45309;
-  --color-clinical-warning-bg: #FEF3C7;
-  --color-clinical-safe: #166534;
-  --color-clinical-safe-bg: #DEF7EC;
-  --color-clinical-low: #475569;
-  --color-clinical-low-bg: #F1F5F9;
-  --color-clinical-missing: #6B7280;
-  --color-clinical-missing-bg: #F3F4F6;
+  --color-aubergine: #4D2F5C;
+  --color-aubergine-primary: #4D2F5C;
+  --color-aubergine-deep: #62406F;
+  --color-aubergine-light: #775382;
+  --color-aubergine-accent-border: #B89BC4;
+  --color-aubergine-muted-bg: #EEE5F1;
+
+  --color-clinical-critical: #C83F49;
+  --color-clinical-critical-bg: #FDF2F3;
+  --color-clinical-warning: #C88728;
+  --color-clinical-warning-bg: #FDF8F0;
+  --color-clinical-safe: #3F765B;
+  --color-clinical-safe-bg: #F2F8F5;
+  --color-clinical-low: #6D6672;
+  --color-clinical-low-bg: #F4F3F5;
+  --color-clinical-missing: #B97821;
+  --color-clinical-missing-bg: #FDF8F2;
 }
 
 :root {
-  --graphite: #1F242D;
-  --graphite-light: #333945;
-  --graphite-muted: #5C6473;
+  --graphite-1: #151419;
+  --graphite-2: #1C1B21;
+  --graphite-3: #27252D;
+  --graphite-4: #35323C;
 
-  --bone: #F8F7F4;
-  --bone-surface: #FFFFFF;
-  --bone-border: #E5E2DA;
-  --bone-muted: #EDEAE1;
+  --bone-canvas: #FAF7F1;
+  --bone-surface: #F4EFE7;
+  --bone-border: #E9E1D7;
 
-  --aubergine: #4A154B;
-  --aubergine-deep: #320E33;
-  --aubergine-light: #732B74;
-  --aubergine-muted: #F3EAF4;
+  --aubergine-primary: #4D2F5C;
+  --aubergine-deep: #62406F;
+  --aubergine-light: #775382;
+  --aubergine-accent-border: #B89BC4;
+  --aubergine-muted-bg: #EEE5F1;
 
-  --clinical-critical: #C53030;
-  --clinical-critical-bg: #FDE8E8;
-  --clinical-warning: #B45309;
-  --clinical-warning-bg: #FEF3C7;
-  --clinical-safe: #166534;
-  --clinical-safe-bg: #DEF7EC;
-  --clinical-low: #475569;
-  --clinical-low-bg: #F1F5F9;
-  --clinical-missing: #6B7280;
-  --clinical-missing-bg: #F3F4F6;
+  --clinical-critical: #C83F49;
+  --clinical-critical-bg: #FDF2F3;
+  --clinical-warning: #C88728;
+  --clinical-warning-bg: #FDF8F0;
+  --clinical-safe: #3F765B;
+  --clinical-safe-bg: #F2F8F5;
+  --clinical-low: #6D6672;
+  --clinical-low-bg: #F4F3F5;
+  --clinical-missing: #B97821;
+  --clinical-missing-bg: #FDF8F2;
 }

@@ -37,6 +37,8 @@ export default defineConfig([
           allowExportNames: ['buttonVariants', 'badgeVariants', 'tabsListVariants'],
         },
       ],
+      'shadcn/no-raw-colors': 'warn',
+      'shadcn/no-inline-styles': 'warn',
     },
   },
 ])

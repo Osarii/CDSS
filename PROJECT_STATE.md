@@ -7,9 +7,9 @@
 ---
 
 ## 1. Execution Coordinates
-- **Current Phase:** Context & Token Optimization Complete -> Next: Phase 0.6 (Design System Alignment)
+- **Current Phase:** Phase 0.6 Design System Alignment Complete -> Next: Phase 1 (Domain Model v1)
 - **Current Branch:** `main`
-- **Last Important Commit:** `bb8c8e3` (`docs: fix context integrity and tool override semantics`)
+- **Last Important Commit:** `b92cd86` (`docs: finalize phase 0.55 context integrity`)
 - **Last Update Date:** 2026-09-24
 
 ## 2. Phase Status
@@ -19,9 +19,10 @@
   - Agent Infrastructure: Rule Library & Prompt Router (`c1bc956`, `ead3430`, `8605383`)
   - Prompt Gate & Curated Journal Setup (`bc0969b`)
   - Context & Token Optimization Infrastructure (`d7d7037`, `f1f7c89`)
-  - Context & Documentation Integrity (`bb8c8e3`)
-- **Current Work:** Context & Documentation Integrity Complete
-- **Next Allowed Phase / Task:** Phase 0.6 — Design System Alignment (consolidate Graphite + Bone + Aubergine tokens in `src/index.css` and resolve shadcn duplicate overrides)
+  - Context & Documentation Integrity (`bb8c8e3`, `b92cd86`)
+  - Phase 0.6: Design System Alignment (Graphite + Bone + Aubergine & Inter + Source Serif 4)
+- **Current Work:** Phase 0.6 Design System Alignment Complete
+- **Next Allowed Phase / Task:** Phase 1 — Domain Model v1 (consolidate clinical schemas & data models)
 - **Explicit Tasks NOT to Start Yet:**
   - DO NOT implement final clinical screens (Dashboard, Medication Review).
   - DO NOT implement final clinical rule sets or invent unvalidated guidance.
@@ -30,7 +31,7 @@
   - DO NOT introduce raw or healthcare-blue colors as primary brand identity.
 
 ## 3. Known Blockers & Issues
-- Visual design tokens in `src/index.css` have duplicate shadcn defaults overriding tokens; scheduled for resolution in Phase 0.6.
+- None. Design tokens, cascade, typography, and @shadcn/lint are aligned and verified.
 
 ## 4. Active Invariants
 - **Clinical Safety:** `UNKNOWN !== NORMAL`, `MISSING !== NORMAL`, `UNAVAILABLE !== NORMAL`, `STALE !== NORMAL`.

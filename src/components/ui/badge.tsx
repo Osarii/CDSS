@@ -18,6 +18,16 @@ const badgeVariants = cva(
         ghost:
           "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",
+        critical:
+          "bg-[var(--clinical-critical-bg)] text-[var(--clinical-critical)] border-[var(--clinical-critical)]/30 font-semibold",
+        warning:
+          "bg-[var(--clinical-warning-bg)] text-[var(--clinical-warning)] border-[var(--clinical-warning)]/30 font-semibold",
+        safe:
+          "bg-[var(--clinical-safe-bg)] text-[var(--clinical-safe)] border-[var(--clinical-safe)]/30 font-semibold",
+        low:
+          "bg-[var(--clinical-low-bg)] text-[var(--clinical-low)] border-[var(--clinical-low)]/30",
+        missing:
+          "bg-[var(--clinical-missing-bg)] text-[var(--clinical-missing)] border-dashed border-[var(--clinical-missing)] font-medium",
       },
     },
     defaultVariants: {

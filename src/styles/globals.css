@@ -1,25 +1,64 @@
 @import "./tokens.css";
 
-/* CDSS-CR Brand Palette Mapping: Graphite + Bone + Aubergine */
+/* CDSS-CR Brand Palette & Semantic Mapping: Graphite + Bone + Aubergine */
 :root {
-  --background: #F8F7F4;
-  --foreground: #1F242D;
-  --card: #FFFFFF;
-  --card-foreground: #1F242D;
-  --popover: #FFFFFF;
-  --popover-foreground: #1F242D;
-  --primary: #4A154B;
-  --primary-foreground: #FFFFFF;
-  --secondary: #EDEAE1;
-  --secondary-foreground: #1F242D;
-  --muted: #F8F7F4;
-  --muted-foreground: #5C6473;
-  --accent: #F3EAF4;
-  --accent-foreground: #4A154B;
-  --destructive: #C53030;
-  --border: #E5E2DA;
-  --input: #E5E2DA;
-  --ring: #4A154B;
+  --background: #FAF7F1;
+  --foreground: #151419;
+  --card: #F4EFE7;
+  --card-foreground: #151419;
+  --popover: #F4EFE7;
+  --popover-foreground: #151419;
+  --primary: #4D2F5C;
+  --primary-foreground: #FAF7F1;
+  --secondary: #E9E1D7;
+  --secondary-foreground: #151419;
+  --muted: #F4EFE7;
+  --muted-foreground: #6D6672;
+  --accent: #EEE5F1;
+  --accent-foreground: #4D2F5C;
+  --destructive: #C83F49;
+  --destructive-foreground: #FAF7F1;
+  --border: #E9E1D7;
+  --input: #E9E1D7;
+  --ring: #4D2F5C;
+  --sidebar: #F4EFE7;
+  --sidebar-foreground: #151419;
+  --sidebar-primary: #4D2F5C;
+  --sidebar-primary-foreground: #FAF7F1;
+  --sidebar-accent: #EEE5F1;
+  --sidebar-accent-foreground: #4D2F5C;
+  --sidebar-border: #E9E1D7;
+  --sidebar-ring: #4D2F5C;
+}
+
+.dark {
+  --background: #151419;
+  --foreground: #FAF7F1;
+  --card: #1C1B21;
+  --card-foreground: #FAF7F1;
+  --popover: #1C1B21;
+  --popover-foreground: #FAF7F1;
+  --primary: #B89BC4;
+  --primary-foreground: #151419;
+  --secondary: #27252D;
+  --secondary-foreground: #FAF7F1;
+  --muted: #1C1B21;
+  --muted-foreground: #B89BC4;
+  --accent: #27252D;
+  --accent-foreground: #B89BC4;
+  --destructive: #C83F49;
+  --destructive-foreground: #FAF7F1;
+  --border: #27252D;
+  --input: #27252D;
+  --ring: #B89BC4;
+  --sidebar: #1C1B21;
+  --sidebar-foreground: #FAF7F1;
+  --sidebar-primary: #B89BC4;
+  --sidebar-primary-foreground: #151419;
+  --sidebar-accent: #27252D;
+  --sidebar-accent-foreground: #B89BC4;
+  --sidebar-border: #27252D;
+  --sidebar-ring: #B89BC4;
 }
 
 body {
