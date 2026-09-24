@@ -4,7 +4,7 @@ import { Badge } from './badge'
 
 const meta = {
   component: Badge,
-  tags: ['ai-generated', 'needs-work'],
+  tags: ['ai-generated'],
 } satisfies Meta<typeof Badge>
 
 export default meta

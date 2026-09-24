@@ -4,7 +4,7 @@ import { Button } from './button'
 
 const meta = {
   component: Button,
-  tags: ['ai-generated', 'needs-work'],
+  tags: ['ai-generated'],
 } satisfies Meta<typeof Button>
 
 export default meta

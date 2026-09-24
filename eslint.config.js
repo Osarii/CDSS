@@ -7,7 +7,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 import shadcnLint from '@shadcn/lint'
 
 export default defineConfig([
-  globalIgnores(['dist', 'storybook-static', 'node_modules']),
+  globalIgnores(['dist', 'storybook-static', 'node_modules', 'public']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
