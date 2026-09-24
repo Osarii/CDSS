@@ -1,32 +1,67 @@
-# CDSS-CR Short Prompt Patterns
+# CDSS-CR Contractual Prompt Shortcuts
 
-These prompts assume `.agents/rules/00-rule-router.md` is active.
+All execution prompts must comply with `PROMPT_CONTRACT.md`. Raw single-line prompts are invalid and will be rejected by the Prompt Gate.
 
-## Domain
-`RULESET:DOMAIN. Implement <task>. Preserve CDSS safety invariants. Reuse existing models where possible. Run relevant tests, lint and build. Stop and report.`
+Use `PROMPT_HELP` to display the blank template.
 
-## UI
-`RULESET:UI. Implement <screen/component> according to DESIGN.md and the approved reference. Do not change domain logic. Verify lint/tests and report.`
+## Canonical Template
 
-## Data
-`RULESET:DATA. Implement <adapter/query/data task>. Validate boundary data and keep components decoupled from JSON Server. Verify and report.`
+```text
+TASK: <single clear objective>
+RULESET: <alias from 00-rule-router.md>
+SCOPE: <paths or AUTO>
+ACCEPTANCE: <observable criteria>
+STOP: <execution boundary>
+DOC: <AUTO | YES | NO>
+```
 
-## Rule engine
-`RULESET:RULES. Implement <demo rule/engine task>. Do not invent validated clinical guidance. Test trigger, non-trigger and missing-data behavior. Report.`
+---
 
-## Table
-`RULESET:TABLES. Implement <table>. Keep TanStack headless and preserve CDSS design tokens. Do not move domain logic into cells.`
+## Example: Domain
 
-## Tests
-`RULESET:TEST. Add the minimum test coverage for <behavior>. Use the cheapest correct test layer. Do not duplicate coverage unnecessarily.`
+```text
+TASK: Implement validation schema and types for patient allergies.
+RULESET: DOMAIN
+SCOPE: src/domain/patient/
+ACCEPTANCE:
+- Zod schema matches domain requirements.
+- Unknown/missing data handled explicitly without assuming normal.
+- Domain unit tests pass.
+STOP: Stop after tests and report. Do not create UI components.
+DOC: NO
+```
 
-## Repository inspection
-`RULESET:REPO. Inspect <area> using Serena first. Do not modify files. Return findings, risks and recommended next step.`
+---
 
-## Agent/tooling check
-`RULESET:AGENT. Verify Serena, RTK and Ponytail configuration. Do not modify application functionality.`
+## Example: UI
 
-## Multi-ruleset
-`RULESET:DOMAIN+DATA. Implement ClinicalContext loading from the adapter. Keep the change minimal and stop after verification.`
+```text
+TASK: Align patient allergy badge styling with DESIGN.md.
+RULESET: UI
+SCOPE: src/components/ui/, src/styles/
+ACCEPTANCE:
+- Adheres to Graphite + Bone + Aubergine tokens.
+- Clinical semantic colors are decoupled from brand colors.
+- Lint and build pass.
+STOP: Stop after verification and report. Do not modify domain logic.
+DOC: NO
+```
 
-The router should deduplicate repeated integration files.
+---
+
+## Example: Repository Inspection
+
+```text
+TASK: Inspect the current domain architecture and report risks.
+RULESET: REPO+DOMAIN
+SCOPE: src/domain/
+ACCEPTANCE: Return findings and recommended next step without modifying files.
+STOP: Stop after the inspection report.
+DOC: NO
+```
+
+---
+
+## Multi-ruleset Combinations
+
+Rulesets can be combined with `+` (e.g., `RULESET:DOMAIN+DATA`, `RULESET:UI+TEST`). `.agents/rules/00-rule-router.md` automatically deduplicates shared integration files.

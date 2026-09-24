@@ -25,6 +25,8 @@
 - Do not use arbitrary raw colors when a token exists.
 
 ## Agent workflow
+- **FIRST ACTION:** Read `PROMPT_CONTRACT.md` and validate the current prompt.
+- If the prompt is invalid, cancel before any repository/tool action using the contract rejection format.
 - Prefer Serena for codebase exploration and symbol-level edits.
 - Prefer RTK for verbose shell output.
 - Follow Ponytail/YAGNI principles.
@@ -33,5 +35,6 @@
 
 ## Task-specific rules
 - `.agents/rules/00-rule-router.md` is the task-specific rule router.
+- `.agents/rules/01-prompt-gate.md` is mandatory for every execution task.
 - Load only the requested RULESET.
 - Never preload the complete `docs/agent-rules/` directory.

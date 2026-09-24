@@ -12,7 +12,15 @@ The routing file is:
 
 `.agents/rules/00-rule-router.md`
 
-Prompts should normally start with a compact alias such as:
+## Prompt Gate
+
+Every execution prompt must pass `PROMPT_CONTRACT.md` before tools or repository exploration are used.
+
+If the format is invalid, the agent cancels the task.
+
+Use `PROMPT_HELP` to display the template without executing project work.
+
+Prompts should specify ruleset aliases such as:
 
 - `RULESET:DOMAIN`
 - `RULESET:UI`
@@ -26,6 +34,7 @@ Prompts should normally start with a compact alias such as:
 - `RULESET:AGENT`
 - `RULESET:REPO`
 - `RULESET:CORE`
+- `RULESET:DOCS`
 
 ## Permanent tools
 - **Serena**: semantic/symbol-level repository exploration and targeted edits.

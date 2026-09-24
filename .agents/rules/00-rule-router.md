@@ -8,12 +8,15 @@
 
 ## 1. Always Applied Core Rules
 The following files are permanently active and apply unconditionally across all tasks:
-1. `AGENTS.md` (Clinical invariants, architecture, visual identity, workflow)
-2. `.agents/rules/antigravity-rtk-rules.md` (RTK command optimizations)
-3. `.agents/rules/ponytail.md` (Minimal engineering, YAGNI, reuse checklist)
-4. `docs/agent-rules/core/context-budget.md` (Token and context conservation policy)
+1. `PROMPT_CONTRACT.md` (Mandatory execution contract & prompt format validation)
+2. `.agents/rules/01-prompt-gate.md` (Immediate cancellation gate before any tool or repo exploration)
+3. `AGENTS.md` (Clinical invariants, architecture, visual identity, workflow)
+4. `.agents/rules/antigravity-rtk-rules.md` (RTK command optimizations)
+5. `.agents/rules/ponytail.md` (Minimal engineering, YAGNI, reuse checklist)
+6. `docs/agent-rules/core/context-budget.md` (Token and context conservation policy)
 
 ### Core Operating Principles
+- **Prompt Gate First**: Validate prompt against `PROMPT_CONTRACT.md` before using Serena, RTK, file exploration, or execution tools.
 - **Serena First**: Prefer Serena semantic and symbol tools (`find_symbol`, `get_symbols_overview`, etc.) for repository exploration and targeted symbol edits before reading full files.
 - **RTK Preferred**: Always prefix verbose shell commands (`git`, `npm test`, `npm run build`, `npm run lint`) with `rtk` to filter redundant tokens.
 - **Ponytail / YAGNI**: Never create speculative abstractions, dead code, or add unneeded dependencies. Reuse existing code first.
@@ -38,6 +41,7 @@ When a prompt specifies a ruleset alias (e.g. `RULESET:DOMAIN`), load **only** t
 | `RULESET:AGENT` | *(None)* | `docs/agent-rules/integrations/serena.md`<br>`docs/agent-rules/integrations/rtk.md`<br>`docs/agent-rules/integrations/ponytail.md` |
 | `RULESET:REPO` | *(None)* | `docs/agent-rules/integrations/git-github.md`<br>`docs/agent-rules/integrations/serena.md` |
 | `RULESET:CORE` | *(None)* | `docs/agent-rules/integrations/vite-react-typescript.md` |
+| `RULESET:DOCS` | `docs/agent-rules/workflows/documentation.md` | `docs/agent-rules/integrations/git-github.md` |
 
 ---
 
