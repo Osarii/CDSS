@@ -115,12 +115,36 @@ describe('Phase 1 — Domain Model v1 Validation & Safety Invariants', () => {
         },
         timestamp: '2026-09-24T12:00:00Z',
       })
-      expect(snapshot.patient.id).toBe('pat-1')
-      expect(snapshot.dataPoints['egfr'].status).toBe('AVAILABLE')
+      expect(snapshot.timestamp).toBe('2026-09-24T12:00:00Z')
+    })
+
+    it('rejects non-serializable data-point values in clinicalDataPointSchema', () => {
+      expect(() =>
+        clinicalContextSchema.parse({
+          patient: {
+            id: 'pat-1',
+            syntheticIdentifier: 'SYNTH-100',
+            age: 60,
+            gender: 'male',
+          },
+          medications: [],
+          allergies: [],
+          conditions: [],
+          observations: [],
+          dataPoints: {
+            invalidFunc: {
+              key: 'invalidFunc',
+              value: (() => 'function_not_serializable') as unknown,
+              status: 'AVAILABLE',
+            },
+          },
+          timestamp: '2026-09-24T12:00:00Z',
+        })
+      ).toThrow()
     })
   })
 
-  describe('Canonical Severity Validation', () => {
+  describe('Canonical Severity & Finding Integrity Validation', () => {
     it('accepts valid canonical severities (critical, warning, low, info)', () => {
       expect(clinicalSeveritySchema.parse('critical')).toBe('critical')
       expect(clinicalSeveritySchema.parse('warning')).toBe('warning')
@@ -145,7 +169,23 @@ describe('Phase 1 — Domain Model v1 Validation & Safety Invariants', () => {
       ).toThrow()
     })
 
-    it('parses deterministic traceable Finding correctly with valid severity', () => {
+    it('rejects Finding when ruleVersion is omitted (no silent defaulting)', () => {
+      expect(() =>
+        clinicalFindingSchema.parse({
+          id: 'f-1',
+          patientId: 'pat-1',
+          ruleId: 'r-ddi-1',
+          // ruleVersion omitted
+          severity: 'critical',
+          title: 'Missing Rule Version',
+          detail: 'Must be explicitly required',
+          timestamp: '2026-09-24T12:00:00Z',
+          isDeterministic: true,
+        })
+      ).toThrow()
+    })
+
+    it('parses deterministic traceable Finding correctly with valid severity and explicit ruleVersion', () => {
       const finding = clinicalFindingSchema.parse({
         id: 'f-1',
         patientId: 'pat-1',

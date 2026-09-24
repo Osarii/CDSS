@@ -26,7 +26,7 @@ Compact orientation for working within the CDSS-CR clinical domain models and bo
 
 ### Findings
 - **CURRENT:** `src/domain/findings/schema.ts` defines `clinicalFindingSchema` (`id`, `patientId`, `ruleId`, `ruleVersion`, `severity: 'critical'|'warning'|'low'|'info'`, `title`, `detail`, `supportingDataKeys`, `missingDataKeys`, `timestamp`, `isDeterministic: true`).
-- **TARGET:** Finding generator converting rule evaluation events into structured finding instances during Phase 2.
+- **TARGET:** Finding generator converting rule evaluation events into structured finding instances during Deterministic Findings milestone.
 
 ### Audit
 - **CURRENT:** `src/domain/audit/schema.ts` defines `auditEventSchema` (`id`, `action`, `userId`, `timestamp`, `payloadSummary`).

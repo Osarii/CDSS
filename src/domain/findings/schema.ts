@@ -5,7 +5,7 @@ export const clinicalFindingSchema = z.object({
   id: z.string(),
   patientId: z.string(),
   ruleId: z.string(),
-  ruleVersion: z.string().default('1.0.0'),
+  ruleVersion: z.string(),
   severity: clinicalSeveritySchema,
   title: z.string(),
   detail: z.string(),

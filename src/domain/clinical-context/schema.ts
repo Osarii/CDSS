@@ -6,9 +6,19 @@ import { allergySchema } from '../allergy/schema'
 import { conditionSchema } from '../condition/schema'
 import { observationSchema } from '../observation/schema'
 
+export const jsonValueSchema = z
+  .union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.array(z.union([z.string(), z.number(), z.boolean()])),
+    z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])),
+  ])
+  .nullable()
+
 export const clinicalDataPointSchema = z.object({
   key: z.string(),
-  value: z.unknown(),
+  value: jsonValueSchema,
   status: dataAvailabilityStateSchema,
   timestamp: z.string().optional(),
   source: z.string().optional(),

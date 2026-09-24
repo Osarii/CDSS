@@ -9,7 +9,7 @@
 ## 1. Execution Coordinates
 - **Current Phase:** Phase 1 Domain Model v1 Complete -> Next: Synthetic Clinical Scenarios v1
 - **Current Branch:** `main`
-- **Last Important Commit:** `d8b3de7` (`fix: finalize phase 0.6 design system wiring`)
+- **Last Important Commit:** `564b7b7` (`feat: complete phase 1 domain model v1`)
 - **Last Update Date:** 2026-09-24
 
 ## 2. Phase Status
@@ -21,7 +21,7 @@
   - Context & Token Optimization Infrastructure (`d7d7037`, `f1f7c89`)
   - Context & Documentation Integrity (`bb8c8e3`, `b92cd86`)
   - Phase 0.6: Design System Alignment (`e76a7cf`, `d8b3de7`)
-  - Phase 1: Domain Model v1 (canonical Zod schemas, ClinicalContext snapshot, severity model, AuditEvent)
+  - Phase 1: Domain Model v1 (canonical Zod schemas, ClinicalContext snapshot, severity model, AuditEvent) (`564b7b7`)
 - **Current Work:** Phase 1 Domain Model v1 Complete
 - **Next Allowed Phase / Task:** Synthetic Clinical Scenarios v1 (generate synthetic patient fixtures & evaluation test cases)
 - **Explicit Tasks NOT to Start Yet:**
@@ -53,4 +53,4 @@
 - **Data Adapters:** `src/services/adapters/ClinicalDataAdapter.ts`
 
 ## 6. Established Decisions Summary
-- See [docs/architecture/DECISIONS.md](./docs/architecture/DECISIONS.md) (`DEC-001` through `DEC-009`) for stable architectural, clinical, and token decisions.
+- See [docs/architecture/DECISIONS.md](./docs/architecture/DECISIONS.md) (`DEC-001` through `DEC-010`) for stable architectural, clinical, token, and domain severity decisions.
