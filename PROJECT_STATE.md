@@ -1,7 +1,7 @@
 # CDSS-CR — Current Project State
 
-> **Canonical changing-state summary.**  
-> Provides the smallest current-state summary needed for a coding agent to understand where CDSS-CR currently is without reconstructing project history.  
+> **Canonical changing-state summary.**
+> Provides the smallest current-state summary needed for a coding agent to understand where CDSS-CR currently is without reconstructing project history.
 > **Rule:** Only important milestones may update this file; routine tasks must not update it unnecessarily. Replace obsolete state rather than appending indefinitely.
 
 ---
@@ -9,7 +9,7 @@
 ## 1. Execution Coordinates
 - **Current Phase:** Agent Infrastructure & Context Optimization
 - **Current Branch:** `main`
-- **Last Important Commit:** `bc0969b` (`docs: add prompt contract and curated project journal`)
+- **Last Important Commit:** `d7d7037` (`docs: add context and token optimization infrastructure`)
 - **Last Update Date:** 2026-09-24
 
 ## 2. Phase Status

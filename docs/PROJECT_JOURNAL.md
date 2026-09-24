@@ -188,7 +188,7 @@ El repositorio cuenta con una barrera permanente de validación de prompts (`01-
 
 **Phase:** Agent Infrastructure
 **Status:** COMPLETE
-**Commit:** pending
+**Commit:** `d7d7037`
 **Agent/model:** Antigravity / Gemini 3.8 High
 
 **Objective**
@@ -218,7 +218,7 @@ Los agentes pueden resolver la documentación de herramientas de manera token-ef
 
 **Phase:** Agent Infrastructure
 **Status:** COMPLETE
-**Commit:** pending
+**Commit:** `d7d7037`
 **Agent/model:** Antigravity / Gemini 3.8 High
 
 **Objective**
