@@ -6,7 +6,7 @@ Compact registry of durable project decisions and invariants. These IDs (`DEC-XX
 
 ## DEC-001 — Non-Normal Unknowns
 **Status:** ACTIVE
-**Decision:** Missing, unknown, stale, or unavailable clinical data is never treated as normal (`UNKNOWN !== NORMAL`, `MISSING !== NORMAL`, `UNAVAILABLE !== NORMAL`, `STALE !== NORMAL`). If a rule requires data that is missing, the system emits a missing-data warning finding rather than evaluating to benign/safe.
+**Decision:** Missing, unknown, stale, or unavailable clinical data is never treated as normal (`UNKNOWN !== NORMAL`, `MISSING !== NORMAL`, `UNAVAILABLE !== NORMAL`, `STALE !== NORMAL`). Clinical evaluation gates prevent rules from treating missing parameters as safe or non-triggered without explicit data presence verification.
 **Canonical references:**
 - `AGENTS.md`
 - `src/domain/clinical-context/requiredDataGate.ts`
@@ -14,7 +14,7 @@ Compact registry of durable project decisions and invariants. These IDs (`DEC-XX
 
 ## DEC-002 — Deterministic Source of Truth
 **Status:** ACTIVE
-**Decision:** All clinical findings, drug-drug interaction alerts, and contraindication detections originate strictly from deterministic rule execution (`json-rules-engine`). Findings must be versioned, traceable, and repeatable.
+**Decision:** All clinical alerts, interaction detections, and contraindications originate strictly from deterministic rule execution (`json-rules-engine`). Findings must be versioned, auditable, and repeatable. AI models cannot create, author, or alter clinical findings.
 **Canonical references:**
 - `AGENTS.md`
 - `src/domain/rules/engine.ts`
@@ -29,7 +29,7 @@ Compact registry of durable project decisions and invariants. These IDs (`DEC-XX
 
 ## DEC-004 — Clinician Primacy
 **Status:** ACTIVE
-**Decision:** CDSS-CR is a clinical decision *support* system. The licensed healthcare professional retains exclusive decision-making authority and clinical responsibility.
+**Decision:** CDSS-CR is a clinical decision support system. The licensed healthcare professional retains exclusive decision-making authority and clinical responsibility.
 **Canonical references:**
 - `AGENTS.md`
 - `README.md`
@@ -51,7 +51,7 @@ Compact registry of durable project decisions and invariants. These IDs (`DEC-XX
 
 ## DEC-007 — Graphite + Bone + Aubergine Visual Identity
 **Status:** ACTIVE
-**Decision:** The visual baseline is defined strictly by Graphite (`#1A1D1E`), Bone (`#F7F7F5`), and Aubergine (`#4A2040`). Clinical semantic tokens (`critical`, `warning`, `safe`, `missing`) are strictly decoupled from brand colors. Healthcare-blue is disallowed as the primary brand identity.
+**Decision:** The visual identity is established around the Graphite + Bone + Aubergine palette per `DESIGN.md`. Clinical semantic tokens (`critical`, `warning`, `safe`, `missing`) are strictly decoupled from brand colors. Healthcare-blue is disallowed as the primary brand identity. Exact token values are subject to consolidation in Phase 0.6 Design System Alignment.
 **Canonical references:**
 - `DESIGN.md`
 - `AGENTS.md`

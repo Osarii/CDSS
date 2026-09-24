@@ -1,26 +1,19 @@
 # UI Context Pack
 
-Compact conceptual orientation for working on the CDSS-CR interface.
+Compact orientation for working on the CDSS-CR interface.
 
-## 1. Approved Design Authority
-- **Primary Source:** `DESIGN.md` is the authoritative visual reference.
-- **Palette Identity:** Graphite (`#1A1D1E`) + Bone (`#F7F7F5`) + Aubergine (`#4A2040`).
-- **Semantic Separation:** Clinical severity colors (`critical`, `warning`, `safe`, `missing`) are strictly decoupled from brand/accent colors. Never use healthcare-blue as the primary brand color.
+## 1. Design Authority & Visual Identity
+- **Primary Source:** `DESIGN.md` defines the approved visual identity: Graphite + Bone + Aubergine.
+- **Current Token Status (PENDING ALIGNMENT):** Design tokens in `src/styles/tokens.css` and `src/index.css` are scheduled for final consolidation and cleanup in Phase 0.6 (resolving shadcn default overrides). Exact values are pending alignment, not frozen.
+- **Semantic Separation:** Clinical severity colors (`critical`, `warning`, `safe`, `missing`) are strictly decoupled from brand/accent colors. Never use healthcare-blue as primary brand identity.
 
-## 2. Component Boundaries
-- **Atoms / Primitives (`src/components/ui/`):** Headless Radix components wrapped with shadcn/ui.
-- **Clinical Components (`src/components/`):** Domain-aware presentation components that consume domain types via props or adapters.
-- **No Embedded Domain Logic:** Complex business rules and scoring algorithms must reside in `src/domain/`, not in UI components or table cells.
+## 2. Current Implementation vs. Target Architecture
+- **Base Primitives (CURRENT):** Headless Radix components wrapped with shadcn/ui under `src/components/ui/` (`button`, `card`, `badge`, `dialog`, `tabs`, `tooltip`, `table`, `separator`, `input`, `sheet`).
+- **Storybook Stories (CURRENT):** Colocated stories under `src/components/ui/*.stories.tsx`.
+- **Clinical Layout (TARGET):** Split clinical panels under `src/components/layout/` (planned for Phase 1).
+- **Clinical Screens (TARGET):** Dashboard and Medication Review screens (planned for Phase 1).
 
-## 3. Current Implementation Status
-- Base shadcn components (`button`, `card`, `badge`, `dialog`, `tabs`, `tooltip`, `table`, `separator`, `input`, `sheet`) are installed and styled.
-- Colocated Storybook stories exist for verifying visual tokens.
-- Clinical screens (Dashboard, Medication Review) are NOT yet implemented.
-
-## 4. Frozen Visual References
-- Consult `docs/design/VISUAL_INDEX.md` before implementing or modifying screens.
-
-## 5. Canonical UI Paths
-- Design tokens & specification: `DESIGN.md`, `src/styles/tokens.css`, `src/styles/globals.css`
-- UI primitives: `src/components/ui/`
-- Layout configuration: `src/components/layout/`
+## 3. Boundaries & Invariants
+- UI components must never contain business rules or scoring algorithms; domain logic resides in `src/domain/`.
+- UI components consume data via props or TanStack Query hooks wrapping `ClinicalDataAdapter`.
+- Consult `docs/design/VISUAL_INDEX.md` before adding or modifying visual components.

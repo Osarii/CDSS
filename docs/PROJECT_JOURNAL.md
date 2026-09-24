@@ -184,41 +184,11 @@ El repositorio cuenta con una barrera permanente de validación de prompts (`01-
 
 ---
 
-## 2026-09-24 — Canonical Tool Documentation Index
-
-**Phase:** Agent Infrastructure
-**Status:** COMPLETE
-**Commit:** `d7d7037`
-**Agent/model:** Antigravity / Gemini 3.8 High
-
-**Objective**
-
-Crear un índice canónico de documentación de herramientas (`docs/agent-rules/TOOL_INDEX.md`) y conectarlo al Prompt Contract y al enrutador de agentes, permitiendo la resolución determinística de paths de integración sin búsquedas en el repositorio.
-
-**Important decisions**
-
-- Mapeo canónico en `docs/agent-rules/TOOL_INDEX.md` para todas las herramientas e integraciones del proyecto (`SERENA`, `RTK`, `PONYTAIL`, `CONTEXT_BUDGET`, `GIT`, `CORE`, `ROUTER`, `TAILWIND`, `SHADCN`, `SHADCN_LINT`, `LUCIDE`, `RESIZABLE_PANELS`, `TANSTACK_QUERY`, `TANSTACK_TABLE`, `ZOD`, `RHF`, `JSON_SERVER`, `MSW`, `RULES_ENGINE`, `VITEST`, `RTL`, `PLAYWRIGHT`, `STORYBOOK`).
-- Las herramientas solicitadas en los prompts se resuelven exclusivamente mediante `TOOL_INDEX.md` en lugar de exploración libre del repositorio.
-- Estados de herramienta: `NO` (no cargar MD de integración), `AUTO` (cargar solo si la tarea lo exige), `YES` (cargar MD antes de usar la herramienta).
-- Las reglas de seguridad clínica en `AGENTS.md` y el Prompt Gate permanecen obligatorios e inhabilitables.
-- `.agents/rules/00-rule-router.md` y `RULES_MANIFEST.json` incorporan `TOOL_INDEX.md`.
-
-**Verification**
-
-- reference integrity: PASS
-- git diff --check: PASS
-
-**Result**
-
-Los agentes pueden resolver la documentación de herramientas de manera token-eficiente y determinística sin explorar el árbol del repositorio.
-
----
-
 ## 2026-09-24 — Context & Token Optimization Infrastructure
 
 **Phase:** Agent Infrastructure
 **Status:** COMPLETE
-**Commit:** `d7d7037`
+**Commit:** `d7d7037` / `f1f7c89`
 **Agent/model:** Antigravity / Gemini 3.8 High
 
 **Objective**
@@ -247,6 +217,7 @@ GIT: NONE
 - Separación canónica entre contexto estable (`AGENTS.md`, `PROMPT_CONTRACT.md`, `.agents/rules/`, `DESIGN.md`) y contexto cambiante (`PROJECT_STATE.md`).
 - Creación de `PROJECT_STATE.md` (<= 150 líneas) como resumen canónico del estado activo para evitar releer historial.
 - Paquetes de contexto compactos (`docs/context/` para `DOMAIN`, `UI`, `DATA`, `RULES`, `TEST`) indexados vía `docs/context/CONTEXT_INDEX.md`.
+- Índice canónico de herramientas (`docs/agent-rules/TOOL_INDEX.md`) para resolución determinística de paths sin búsqueda libre en el repo.
 - Perfiles de herramientas configurables (`TOOLS: AUTO | MINIMAL | DEEP` y granular `SERENA`, `RTK`, `PONYTAIL`, `CONTEXT_BUDGET`).
 - Modos de contexto (`CONTEXT: AUTO | MINIMAL | DEEP`) y presupuestos de lectura planificados (`BUDGET: AUTO | FILES, FULL_READS, COMMANDS`).
 - Regla de Context Receipt conceptual interna (sin persistir ni generar archivos).
@@ -260,6 +231,7 @@ GIT: NONE
 - `docs/context/` (`CONTEXT_INDEX.md`, `DOMAIN_CONTEXT.md`, `UI_CONTEXT.md`, `DATA_CONTEXT.md`, `RULES_CONTEXT.md`, `TEST_CONTEXT.md`)
 - `docs/architecture/DECISIONS.md`
 - `docs/design/VISUAL_INDEX.md`
+- `docs/agent-rules/TOOL_INDEX.md`
 - `docs/agent-rules/workflows/diff-first.md`
 - `docs/agent-rules/VERIFY_PROFILES.md`
 - `docs/agent-rules/core/escalation-policy.md`
@@ -275,11 +247,45 @@ El repositorio cuenta con una arquitectura de contexto completa, determinística
 
 ---
 
+## 2026-09-24 — Context & Documentation Integrity Fix
+
+**Phase:** Agent Infrastructure
+**Status:** COMPLETE
+**Commit:** pending
+**Agent/model:** Antigravity / Gemini 3.8 Medium
+
+**Objective**
+
+Subsanar inconsistencias entre las herramientas configurables y las reglas obligatorias, auditar los paquetes de contexto contra el código real existente (separando CURRENT de TARGET) y asegurar la validez de referencias relativas sin enlaces `file:///`.
+
+**Important decisions**
+
+- Las reglas no inhabilitables del proyecto quedan estrictamente reducidas a `PROMPT_CONTRACT.md`, `.agents/rules/01-prompt-gate.md` y las reglas de seguridad clínica/arquitectura en `AGENTS.md`.
+- `RTK`, `PONYTAIL` y `CONTEXT_BUDGET` dejan de ser precargadas incondicionalmente si entran en conflicto con overrides `TOOLS`.
+- `AGENTS.md` se actualiza para reflejar que Serena y RTK son preferidas cuando están habilitadas (`YES` o `AUTO`).
+- Los paquetes de contexto bajo `docs/context/` separan explícitamente lo implementado actualmente (`CURRENT`) de lo proyectado (`TARGET`).
+- `DEC-001`, `DEC-002` y `DEC-007` se corrigen para no asumir funcionalidades o valores de tokens que no han sido consolidados.
+- `DESIGN_SYSTEM_TOKENS` en `docs/design/VISUAL_INDEX.md` se etiqueta como `PENDING_ALIGNMENT` para la Fase 0.6.
+- Se eliminan todos los enlaces `file:///` en favor de rutas relativas limpias.
+- `PROMPT_CONTRACT.md` se compacta preservando validación estricta y enlaces canónicos.
+
+**Verification**
+- reference integrity: PASS (0 missing)
+- file:/// audit: PASS (0 remaining)
+- line count limits: PASS (all within guards)
+- git diff --check: PASS
+- application code untouched: PASS
+
+**Result**
+La infraestructura de contexto y tokens refleja con total veracidad el estado actual del repositorio, eliminando ambigüedades antes de iniciar la Fase 0.6.
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:
 
-- Alineación final del Design System.
+- Alineación final del Design System (Fase 0.6).
 - Domain Model v1.
 - Synthetic Clinical Scenarios v1.
 - Clinical Context Builder.

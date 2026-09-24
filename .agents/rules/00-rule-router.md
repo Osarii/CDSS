@@ -1,19 +1,22 @@
 # CDSS-CR Agent Rule Router
 
-> **CRITICAL TOKEN POLICY:**  
-> **DO NOT load every file under `docs/agent-rules/` by default.**  
+> **CRITICAL TOKEN POLICY:**
+> **DO NOT load every file under `docs/agent-rules/` by default.**
 > Loading the entire rules directory exhausts context needlessly. Load only the specific integration and workflow documents required by the active task's ruleset.
 
 ---
 
-## 1. Always Applied Core Rules
-The following files are permanently active and apply unconditionally across all tasks:
+## 1. Non-Disableable Core Rules
+The following files are permanently active and apply unconditionally across all tasks (cannot be disabled by any prompt override):
 1. `PROMPT_CONTRACT.md` (Mandatory execution contract & prompt format validation)
 2. `.agents/rules/01-prompt-gate.md` (Immediate cancellation gate before any tool or repo exploration)
-3. `AGENTS.md` (Clinical invariants, architecture, visual identity, workflow)
-4. `.agents/rules/antigravity-rtk-rules.md` (RTK command optimizations)
-5. `.agents/rules/ponytail.md` (Minimal engineering, YAGNI, reuse checklist)
-6. `docs/agent-rules/core/context-budget.md` (Token and context conservation policy)
+3. `AGENTS.md` (Clinical safety invariants, core architecture principles, clinician decision authority)
+
+### Configurable Tool & Optimization Governance
+Tool-specific rule files are NOT loaded unconditionally if disabled by prompt `TOOLS` overrides:
+- **RTK Rules (`.agents/rules/antigravity-rtk-rules.md`):** Loaded when `RTK: YES` or `AUTO`. Skipped when `RTK: NO`.
+- **Ponytail Rules (`.agents/rules/ponytail.md`):** Loaded when `PONYTAIL: YES` or `AUTO`. Skipped when `PONYTAIL: NO`.
+- **Context Budget (`docs/agent-rules/core/context-budget.md`):** Active when `CONTEXT_BUDGET: STRICT` (default) or `NORMAL`. Inactive when `OFF`.
 
 ### Canonical System Indices & Policies
 - **Tool Index (`docs/agent-rules/TOOL_INDEX.md`):** Resolves all tool and integration documentation paths. Never search the repository manually for tool guidelines.

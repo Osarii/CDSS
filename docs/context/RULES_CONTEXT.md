@@ -1,20 +1,20 @@
 # Rules Context Pack
 
-Compact conceptual orientation for working with clinical decision rules in CDSS-CR.
+Compact orientation for working with clinical decision rules in CDSS-CR.
 
-## 1. Deterministic Engine Role
-- Rule execution is performed deterministically using `json-rules-engine` (`src/domain/rules/engine.ts`).
-- Rules evaluate facts extracted from `ClinicalContext` (patient conditions, allergies, active prescriptions, lab values).
-- Rule definitions must be versioned, auditable, and traceable to explicit clinical criteria.
+## 1. Engine & Schema Status
+- **CURRENT:** `src/domain/rules/engine.ts` exports `createRuleEngine()`, initializing an instance of `json-rules-engine`. `src/domain/rules/schema.ts` defines `ruleDefinitionSchema` (`id`, `version`, `name`, `description`, `severity`, `enabled`).
+- **TARGET:** Concrete clinical rules catalog (drug-drug interactions, renal dosing, contraindications). No validated clinical rules are implemented in the environment setup phase.
 
 ## 2. Required Data Gate Relationship
-- Before a rule evaluates clinical risk, the `RequiredDataGate` (`src/domain/clinical-context/requiredDataGate.ts`) verifies that all necessary clinical facts are present.
-- Missing required facts must produce a missing-data warning/finding instead of silently allowing the rule to pass as non-triggered or safe.
+- **CURRENT:** `evaluateDataGate` (`src/domain/clinical-context/requiredDataGate.ts`) evaluates required data points and returns `{ canProceed, blockedReasons }`.
+- **TARGET:** Integrated pipeline where `canProceed === false` generates missing-data alert findings before engine evaluation occurs.
+- **Invariant:** Missing required data prevents assumption of normal or safe status.
 
-## 3. Finding Relationship
-- Successful rule evaluations generate structured `Finding` objects (`src/domain/findings/types.ts`).
-- Findings include severity levels (`critical`, `warning`, `info`), identified medication or condition references, and structured evidence citations.
+## 3. Findings Relationship
+- **CURRENT:** `clinicalFindingSchema` (`src/domain/findings/schema.ts`) models deterministic findings (`id`, `ruleId`, `severity: 'critical'|'warning'|'safe'|'low'`, `title`, `detail`, `timestamp`, `isDeterministic: true`).
+- **TARGET:** Finding generator converting rule evaluation events into structured finding instances.
 
-## 4. AI Separation & Validation Restrictions
-- **No AI Truth:** AI models may generate natural-language explanations of existing deterministic findings downstream, but may NEVER invent, modify, or author clinical findings directly.
-- **Demo / Unvalidated Rules Restriction:** Never invent clinical guidelines. All prototype rules are explicitly tagged as DEMO or PROTOTYPE until officially validated by clinical specialists.
+## 4. AI Separation & Guideline Invariant
+- **No AI Truth:** AI models may generate natural-language explanations downstream from deterministic findings, but NEVER author or modify clinical truth.
+- **Unvalidated Rules Restriction:** Never invent clinical guidelines. Prototype rules are strictly demo fixtures until validated by clinicians.

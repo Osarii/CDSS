@@ -27,9 +27,9 @@
 ## Agent workflow
 - **FIRST ACTION:** Read `PROMPT_CONTRACT.md` and validate the current prompt.
 - If the prompt is invalid, cancel before any repository/tool action using the contract rejection format.
-- Prefer Serena for codebase exploration and symbol-level edits.
-- Prefer RTK for verbose shell output.
-- Follow Ponytail/YAGNI principles.
+- Prefer Serena for codebase exploration and symbol-level edits when enabled (`SERENA: YES` or `AUTO`).
+- Use RTK for verbose shell output when enabled (`RTK: YES` or `AUTO`).
+- Apply Ponytail/YAGNI principles against speculative abstractions and unjustified dependencies.
 - Do not add dependencies without justification.
 - Run lint, tests and build before declaring a task complete.
 

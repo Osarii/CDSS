@@ -11,11 +11,9 @@ No Serena call, shell command, file read other than `PROMPT_CONTRACT.md`, browse
 1. Read this file.
 2. Validate the current user prompt against the required format below.
 3. If valid, continue.
-4. If invalid, cancel the task immediately.
+4. If invalid, cancel the task immediately using the rejection format below.
 
-Do not infer missing fields.
-Do not silently repair an invalid prompt.
-Do not begin repository exploration before validation.
+Do not infer missing fields, silently repair invalid prompts, or begin exploration before validation.
 
 ---
 
@@ -30,22 +28,14 @@ ACCEPTANCE: <observable completion criteria>
 STOP: <boundary / what must not be continued automatically>
 DOC: <AUTO | YES | NO>
 
-Optional fields:
-
-REFS: <design files, URLs, screenshots, commits, issue IDs, or other references>
-GIT: <NONE | COMMIT | PUSH>
-TOOLS: <AUTO | MINIMAL | DEEP | list of tool overrides>
-CONTEXT: <AUTO | MINIMAL | DEEP>
-BUDGET: <AUTO | list of planning limits>
-VERIFY: <AUTO | DOCS | TARGETED | UI | DOMAIN | FULL>
-PRESERVE: <list of DEC-XXX decision IDs>
-
-Defaults when optional fields are omitted:
-- `GIT: NONE`
-- `TOOLS: AUTO`
-- `CONTEXT: AUTO`
-- `BUDGET: AUTO`
-- `VERIFY: AUTO`
+Optional fields (with defaults when omitted):
+- `GIT: <NONE | COMMIT | PUSH>` (Default: `NONE`)
+- `TOOLS: <AUTO | MINIMAL | DEEP | tool overrides>` (Default: `AUTO`)
+- `CONTEXT: <AUTO | MINIMAL | DEEP>` (Default: `AUTO`)
+- `BUDGET: <AUTO | explicit limits>` (Default: `AUTO`)
+- `VERIFY: <AUTO | DOCS | TARGETED | UI | DOMAIN | FULL>` (Default: `AUTO`)
+- `REFS: <references>`
+- `PRESERVE: <list of DEC-XXX decision IDs>`
 
 ---
 
@@ -53,95 +43,38 @@ Defaults when optional fields are omitted:
 
 DOMAIN | UI | DATA | FORMS | TABLES | RULES | TEST | ROUTING | LAYOUT | AGENT | REPO | CORE | DOCS
 
-Rulesets may be combined with `+` (e.g. `RULESET:DOMAIN+DATA`). The agent router deduplicates shared files.
+Combine with `+` (e.g. `RULESET:DOMAIN+DATA`). The agent router ([.agents/rules/00-rule-router.md](./.agents/rules/00-rule-router.md)) deduplicates shared files.
 
 ---
 
-## Field rules
+## Field & Tool Rules
 
-### TASK
-Must describe one coherent task. Avoid combining unrelated phases.
-
-### RULESET
-Must contain only aliases supported by `.agents/rules/00-rule-router.md`.
-
-### SCOPE
-Use repository paths when known. Use `AUTO` only when Serena should discover the smallest relevant scope.
-
-### ACCEPTANCE
-Must define how the agent knows the task is complete.
-
-### STOP
-Must define the execution boundary (e.g., `Stop after tests and report. Do not continue to UI.`).
-
-### DOC
-- `AUTO`: Document only if the result qualifies as an important project milestone.
-- `YES`: Always append an entry to `docs/PROJECT_JOURNAL.md`.
-- `NO`: Do not append a journal entry.
-Detailed criteria in `docs/agent-rules/workflows/documentation.md`.
-
-### GIT
-If omitted, treat as `NONE`. `COMMIT` creates a focused commit after verification. `PUSH` commits and pushes after verification.
-
-### TOOLS
-Optional tool configuration. Presets:
-- `AUTO`: `SERENA=AUTO`, `RTK=AUTO`, `PONYTAIL=AUTO`, `CONTEXT_BUDGET=STRICT` (Default)
-- `MINIMAL`: `SERENA=NO`, `RTK=AUTO`, `PONYTAIL=YES`, `CONTEXT_BUDGET=STRICT`
-- `DEEP`: `SERENA=YES`, `RTK=YES`, `PONYTAIL=AUTO`, `CONTEXT_BUDGET=NORMAL`
-
-Granular overrides:
-- `SERENA: AUTO | YES | NO` (`YES` resolves doc and uses symbol tools first; `NO` disables Serena entirely).
-- `RTK: AUTO | YES | NO` (`YES` filters shell output; `NO` skips RTK).
-- `PONYTAIL: AUTO | YES | NO` (`YES` loads ponytail guide; `NO` avoids loading optional guide).
-- `CONTEXT_BUDGET: STRICT | NORMAL | OFF` (`STRICT` = minimal reads; `OFF` = exceptional debug only).
-
-Tool documentation resolves exclusively via `docs/agent-rules/TOOL_INDEX.md`. Invalid tool values reject the prompt.
-
-### CONTEXT
-- `AUTO`: Smallest sufficient context mode (Default).
-- `MINIMAL`: `PROJECT_STATE.md` + active ruleset context pack(s) from `docs/context/CONTEXT_INDEX.md` + targeted exploration. No historical journal.
-- `DEEP`: Permits broader architecture and context inspection when required for complex refactors.
-
-### BUDGET
-Planning budget. `AUTO` (Default) or explicit limits:
-- `FILES: <integer>` (max distinct files to inspect)
-- `FULL_READS: <integer>` (max complete-file reads; prefer symbol/slice reads)
-- `COMMANDS: <integer>` (max terminal commands)
-If a budget limit is reached, pause, explain reason, and record escalation in report.
-
-### VERIFY
-Verification profile: `AUTO` (Default), `DOCS`, `TARGETED`, `DOMAIN`, `UI`, `FULL`. Specifications in `docs/agent-rules/VERIFY_PROFILES.md`.
-
-### PRESERVE
-Optional reminder list of decision IDs from `docs/architecture/DECISIONS.md` (e.g., `PRESERVE: DEC-001, DEC-007`). Mandatory decisions apply even if omitted.
+- **TASK / SCOPE / ACCEPTANCE / STOP:** Define a single objective, paths/area, completion criteria, and a strict boundary.
+- **DOC:** `AUTO` (milestones only), `YES` (append entry), `NO` (no entry). Governed by [docs/agent-rules/workflows/documentation.md](./docs/agent-rules/workflows/documentation.md).
+- **GIT:** `NONE` (no commit/push), `COMMIT` (local commit after verify), `PUSH` (commit and push after verify).
+- **TOOLS:**
+  - Presets: `AUTO` (Serena: AUTO, RTK: AUTO, Ponytail: AUTO, Context Budget: STRICT), `MINIMAL` (Serena: NO, RTK: AUTO, Ponytail: YES, Context Budget: STRICT), `DEEP` (Serena: YES, RTK: YES, Ponytail: AUTO, Context Budget: NORMAL).
+  - Granular overrides: `SERENA: AUTO|YES|NO`, `RTK: AUTO|YES|NO`, `PONYTAIL: AUTO|YES|NO`, `CONTEXT_BUDGET: STRICT|NORMAL|OFF`.
+  - Tool documentation resolves exclusively via [docs/agent-rules/TOOL_INDEX.md](./docs/agent-rules/TOOL_INDEX.md). Invalid tool values reject the prompt.
+- **CONTEXT:** `AUTO` (smallest sufficient), `MINIMAL` (`PROJECT_STATE.md` + active ruleset pack via [docs/context/CONTEXT_INDEX.md](./docs/context/CONTEXT_INDEX.md)), `DEEP` (broader inspection for complex refactors).
+- **BUDGET:** `AUTO` or limits: `FILES: <n>`, `FULL_READS: <n>`, `COMMANDS: <n>`. If exceeded, pause, explain reason, and record escalation.
+- **VERIFY:** Tiered profiles (`DOCS`, `TARGETED`, `DOMAIN`, `UI`, `FULL`, `AUTO`) defined in [docs/agent-rules/VERIFY_PROFILES.md](./docs/agent-rules/VERIFY_PROFILES.md).
+- **PRESERVE:** Optional reminder of decision IDs from [docs/architecture/DECISIONS.md](./docs/architecture/DECISIONS.md).
 
 ---
 
 ## Context Architecture & Optimization Rules
 
-### Stable vs. Changing Context
-- **Stable Context:** `AGENTS.md`, `PROMPT_CONTRACT.md`, `.agents/rules/`, `DESIGN.md`, `docs/architecture/DECISIONS.md`. Durable principles and invariants.
-- **Changing Context:** `PROJECT_STATE.md`, active blockers, current phase, implementation status.
-Agents must read `PROJECT_STATE.md` for current state rather than rereading historical documentation.
-
-### Context Receipt Rule
-Maintain an internal conceptual Context Receipt during execution. Track files read, symbols inspected, and context packs loaded. Never reread unchanged files or reload identical documentation packs within the same task. Do NOT persist or create receipt files.
-
-### File Size Limits
-- `AGENTS.md` <= 150 lines
-- `PROJECT_STATE.md` <= 150 lines
-- `docs/agent-rules/TOOL_INDEX.md` <= 150 lines
-- `docs/context/CONTEXT_INDEX.md` <= 100 lines
-- Each context pack <= 120 lines
-- `docs/design/VISUAL_INDEX.md` <= 150 lines
-
-**Non-Overridable Core:** Prompt Gate, clinical safety invariants (`AGENTS.md`), and `PROMPT_CONTRACT.md` can NEVER be disabled.
+- **Stable vs. Changing Context:** Stable rules ([AGENTS.md](./AGENTS.md), [DESIGN.md](./DESIGN.md), decisions) are durable. Changing state lives in [PROJECT_STATE.md](./PROJECT_STATE.md). Agents must read `PROJECT_STATE.md` rather than rereading historical documentation.
+- **Context Receipt:** Maintain internal conceptual tracking during tasks; never reload unchanged files or duplicate context packs. Do NOT create or persist receipt files.
+- **File Size Limits:** `AGENTS.md` <= 150 lines, `PROJECT_STATE.md` <= 150 lines, `TOOL_INDEX.md` <= 150 lines, `CONTEXT_INDEX.md` <= 100 lines, context packs <= 120 lines, `VISUAL_INDEX.md` <= 150 lines.
+- **Non-Disableable Core:** Prompt Gate, clinical safety invariants ([AGENTS.md](./AGENTS.md)), and `PROMPT_CONTRACT.md` can NEVER be disabled.
 
 ---
 
 ## Invalid prompt behavior
 
-If any required field is absent or invalid, or an invalid tool value is specified:
+If any required field is missing or invalid, or an invalid tool value is specified:
 
 PROMPT REJECTED — FORMAT INVALID
 
@@ -164,10 +97,11 @@ Then stop.
 
 ## Meta-help exception
 
-`PROMPT_HELP` displays the canonical template and stops without executing work.
+`PROMPT_HELP` displays the canonical template and stops without executing project work.
 
-## Canonical short template
+## Canonical Templates
 
+### Minimal Template
 TASK:
 RULESET:
 SCOPE:
@@ -175,8 +109,7 @@ ACCEPTANCE:
 STOP:
 DOC: AUTO
 
-## Canonical full template
-
+### Full Optimization Template
 TASK:
 RULESET:
 SCOPE:

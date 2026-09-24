@@ -5,6 +5,7 @@ Canonical registry of approved and pending visual references, screen baselines, 
 ## Reference Policy
 - Prompts may refer directly to reference IDs (e.g., `REFS: DASHBOARD_BASELINE_V1`).
 - Only references marked `APPROVED` or `FROZEN` represent binding visual baselines.
+- References marked `PENDING_ALIGNMENT` are scheduled for consolidation in Phase 0.6.
 - Items marked `EXTERNAL_REFERENCE_PENDING` or `NOT_IMPORTED` await official design import into `docs/project-journal/images/`.
 
 ---
@@ -13,7 +14,7 @@ Canonical registry of approved and pending visual references, screen baselines, 
 
 | Reference ID | Status | Screen | File / Location | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| `DESIGN_SYSTEM_TOKENS` | `APPROVED` | All / Global Tokens | `DESIGN.md`, `src/styles/tokens.css` | Authoritative Graphite + Bone + Aubergine palette. |
+| `DESIGN_SYSTEM_TOKENS` | `PENDING_ALIGNMENT` | All / Global Tokens | `DESIGN.md`, `src/styles/tokens.css` | Graphite + Bone + Aubergine palette; final consolidation scheduled in Phase 0.6. |
 | `BUTTON_CARD_STORIES` | `APPROVED` | Base Primitives | `src/components/ui/*.stories.tsx` | Visual verification of base atoms via Storybook. |
 | `DASHBOARD_BASELINE_V1` | `EXTERNAL_REFERENCE_PENDING` | Clinical Dashboard | *Pending import* | Planned initial overview screen for clinical alerts and patient summary. |
 | `MEDICATION_REVIEW_V1` | `EXTERNAL_REFERENCE_PENDING` | Pharmacotherapeutic Review | *Pending import* | Planned multi-pane medication list and interaction assessment. |
