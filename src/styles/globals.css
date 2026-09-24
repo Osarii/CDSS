@@ -1,0 +1,29 @@
+@import "./tokens.css";
+
+/* CDSS-CR Brand Palette Mapping: Graphite + Bone + Aubergine */
+:root {
+  --background: #F8F7F4;
+  --foreground: #1F242D;
+  --card: #FFFFFF;
+  --card-foreground: #1F242D;
+  --popover: #FFFFFF;
+  --popover-foreground: #1F242D;
+  --primary: #4A154B;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EDEAE1;
+  --secondary-foreground: #1F242D;
+  --muted: #F8F7F4;
+  --muted-foreground: #5C6473;
+  --accent: #F3EAF4;
+  --accent-foreground: #4A154B;
+  --destructive: #C53030;
+  --border: #E5E2DA;
+  --input: #E5E2DA;
+  --ring: #4A154B;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "rlig" 1, "calt" 1;
+}

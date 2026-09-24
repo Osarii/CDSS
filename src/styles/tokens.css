@@ -1,0 +1,55 @@
+/* CDSS-CR Design Tokens: Graphite + Bone + Aubergine & Clinical Semantics */
+
+@theme {
+  --color-graphite: #1F242D;
+  --color-graphite-light: #333945;
+  --color-graphite-muted: #5C6473;
+
+  --color-bone: #F8F7F4;
+  --color-bone-surface: #FFFFFF;
+  --color-bone-border: #E5E2DA;
+  --color-bone-muted: #EDEAE1;
+
+  --color-aubergine: #4A154B;
+  --color-aubergine-deep: #320E33;
+  --color-aubergine-light: #732B74;
+  --color-aubergine-muted: #F3EAF4;
+
+  --color-clinical-critical: #C53030;
+  --color-clinical-critical-bg: #FDE8E8;
+  --color-clinical-warning: #B45309;
+  --color-clinical-warning-bg: #FEF3C7;
+  --color-clinical-safe: #166534;
+  --color-clinical-safe-bg: #DEF7EC;
+  --color-clinical-low: #475569;
+  --color-clinical-low-bg: #F1F5F9;
+  --color-clinical-missing: #6B7280;
+  --color-clinical-missing-bg: #F3F4F6;
+}
+
+:root {
+  --graphite: #1F242D;
+  --graphite-light: #333945;
+  --graphite-muted: #5C6473;
+
+  --bone: #F8F7F4;
+  --bone-surface: #FFFFFF;
+  --bone-border: #E5E2DA;
+  --bone-muted: #EDEAE1;
+
+  --aubergine: #4A154B;
+  --aubergine-deep: #320E33;
+  --aubergine-light: #732B74;
+  --aubergine-muted: #F3EAF4;
+
+  --clinical-critical: #C53030;
+  --clinical-critical-bg: #FDE8E8;
+  --clinical-warning: #B45309;
+  --clinical-warning-bg: #FEF3C7;
+  --clinical-safe: #166534;
+  --clinical-safe-bg: #DEF7EC;
+  --clinical-low: #475569;
+  --clinical-low-bg: #F1F5F9;
+  --clinical-missing: #6B7280;
+  --clinical-missing-bg: #F3F4F6;
+}
