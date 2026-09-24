@@ -57,5 +57,7 @@ Prompts may combine ruleset aliases using the `+` operator, for example:
 - `RULESET:RULES+TEST`
 - `RULESET:AGENT+DOCS+REPO`
 
-### Deduplication Rule
+### Deduplication & Tool Override Precedence
 When combining rulesets, union the target files and **deduplicate** common references. Each file must be loaded at most once per task.
+
+**Tool Override Precedence:** Prompt `TOOLS` overrides take precedence over configurable-tool entries inherited from `RULESET` mappings. For example, if a prompt specifies `RULESET:AGENT` or `RULESET:REPO` but sets `TOOLS` with `SERENA: NO`, `docs/agent-rules/integrations/serena.md` is NOT loaded.

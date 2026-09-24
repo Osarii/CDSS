@@ -251,7 +251,7 @@ El repositorio cuenta con una arquitectura de contexto completa, determinística
 
 **Phase:** Agent Infrastructure
 **Status:** COMPLETE
-**Commit:** pending
+**Commit:** `bb8c8e3`
 **Agent/model:** Antigravity / Gemini 3.8 Medium
 
 **Objective**

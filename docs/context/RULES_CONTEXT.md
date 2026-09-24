@@ -8,7 +8,7 @@ Compact orientation for working with clinical decision rules in CDSS-CR.
 
 ## 2. Required Data Gate Relationship
 - **CURRENT:** `evaluateDataGate` (`src/domain/clinical-context/requiredDataGate.ts`) evaluates required data points and returns `{ canProceed, blockedReasons }`.
-- **TARGET:** Integrated pipeline where `canProceed === false` generates missing-data alert findings before engine evaluation occurs.
+- **TARGET:** Integrated pipeline evaluating data readiness before clinical rule execution. Phase 1 will define whether and how `canProceed === false` produces missing-data Finding instances or blocks downstream evaluation.
 - **Invariant:** Missing required data prevents assumption of normal or safe status.
 
 ## 3. Findings Relationship

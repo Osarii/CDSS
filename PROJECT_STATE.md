@@ -9,7 +9,7 @@
 ## 1. Execution Coordinates
 - **Current Phase:** Context & Token Optimization Complete -> Next: Phase 0.6 (Design System Alignment)
 - **Current Branch:** `main`
-- **Last Important Commit:** `f1f7c89` (`docs: add context and token optimization infrastructure`)
+- **Last Important Commit:** `bb8c8e3` (`docs: fix context integrity and tool override semantics`)
 - **Last Update Date:** 2026-09-24
 
 ## 2. Phase Status
@@ -19,7 +19,8 @@
   - Agent Infrastructure: Rule Library & Prompt Router (`c1bc956`, `ead3430`, `8605383`)
   - Prompt Gate & Curated Journal Setup (`bc0969b`)
   - Context & Token Optimization Infrastructure (`d7d7037`, `f1f7c89`)
-- **Current Work:** Context & Documentation Integrity Verified
+  - Context & Documentation Integrity (`bb8c8e3`)
+- **Current Work:** Context & Documentation Integrity Complete
 - **Next Allowed Phase / Task:** Phase 0.6 — Design System Alignment (consolidate Graphite + Bone + Aubergine tokens in `src/index.css` and resolve shadcn duplicate overrides)
 - **Explicit Tasks NOT to Start Yet:**
   - DO NOT implement final clinical screens (Dashboard, Medication Review).
@@ -33,7 +34,7 @@
 
 ## 4. Active Invariants
 - **Clinical Safety:** `UNKNOWN !== NORMAL`, `MISSING !== NORMAL`, `UNAVAILABLE !== NORMAL`, `STALE !== NORMAL`.
-- **Truth Hierarchy:** Deterministic finding (`json-rules-engine`) > AI explanations (downstream only) > Clinician retains final authority.
+- **Truth Hierarchy:** Deterministic clinical findings > AI explanations (downstream only) > Clinician retains final authority.
 - **Data Boundary:** 100% synthetic data. External/mock data must pass Zod validation before domain consumption.
 - **Visual Identity:** Graphite + Bone + Aubergine. Clinical semantic tokens are decoupled from brand colors.
 - **Prompt Gate:** `PROMPT_CONTRACT.md` is the only file read permitted before validation. Invalid prompts immediately cancel all execution.

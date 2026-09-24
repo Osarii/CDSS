@@ -14,7 +14,7 @@ Compact registry of durable project decisions and invariants. These IDs (`DEC-XX
 
 ## DEC-002 — Deterministic Source of Truth
 **Status:** ACTIVE
-**Decision:** All clinical alerts, interaction detections, and contraindications originate strictly from deterministic rule execution (`json-rules-engine`). Findings must be versioned, auditable, and repeatable. AI models cannot create, author, or alter clinical findings.
+**Decision:** All clinical alerts, interaction detections, and contraindications originate strictly from deterministic clinical logic as the single source of truth. The `json-rules-engine` library represents current infrastructure, not the only possible deterministic producer. Findings must be versioned, auditable, and repeatable. AI models cannot create, author, or alter clinical findings.
 **Canonical references:**
 - `AGENTS.md`
 - `src/domain/rules/engine.ts`
@@ -59,7 +59,7 @@ Compact registry of durable project decisions and invariants. These IDs (`DEC-XX
 
 ## DEC-008 — Token-Optimized Agent Tooling
 **Status:** ACTIVE
-**Decision:** Coding agents must use Serena for targeted symbol/AST discovery, RTK for terminal output filtering, and Ponytail for strict YAGNI/anti-duplication. Full rule directories must never be preloaded automatically.
+**Decision:** Coding agents configure Serena (symbol/AST discovery), RTK (terminal output filtering), and Ponytail (strict YAGNI/anti-duplication) according to `SERENA`, `RTK`, and `PONYTAIL` `YES | AUTO | NO` settings. Prompt `TOOLS` overrides take precedence over inherited ruleset tool mappings. Full rule directories must never be preloaded automatically.
 **Canonical references:**
 - `AGENTS.md`
 - `.agents/rules/00-rule-router.md`
