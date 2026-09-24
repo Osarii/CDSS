@@ -285,7 +285,7 @@ La infraestructura de contexto y tokens refleja con total veracidad el estado ac
 
 **Phase:** Phase 0.6
 **Status:** COMPLETE
-**Commit:** pending (GIT: NONE)
+**Commit:** `e76a7cf`
 **Agent/model:** Antigravity / Gemini 3.6 Flash
 
 **Objective**
