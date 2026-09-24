@@ -30,3 +30,8 @@
 - Follow Ponytail/YAGNI principles.
 - Do not add dependencies without justification.
 - Run lint, tests and build before declaring a task complete.
+
+## Task-specific rules
+- `.agents/rules/00-rule-router.md` is the task-specific rule router.
+- Load only the requested RULESET.
+- Never preload the complete `docs/agent-rules/` directory.
