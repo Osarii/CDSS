@@ -1,4 +1,5 @@
-import type { SyntheticScenario } from '@/domain/scenarios/types'
+import type { SyntheticScenario, ClinicalContextSourceInput } from '@/domain'
+import { getMedicationExposuresByPatientId } from './exposures'
 
 export const SYN_001: SyntheticScenario = {
   scenarioId: 'SYN-001',
@@ -33,7 +34,9 @@ export const SYN_001: SyntheticScenario = {
         route: 'oral',
       },
     ],
+    medicationExposures: [...getMedicationExposuresByPatientId('pat-syn-001')],
     allergies: [],
+
     conditions: [
       {
         id: 'cond-syn-001-1',
@@ -202,7 +205,9 @@ export const SYN_002: SyntheticScenario = {
         route: 'oral',
       },
     ],
+    medicationExposures: [...getMedicationExposuresByPatientId('pat-syn-002')],
     allergies: [
+
       {
         id: 'all-syn-002-1',
         patientId: 'pat-syn-002',
@@ -408,7 +413,9 @@ export const SYN_003: SyntheticScenario = {
         route: 'oral',
       },
     ],
+    medicationExposures: [...getMedicationExposuresByPatientId('pat-syn-003')],
     allergies: [],
+
     conditions: [
       {
         id: 'cond-syn-003-1',
@@ -606,7 +613,9 @@ export const SYN_004: SyntheticScenario = {
         route: 'oral',
       },
     ],
+    medicationExposures: [...getMedicationExposuresByPatientId('pat-syn-004')],
     allergies: [],
+
     conditions: [
       {
         id: 'cond-syn-004-1',
@@ -754,6 +763,7 @@ export const SYN_005: SyntheticScenario = {
         route: 'oral',
       },
     ],
+    medicationExposures: [...getMedicationExposuresByPatientId('pat-syn-005')],
     allergies: [],
     conditions: [
       {
@@ -938,6 +948,7 @@ export const SYN_006: SyntheticScenario = {
         route: 'oral',
       },
     ],
+    medicationExposures: [...getMedicationExposuresByPatientId('pat-syn-006')],
     allergies: [],
     conditions: [
       {
@@ -1136,6 +1147,7 @@ export const SYN_007: SyntheticScenario = {
         route: 'oral',
       },
     ],
+    medicationExposures: [...getMedicationExposuresByPatientId('pat-syn-007')],
     allergies: [
       {
         id: 'all-syn-007-1',
@@ -1365,6 +1377,7 @@ export const SYN_008: SyntheticScenario = {
         route: 'subcutaneous',
       },
     ],
+    medicationExposures: [...getMedicationExposuresByPatientId('pat-syn-008')],
     allergies: [],
     conditions: [
       {
@@ -1503,6 +1516,26 @@ export function getSyntheticScenarios(): readonly SyntheticScenario[] {
 
 export function getSyntheticScenarioById(scenarioId: string): SyntheticScenario | undefined {
   return syntheticScenarios.find((s) => s.scenarioId === scenarioId)
+}
+
+export function getScenarioSourceInput(scenarioId: string): ClinicalContextSourceInput | undefined {
+  const scenario = getSyntheticScenarioById(scenarioId)
+  if (!scenario) return undefined
+
+  const exposures = getMedicationExposuresByPatientId(scenario.clinicalContext.patient.id)
+
+  return {
+    patient: { ...scenario.clinicalContext.patient },
+    medications: scenario.clinicalContext.medications.map((m) => ({ ...m })),
+    medicationExposures: exposures.map((e) => ({ ...e })),
+    allergies: scenario.clinicalContext.allergies.map((a) => ({ ...a })),
+    conditions: scenario.clinicalContext.conditions.map((c) => ({ ...c })),
+    observations: scenario.clinicalContext.observations.map((o) => ({ ...o })),
+    dataPoints: Object.fromEntries(
+      Object.entries(scenario.clinicalContext.dataPoints).map(([k, v]) => [k, { ...v }])
+    ),
+    evaluationTimestamp: scenario.clinicalContext.timestamp,
+  }
 }
 
 export * from './exposures'

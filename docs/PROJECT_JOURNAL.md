@@ -353,7 +353,7 @@ El repositorio cuenta con una base de modelo de dominio clínico tipada, validad
 
 **Phase:** Synthetic Clinical Scenarios v1
 **Status:** COMPLETE
-**Commit:** pending (GIT: NONE)
+**Commit:** aa3232b
 **Agent/model:** Antigravity / Gemini 3.8 Flash
 
 **Objective**
@@ -391,15 +391,15 @@ CDSS-CR cuenta con un catálogo canónico de 8 escenarios clínicos sintéticos 
 ### Mini-Phase: Medication Exposure & Clinical Context Source Boundary
 
 - **Fecha:** 2026-09-24
-- **Commit:** pending
+- **Commit:** e15e72f
 - **Ruleset activado:** DOMAIN+DATA+TEST+DOCS
 - **Context packs consultados:** `DATA_CONTEXT.md`, `DOMAIN_CONTEXT.md`
 
 **Contexto y Racionalidad**
 
-Para evitar el acoplamiento implícito entre definiciones farmacológicas puras e historiales de pacientes individuales (evitando el antipatrón de usar identificadores de medicamentos como claves foráneas implícitas de pacientes), se formalizó la distinción conceptual y arquitectónica entre:
-1. `Medication`: definición o snapshot de catálogo farmacológico (`code`, `name`, `dosage`, `route`).
-2. `MedicationExposure`: relación específica de un paciente con un medicamento (`patientId`, `medicationId`, `therapyContext`, `status`, `startedAt`, `endedAt`).
+Para evitar el acoplamiento implícito entre registros de medicamentos e historiales de pacientes individuales (evitando el antipatrón de usar identificadores de medicamentos como claves foráneas implícitas de pacientes), se formalizó la distinción conceptual y arquitectónica entre:
+1. `Medication`: registro prototipo de medicamento/régimen prescrito (`id`, `code`, `name`, `dosage`, `route`), en lugar de una definición pura de catálogo farmacológico.
+2. `MedicationExposure`: relación temporal específica de un paciente con un medicamento (`patientId`, `medicationId`, `therapyContext`, `status`, `startedAt`, `endedAt`).
 3. `ClinicalContext`: snapshot derivado de evaluación clínica.
 
 Asimismo, se definió la frontera de entrada para el futuro Clinical Context Builder (`ClinicalContextSourceInput`) para garantizar que el contexto clínico se construya explícitamente agregando registros fuente vinculados a pacientes en lugar de copiarse de estructuras estáticas preconcebidas.
@@ -431,11 +431,47 @@ Frontera de exposición a medicamentos y entrada fuente de contexto clínico for
 
 ---
 
+### 2026-09-24 — Clinical Context Builder v1
+
+**Phase:** Clinical Context Builder v1
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.8 Flash
+**Ruleset activado:** DOMAIN+DATA+TEST+DOCS
+**Context packs consultados:** `DATA_CONTEXT.md`, `DOMAIN_CONTEXT.md`
+
+**Objetivo**
+
+Implementar el ensamblador determinístico `buildClinicalContext` para derivar snapshots de evaluación clínica (`ClinicalContext`) a partir de paquetes de registros fuente vinculados al paciente (`ClinicalContextSourceInput`), garantizando integridad referencial estricta, resolución de medicamentos a través de registros `MedicationExposure`, prevención de fugas de datos entre pacientes y preservación inalterada de estados de disponibilidad de datos analíticos.
+
+**Decisiones clave y cambios**
+
+- **Ensamblador determinístico (`src/domain/clinical-context/builder.ts`):** Función pura `buildClinicalContext` libre de efectos secundarios y mutaciones que valida estrictamente la entrada mediante `clinicalContextSourceInputSchema` y valida el snapshot final con `clinicalContextSchema` antes de retornarlo.
+- **Integración de metadatos de exposición a medicamentos en el snapshot canónico (`src/domain/clinical-context/schema.ts`):** Se incorporó `medicationExposures: z.array(medicationExposureSchema)` a `clinicalContextSchema` y al tipo `ClinicalContext`.
+- **Preservación exacta de exposición en el ensamblador (`src/domain/clinical-context/builder.ts`):** `buildClinicalContext` incluye únicamente las exposiciones pertenecientes al paciente fuente y que referencian medicamentos resueltos en el conjunto prescrito, preservando de forma exacta `therapyContext`, `status`, `startedAt` y `endedAt` sin inferir ni normalizar estados.
+- **Resolución de medicamentos por exposición:** Los medicamentos se resuelven exclusivamente mediante registros `MedicationExposure` vinculados al paciente, eliminando cualquier asunción o inferencia de propiedad por IDs de medicamentos o convenciones de nomenclatura.
+- **Integridad referencial y rechazo de inconsistencias:** Validación exhaustiva de que todos los registros vinculados (`medicationExposures`, `allergies`, `conditions`, `observations`) pertenecen al `patientId` de la fuente, y que toda exposición referencia un medicamento existente en el catálogo suministrado, rechazando de forma determinística cualquier paquete inconsistente o cruzado entre pacientes.
+- **Preservación de estados de disponibilidad sin normalización:** Se preservan fielmente los estados `AVAILABLE`, `MISSING`, `UNKNOWN`, `STALE` y `UNAVAILABLE` con sus respectivos valores, marcas de tiempo y orígenes (`timestamp` de evaluación mapeado a `ClinicalContext.timestamp`), sin interpretar datos faltantes o desconocidos como normales.
+- **Actualización de fixtures de escenarios sintéticos (`src/data/scenarios/index.ts`):** Se actualizaron todos los fixtures de contexto clínico (`SYN-001` a `SYN-008`) incorporando sus respectivos registros `medicationExposures`, manteniendo 100% de validez frente al esquema canónico y preservando en `SYN-003`: enalapril crónico, furosemida crónica, espironolactona crónica y amiodarona aguda.
+- **Suite de pruebas automatizadas (`src/domain/clinical-context/builder.test.ts`):** 19 pruebas unitarias y de integración verificando construcción determinística, preservación exacta de metadatos de exposición (`source -> builder -> ClinicalContext`), resolución de medicamentos y tiempos en `SYN-003`, preservación de estados en `SYN-004`/`SYN-005`/`SYN-008`, detección de registros huérfanos/foráneos e inmutabilidad estricta.
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS (0 errors, 0 warnings)
+- npm run test: PASS (8 files, 86 tests passed)
+- npm run build: PASS (Vite + TypeScript compilation)
+
+**Resultado**
+
+El ensamblador de contexto clínico `buildClinicalContext` queda completamente finalizado, preservando los metadatos de exposición de medicamentos en el snapshot canónico `ClinicalContext`, verificado y listo para la compuerta de datos obligatoria (`evaluateDataGate`) y el motor de evaluación determinística de reglas.
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:
 
-- Clinical Context Builder.
 - Required Data Gate v1.
 - Deterministic Findings v1.
 - Primeras reglas DEMO.

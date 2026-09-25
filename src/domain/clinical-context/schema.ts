@@ -35,6 +35,7 @@ export type ClinicalDataPoint<T = unknown> = {
 export const clinicalContextSchema = z.object({
   patient: patientSchema,
   medications: z.array(medicationSchema),
+  medicationExposures: z.array(medicationExposureSchema),
   allergies: z.array(allergySchema),
   conditions: z.array(conditionSchema),
   observations: z.array(observationSchema),
@@ -43,6 +44,7 @@ export const clinicalContextSchema = z.object({
 })
 
 export type ClinicalContext = z.infer<typeof clinicalContextSchema>
+
 
 export const clinicalContextSourceInputSchema = z.object({
   patient: patientSchema,

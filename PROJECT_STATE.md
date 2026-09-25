@@ -7,9 +7,9 @@
 ---
 
 ## 1. Execution Coordinates
-- **Current Phase:** Medication Exposure + Clinical Context Source Boundary Complete -> Next: Clinical Context Builder
+- **Current Phase:** Clinical Context Builder v1 Complete -> Next: Required Data Gate Integration & Rules Evaluation
 - **Current Branch:** `main`
-- **Last Important Commit:** `564b7b7` (Phase 1 Domain Model v1)
+- **Last Important Commit:** `e15e72f` (Medication Exposure + Clinical Context Source Boundary)
 - **Last Update Date:** 2026-09-24
 
 ## 2. Phase Status
@@ -22,10 +22,12 @@
   - Context & Documentation Integrity (`bb8c8e3`, `b92cd86`)
   - Phase 0.6: Design System Alignment (`e76a7cf`, `d8b3de7`)
   - Phase 1: Domain Model v1 (canonical Zod schemas, ClinicalContext snapshot, severity model, AuditEvent) (`564b7b7`)
-  - Synthetic Clinical Scenarios v1 (`SYN-001` through `SYN-008`, typed catalog, multi-state availability tests, raw synthetic fixtures stored in `db.json`)
-  - Medication Exposure + Clinical Context Source Boundary (`MedicationExposure` typed/Zod model, 39 synthetic exposures in `src/data/scenarios/exposures.ts` & `db.json`, SYN-003 physician temporal structure preserved, `clinicalContextSourceInputSchema` boundary)
-- **Current Work:** Medication Exposure + Clinical Context Source Boundary Complete
-- **Next Allowed Phase / Task:** Clinical Context Builder (assemble clinical context snapshots for rule evaluation from patient-linked source records)
+  - Synthetic Clinical Scenarios v1 (`SYN-001` through `SYN-008`, typed catalog, multi-state availability tests, raw synthetic fixtures stored in `db.json`) (`aa3232b`)
+  - Medication Exposure + Clinical Context Source Boundary (`MedicationExposure` typed/Zod model, 39 synthetic exposures in `src/data/scenarios/exposures.ts` & `db.json`, SYN-003 physician temporal structure preserved, `clinicalContextSourceInputSchema` boundary) (`e15e72f`)
+  - Clinical Context Builder v1 (`buildClinicalContext` pure deterministic assembler, patient-linked medication exposure resolution, preservation of medication exposure metadata in canonical `ClinicalContext` snapshot, cross-patient leak protection, data point availability preservation, full scenario suite)
+- **Current Work:** Clinical Context Builder v1 Finalized
+- **Next Allowed Phase / Task:** Required Data Gate Integration & Deterministic Rules Evaluation
+
 
 - **Explicit Tasks NOT to Start Yet:**
   - DO NOT implement final clinical screens (Dashboard, Medication Review).

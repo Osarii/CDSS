@@ -105,6 +105,7 @@ describe('Phase 1 — Domain Model v1 Validation & Safety Invariants', () => {
         allergies: [],
         conditions: [],
         observations: [],
+        medicationExposures: [],
         dataPoints: {
           egfr: {
             key: 'egfr',
@@ -128,6 +129,7 @@ describe('Phase 1 — Domain Model v1 Validation & Safety Invariants', () => {
             gender: 'male',
           },
           medications: [],
+          medicationExposures: [],
           allergies: [],
           conditions: [],
           observations: [],

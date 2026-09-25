@@ -8,12 +8,12 @@ Compact orientation for working within the CDSS-CR clinical domain models and bo
 - **CURRENT:** `src/domain/patient/schema.ts` defines `patientSchema` (`id`, `syntheticIdentifier`, `age`, `gender`).
 - **TARGET:** Synthetic patient fixture factory and scenario linkage.
 
-### Medication (Medication Definition / Snapshot)
-- **CURRENT:** `src/domain/medication/schema.ts` defines `medicationSchema` (`id`, `code`, `name`, `dosage`, `route`). Represents the pure medication catalog definition/snapshot. Medication IDs are never implicit patient foreign keys.
+### Medication (Prototype Medication / Regimen Record)
+- **CURRENT:** `src/domain/medication/schema.ts` defines `medicationSchema` (`id`, `code`, `name`, `dosage`, `route`). Represents the current prototype medication/regimen record rather than a pure pharmacological catalog definition. Medication IDs are never implicit patient foreign keys.
 - **TARGET:** Extended pharmacology structures (ATC classifications, dosage frequencies, active ingredients).
 
-### Medication Exposure (Patient-Specific Relationship)
-- **CURRENT:** `src/domain/medication/schema.ts` defines `medicationExposureSchema` (`id`, `patientId`, `medicationId`, `therapyContext: 'chronic' | 'acute' | 'unknown'`, `status: 'active' | 'stopped' | 'unknown'`, `startedAt?`, `endedAt?`). Models the patient's specific relationship to a medication. Fixtures in `src/data/scenarios/exposures.ts` and `db.json`.
+### Medication Exposure (Patient-Specific Temporal Relationship)
+- **CURRENT:** `src/domain/medication/schema.ts` defines `medicationExposureSchema` (`id`, `patientId`, `medicationId`, `therapyContext: 'chronic' | 'acute' | 'unknown'`, `status: 'active' | 'stopped' | 'unknown'`, `startedAt?`, `endedAt?`). Models the patient's specific temporal relationship to a medication. Fixtures in `src/data/scenarios/exposures.ts` and `db.json`.
 - **TARGET:** Ingestion of patient exposure records via adapters and Clinical Context Builder.
 
 ### Allergy, Condition & Observation
@@ -21,16 +21,18 @@ Compact orientation for working within the CDSS-CR clinical domain models and bo
 - **TARGET:** Extended ontology codes (SNOMED, RxNorm) for advanced clinical mappings.
 
 ### Synthetic Scenarios
-- **CURRENT:** `src/domain/scenarios/schema.ts` (`syntheticScenarioSchema`) and `src/data/scenarios/` (`SYN-001` through `SYN-008`).
-- **TARGET:** Clinical Context Builder aggregating scenario source records for evaluation pipelines.
+- **CURRENT:** `src/domain/scenarios/schema.ts` (`syntheticScenarioSchema`), `src/data/scenarios/` (`SYN-001` through `SYN-008`), and `getScenarioSourceInput` assembling patient-linked source bundles.
+- **TARGET:** Pipeline integration connecting scenario source inputs to evaluation workflows.
 
 ### Clinical Context (Derived Evaluation Snapshot) & Data Gate
-- **CURRENT:** `src/domain/clinical-context/schema.ts` defines:
-  - `clinicalContextSchema`: Derived evaluation snapshot containing resolved patient, medications, allergies, conditions, observations, dataPoints, and timestamp.
-  - `clinicalContextSourceInputSchema`: Explicit raw-source input boundary for the Clinical Context Builder (`patient`, `medications`, `medicationExposures`, `allergies`, `conditions`, `observations`, `dataPoints?`, `evaluationTimestamp`), making explicit that a context is assembled from patient-linked source records rather than copied from an already-built snapshot.
+- **CURRENT:** `src/domain/clinical-context/` defines:
+  - `clinicalContextSchema`: Derived evaluation snapshot containing resolved patient, medications, medicationExposures, allergies, conditions, observations, dataPoints, and timestamp.
+  - `clinicalContextSourceInputSchema`: Explicit raw-source input boundary for the Clinical Context Builder (`patient`, `medications`, `medicationExposures`, `allergies`, `conditions`, `observations`, `dataPoints?`, `evaluationTimestamp`).
+  - `buildClinicalContext` (`src/domain/clinical-context/builder.ts`): Pure deterministic builder assembling `ClinicalContext` from `ClinicalContextSourceInput`, resolving medications and preserving exposure metadata strictly via `MedicationExposure` records belonging to the patient and resolved medication set, preserving therapyContext, status, startedAt and endedAt without inference or normalization, enforcing source patient referential integrity (rejecting cross-patient or uncataloged references), and preserving raw availability states (`AVAILABLE`, `MISSING`, `UNKNOWN`, `STALE`, `UNAVAILABLE`) without normalization.
   - `clinicalDataPointSchema`: Serializable key-value data point with availability state.
   - `requiredDataGate.ts`: Evaluates data readiness preserving `failedRequirements` (`key`, `status`).
-- **TARGET:** Clinical Context Builder assembling `ClinicalContextSourceInput` records into `ClinicalContext` evaluation snapshots for deterministic rule engine execution.
+- **TARGET:** Pipeline integration feeding assembled `ClinicalContext` snapshots into deterministic rule engine execution and clinical UI review screens.
+
 
 
 ### Rules Engine
