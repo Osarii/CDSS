@@ -7,7 +7,10 @@
 ---
 
 ## 1. Execution Coordinates
-- **Current Phase:** DEMO Rules v1 Complete -> Next: Synthetic DB Normalization + Adapter Integration
+- **Product Brand:** SAMED — *Sistema de Apoyo Médico para Evaluación y Decisión*
+- **Tagline:** *"SAMED apoya la decisión. El profesional toma la decisión."*
+- **Architecture Role:** Product brand = **SAMED** | Technical project / repository = **CDSS**
+- **Current Phase:** SAMED Branding Aligned -> Next: Dashboard Visual Baseline v1
 - **Current Branch:** `main`
 - **Last Important Commit:** `519b839` (docs: finalize findings identity invariant)
 - **Last Update Date:** 2026-09-25
@@ -28,8 +31,10 @@
   - Required Data Gate v1 (`evaluateClinicalContextDataGate` integrating `ClinicalContext` snapshots with `RuleDefinition.requiredDataKeys`, selective key evaluation, failed requirement status & reason preservation, blocking non-usable/not-present data without assuming normal status, scenario suite verified) (`34a3f4f`)
   - Deterministic Findings v1 (`buildClinicalFinding`, `buildFinding`, `buildClinicalFindingFromRule`, `buildClinicalFindings` pure deterministic builders, timestamped automatic IDs scoped to the v1 identity invariant, explicit traceability and severity preservation, strict rule version preservation, supportingDataKeys & missingDataKeys preservation, canonical schema validation, test suite verified) (`34a3f4f`)
   - DEMO Rules v1 (`DEMO-ALG-001`, `DEMO-DDI-001`, `DEMO-REN-001` synthetic prototype rules, `evaluateDemoRule` and `evaluateDemoRules`, selective data gate pre-check, blocking non-usable data without generating findings, deterministic finding generation via builder, scenario suite verified; conditions, pairings, and thresholds like eGFR <= 50 explicitly framed as non-authoritative synthetic demonstration logic)
-- **Current Work:** DEMO Rules v1 Safety-Framed & Finalized
-- **Next Allowed Phase / Task:** Synthetic DB Normalization + Adapter Integration
+  - Synthetic DB Normalization + Adapter Integration (`db.json` normalized synthetic source with collections `patients`, `medications`, `medicationExposures`, `allergies`, `conditions`, `observations`, `clinicalDataPoints`, `scenarios`; `JsonServerAdapter` behind `ClinicalDataAdapter` assembling `ClinicalContextSourceInput` and feeding `buildClinicalContext()`; canonical Zod validation at boundaries; referential integrity enforcement across 7 entity types; 8/8 regression equivalence against `SYN-001` through `SYN-008`)
+  - SAMED Product Branding Alignment (Product-facing name: SAMED — *Sistema de Apoyo Médico para Evaluación y Decisión*; Tagline: *"SAMED apoya la decisión. El profesional toma la decisión."*; architecture role decoupled: product brand = SAMED, technical project/repository = CDSS; titles, headers, navigation, descriptive copy, context packs and README aligned; technical architecture, schemas, entities and adapters preserved)
+- **Current Work:** SAMED Product Branding Aligned & Verified
+- **Next Allowed Phase / Task:** Dashboard Visual Baseline v1
 
 
 - **Explicit Tasks NOT to Start Yet:**

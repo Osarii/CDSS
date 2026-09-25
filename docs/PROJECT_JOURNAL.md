@@ -590,12 +590,104 @@ Implementar las primeras tres reglas sintéticas/demo claramente delimitadas (`D
 
 El pipeline de reglas determinísticas DEMO Rules v1 queda completamente integrado y encuadrado bajo premisas de seguridad clínica, verificando la compuerta de datos como prerrequisito ineludible y emitiendo hallazgos clínicos determinísticos trazables hacia las reglas prototipo.
 
+### 2026-09-25 — Synthetic DB Normalization + Adapter Integration
+
+**Phase:** Synthetic DB Normalization + Adapter Integration
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.8 Flash
+**Ruleset activado:** DATA+DOMAIN+TEST+DOCS
+**Context packs consultados:** `DATA_CONTEXT.md`, `DOMAIN_CONTEXT.md`, `TEST_CONTEXT.md`
+
+**Objetivo**
+
+Establecer `db.json` como la fuente de verdad sintética normalizada para los escenarios clínicos, eliminar la duplicación de snapshots `ClinicalContext` en persistencia, e implementar `JsonServerAdapter` detrás de la interfaz `ClinicalDataAdapter` para ensamblar `ClinicalContextSourceInput`, validar mediante esquemas canónicos Zod, alimentar `buildClinicalContext()` y preservar fielmente la integridad referencial y los estados de disponibilidad sin conectar servicios reales ni alterar la lógica clínica existente.
+
+**Decisiones clave y cambios**
+
+- **Normalización estricta de `db.json`:**
+  - Se estructuraron 8 colecciones normalizadas: `patients` (8), `medications` (39), `medicationExposures` (39), `allergies` (3), `conditions` (33), `observations` (46), `clinicalDataPoints` (51) y `scenarios` (8).
+  - Ningún objeto `ClinicalContext` preconstruido se almacena en `db.json`.
+  - Cada escenario en `scenarios` referencia únicamente los identificadores de los registros normalizados (`patientId`, `medicationIds`, `medicationExposureIds`, `allergyIds`, `conditionIds`, `observationIds`, `clinicalDataPointIds`) y su `evaluationTimestamp`.
+- **Esquemas canónicos de frontera (`src/domain/clinical-context/schema.ts`, `src/domain/scenarios/schema.ts`):**
+  - `clinicalDataPointRecordSchema` y tipo `ClinicalDataPointRecord`: define la estructura normalizada en base de datos (`id`, `patientId`, `key`, `value`, `status`, `timestamp?`, `source?`).
+  - `normalizedScenarioSchema` y tipo `NormalizedScenario`: define el registro de escenario por referencias foráneas a colecciones normalizadas.
+  - Tipos exportados en `types.ts` e indexados en `src/domain/index.ts`.
+- **Ampliación de la interfaz `ClinicalDataAdapter` (`src/services/adapters/ClinicalDataAdapter.ts`):**
+  - Incorporación de métodos de consulta y ensamblaje: `getScenarios()`, `getScenarioById(id)`, `getScenarioSourceInput(scenarioId)` y `getScenarioContext(scenarioId)`.
+- **Implementación completa de `JsonServerAdapter` (`src/services/adapters/JsonServerAdapter.ts`):**
+  - Soporte dual: transporte HTTP REST vía JSON Server (`http://localhost:3001`) e ingestión directa de base de datos normalizada (`SyntheticDatabase`) para ejecución pura y determinística en tests y desarrollo.
+  - Validación Zod estricta en cada frontera antes del consumo por capas de dominio.
+  - Verificación rigurosa de integridad referencial para los 7 tipos de entidades referenciadas: detección y rechazo con errores informativos de referencias huérfanas (registros no existentes) e inconsistentes (filtración entre pacientes distintos o medicamentos no registrados en el escenario).
+  - Ensamblaje determinístico de `ClinicalContextSourceInput` validado con `clinicalContextSourceInputSchema.parse()`, alimentando directamente `buildClinicalContext()`.
+  - Preservación exacta de metadatos temporales de exposición (`therapyContext`, `status`, `startedAt`, `endedAt`) y estados de disponibilidad de datos (`AVAILABLE`, `MISSING`, `UNKNOWN`, `STALE`, `UNAVAILABLE`) sin coerción a normal.
+- **Suite de pruebas integrales y regresión 8/8 (`src/services/adapters/JsonServerAdapter.test.ts`):**
+  - 41 pruebas automatizadas utilizando los fixtures TypeScript de `SYN-001` a `SYN-008` como oráculo de regresión.
+  - Validación de equivalencia exacta 8/8 en `ClinicalContextSourceInput` y `ClinicalContext`.
+  - Verificación de comportamiento idéntico en la compuerta de datos requeridos y reglas DEMO (DEMO-ALG-001 en SYN-002, DEMO-DDI-001 en SYN-003, bloqueo en SYN-004).
+  - Pruebas negativas completas para referencias huérfanas e inconsistentes en las 7 entidades.
+  - Validación de transporte HTTP y manejo de errores 404/500 con fetch simulado.
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS (0 errors, 0 warnings)
+- npm run test: PASS (11 files, 182 tests passed)
+- npm run build: PASS (Vite + TypeScript compilation)
+
+**Resultado**
+
+La base de datos sintética normalizada `db.json` y el adaptador `JsonServerAdapter` quedan plenamente operativos, garantizando que el consumo de escenarios se realice a través de la frontera de adaptadores con validación Zod canónica, preservación integral de metadatos clínicos y verificación de regresión exacta sobre los 8 escenarios sintéticos.
+
+---
+
+### 2026-09-25 — SAMED Product Branding Alignment
+
+**Phase:** SAMED Product Branding Alignment
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.8 Flash
+**Ruleset activado:** UI+DOCS+REPO
+**Context packs consultados:** `UI_CONTEXT.md`, `DOMAIN_CONTEXT.md`, `DATA_CONTEXT.md`
+
+**Objetivo**
+
+Alinear la identidad de marca del producto de cara al usuario final bajo el nombre **SAMED** (*Sistema de Apoyo Médico para Evaluación y Decisión*) y su lema oficial *"SAMED apoya la decisión. El profesional toma la decisión."*, estableciendo una clara separación conceptual entre la marca de producto y el proyecto técnico/repositorio **CDSS**, sin alterar la arquitectura técnica, esquemas, entidades de dominio ni adaptadores.
+
+**Decisiones clave y cambios**
+
+- **Definición de marca de producto y lema oficial:**
+  - Nombre del producto: **SAMED** (*Sistema de Apoyo Médico para Evaluación y Decisión*).
+  - Lema oficial: *"SAMED apoya la decisión. El profesional toma la decisión."*
+  - Relación arquitectónica explícita: **Marca de producto = SAMED** | **Proyecto técnico y repositorio = CDSS**.
+- **Alineación de interfaces y documentación visible al usuario:**
+  - `index.html`: actualización del título del documento a `SAMED — Sistema de Apoyo Médico para Evaluación y Decisión`.
+  - `src/app/router/AppRouter.tsx`: actualización del encabezado principal a `SAMED — Sistema de Apoyo Médico para Evaluación y Decisión` e incorporación visible del lema oficial.
+  - `tests/e2e/smoke.spec.ts`: soporte para validación del título con `SAMED`.
+  - `DESIGN.md`: actualización de la especificación del sistema de diseño, formalizando la identidad de marca SAMED y su lema, manteniendo intacto el sistema visual Graphite + Bone + Aubergine y los tokens semánticos clínicos.
+  - `README.md`: actualización del encabezado, lema, contexto arquitectónico y descripción del rol de SAMED como sistema de soporte a decisiones clínicas.
+  - Paquetes de contexto (`docs/context/UI_CONTEXT.md`, `docs/context/DOMAIN_CONTEXT.md`, `docs/context/DATA_CONTEXT.md`): reflejo de la marca de producto SAMED y la arquitectura técnica CDSS.
+- **Preservación estricta de nombres técnicos y arquitectura:**
+  - No se renombró el repositorio de GitHub.
+  - No se renombraron carpetas de dominio, entidades (`Patient`, `Medication`, `MedicationExposure`, `ClinicalContext`, etc.), esquemas Zod, adaptadores (`ClinicalDataAdapter`, `JsonServerAdapter`), reglas determinísticas, pruebas ni imports.
+  - La suite de pruebas y compilación se mantienen 100% estables.
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS (0 errors, 0 warnings)
+- npm run test: PASS (11 files, 182 tests passed)
+- npm run build: PASS (Vite + TypeScript compilation)
+
+**Resultado**
+
+La identidad de marca del producto queda formalizada como SAMED con su lema clínico oficial, manteniendo total integridad en la arquitectura técnica, contratos de dominio y base de código CDSS.
+
 ---
 
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:
 
-- Normalización de Synthetic DB e integración de adaptadores (`ClinicalDataAdapter` / `JsonServerAdapter`).
 - Dashboard Visual Baseline integrado.
 - Medication Review Visual Baseline integrado.

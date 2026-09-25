@@ -1,6 +1,6 @@
-# Domain Context Pack
+# Domain Context Pack — SAMED (CDSS)
 
-Compact orientation for working within the CDSS-CR clinical domain models and boundaries.
+Compact orientation for working within the SAMED clinical domain models and boundaries (technical project: CDSS).
 
 ## 1. Current State vs. Target Architecture
 
@@ -21,17 +21,18 @@ Compact orientation for working within the CDSS-CR clinical domain models and bo
 - **TARGET:** Extended ontology codes (SNOMED, RxNorm) for advanced clinical mappings.
 
 ### Synthetic Scenarios
-- **CURRENT:** `src/domain/scenarios/schema.ts` (`syntheticScenarioSchema`), `src/data/scenarios/` (`SYN-001` through `SYN-008`), and `getScenarioSourceInput` assembling patient-linked source bundles.
-- **TARGET:** Pipeline integration connecting scenario source inputs to evaluation workflows.
+- **CURRENT:** `src/domain/scenarios/schema.ts` (`syntheticScenarioSchema`, `normalizedScenarioSchema`), `src/data/scenarios/` (`SYN-001` through `SYN-008`), and `JsonServerAdapter` (`src/services/adapters/JsonServerAdapter.ts`) assembling patient-linked source inputs directly from normalized `db.json` collections.
+- **TARGET:** Pipeline integration connecting scenario source inputs to evaluation and UI workflows.
 
 ### Clinical Context (Derived Evaluation Snapshot) & Data Gate
 - **CURRENT:** `src/domain/clinical-context/` defines:
   - `clinicalContextSchema`: Derived evaluation snapshot containing resolved patient, medications, medicationExposures, allergies, conditions, observations, dataPoints, and timestamp.
   - `clinicalContextSourceInputSchema`: Explicit raw-source input boundary for the Clinical Context Builder (`patient`, `medications`, `medicationExposures`, `allergies`, `conditions`, `observations`, `dataPoints?`, `evaluationTimestamp`).
+  - `clinicalDataPointRecordSchema`: Normalized data point record in `db.json` (`id`, `patientId`, `key`, `value`, `status`, `timestamp?`, `source?`).
   - `buildClinicalContext` (`src/domain/clinical-context/builder.ts`): Pure deterministic builder assembling `ClinicalContext` from `ClinicalContextSourceInput`, resolving medications and preserving exposure metadata strictly via `MedicationExposure` records belonging to the patient and resolved medication set, preserving therapyContext, status, startedAt and endedAt without inference or normalization, enforcing source patient referential integrity (rejecting cross-patient or uncataloged references), and preserving raw availability states (`AVAILABLE`, `MISSING`, `UNKNOWN`, `STALE`, `UNAVAILABLE`) without normalization.
   - `clinicalDataPointSchema`: Serializable key-value data point with availability state.
   - `requiredDataGate.ts`: Pure deterministic data gate evaluating data readiness before rule execution (`evaluateDataGate`, `evaluateClinicalContextDataGate`), preserving failed requirements (`key`, `status`, `reason`) across availability states (`AVAILABLE`, `MISSING`, `UNKNOWN`, `STALE`, `UNAVAILABLE`) and handling missing required keys (`NOT_PRESENT`) without assuming normal status.
-- **TARGET:** Pipeline integration connecting `evaluateClinicalContextDataGate` directly to deterministic rule engine execution and clinical finding generation.
+- **TARGET:** Pipeline integration connecting `JsonServerAdapter.getScenarioContext` directly to deterministic rule engine execution and clinical finding generation in UI views.
 
 
 

@@ -24,6 +24,18 @@ export const clinicalDataPointSchema = z.object({
   source: z.string().optional(),
 })
 
+export const clinicalDataPointRecordSchema = z.object({
+  id: z.string().min(1, 'ID is required'),
+  patientId: z.string().min(1, 'Patient ID is required'),
+  key: z.string().min(1, 'Key is required'),
+  value: jsonValueSchema,
+  status: dataAvailabilityStateSchema,
+  timestamp: z.string().optional(),
+  source: z.string().optional(),
+})
+
+export type ClinicalDataPointRecord = z.infer<typeof clinicalDataPointRecordSchema>
+
 export type ClinicalDataPoint<T = unknown> = {
   key: string
   value: T | null

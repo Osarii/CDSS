@@ -1,2 +1,2 @@
-export type { SyntheticScenario } from './schema'
-export { syntheticScenarioSchema } from './schema'
+export type { SyntheticScenario, NormalizedScenario } from './schema'
+export { syntheticScenarioSchema, normalizedScenarioSchema } from './schema'

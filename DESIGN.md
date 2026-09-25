@@ -1,8 +1,12 @@
-# CDSS-CR Design System Specification
+# SAMED Design System Specification
+
+> **Product Brand:** SAMED — *Sistema de Apoyo Médico para Evaluación y Decisión*<br />
+> **Lema oficial:** *"SAMED apoya la decisión. El profesional toma la decisión."*<br />
+> **Relación de arquitectura:** Marca de producto = **SAMED** | Proyecto técnico / repositorio = **CDSS**
 
 ## Visual Identity: Graphite + Bone + Aubergine
 
-CDSS-CR utilizes a disciplined, calm, high-contrast palette tailored for high-stakes clinical decision support. The interface avoids generic "healthcare blue" and instead emphasizes clinical readability, hierarchical focus, and intentional contrast.
+SAMED utilizes a disciplined, calm, high-contrast palette tailored for high-stakes clinical decision support. The interface avoids generic "healthcare blue" and instead emphasizes clinical readability, hierarchical focus, and intentional contrast.
 
 ### Typography Baseline
 - **Clinical UI & Body (`--font-sans`):** **Inter Variable** (`@fontsource-variable/inter`)

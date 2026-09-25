@@ -1,20 +1,23 @@
-# CDSS-CR — Clinical Decision Support System (Costa Rica)
+# SAMED — Sistema de Apoyo Médico para Evaluación y Decisión
 
-> **Aviso de Seguridad Clínica:**  
-> Este repositorio se encuentra actualmente en **fase de preparación técnica y arquitectura inicial**.  
-> **Todos los datos son sintéticos.** No existe conexión ni integración real con sistemas hospitalarios ni con el EDUS de la CCSS. Las reglas clínicas definitivas y las pantallas operativas no han sido implementadas todavía.
+> **Lema:** *"SAMED apoya la decisión. El profesional toma la decisión."*<br />
+> **Relación de arquitectura:** Marca de producto = **SAMED** | Proyecto técnico y repositorio = **CDSS**<br />
+>
+> **Aviso de Seguridad Clínica:**<br />
+> Este prototipo se encuentra actualmente en **fase de preparación técnica y arquitectura de datos**.<br />
+> **Todos los datos son sintéticos.** No existe conexión ni integración real con sistemas hospitalarios ni con el EDUS de la CCSS. Las reglas clínicas definitivas y las pantallas operativas finales no han sido implementadas todavía.
 
 ---
 
-## 1. ¿Qué es CDSS-CR?
-CDSS-CR es un prototipo de Sistema de Soporte a Decisiones Clínicas (CDSS) diseñado para apoyar a profesionales de la salud en la revisión farmacoterapéutica, detección determinística de interacciones medicamentosas y evaluación de riesgos en contextos clínicos complejos.
+## 1. ¿Qué es SAMED?
+**SAMED** (*Sistema de Apoyo Médico para Evaluación y Decisión*) es una solución de soporte para la toma de decisiones clínicas (CDSS) diseñada para asistir a profesionales de la salud en la revisión farmacoterapéutica, detección determinística de interacciones medicamentosas y evaluación de riesgos en contextos clínicos complejos.
 
 ### Principios Fundamentales
-- **Datos 100% sintéticos:** Cumplimiento de privacidad y ética clínica.
-- **Dato no disponible ≠ normal:** En CDSS-CR, `UNKNOWN !== NORMAL`, `MISSING !== NORMAL`, `UNAVAILABLE !== NORMAL` y `STALE !== NORMAL`. La falta de información se maneja explícitamente mediante el *Required Data Gate*.
-- **Lógica determinística como fuente de verdad:** Las alertas e interacciones clínicas se originan en motores determinísticos (`json-rules-engine`), garantizando trazabilidad y reproducibilidad.
+- **Datos 100% sintéticos:** Cumplimiento estricto de privacidad y ética clínica.
+- **Dato no disponible ≠ normal:** En SAMED, `UNKNOWN !== NORMAL`, `MISSING !== NORMAL`, `UNAVAILABLE !== NORMAL` y `STALE !== NORMAL`. La falta de información se maneja explícitamente mediante el *Required Data Gate*.
+- **Lógica determinística como fuente de verdad:** Las alertas e interacciones clínicas se originan exclusivamente en motores determinísticos (`json-rules-engine`), garantizando trazabilidad y reproducibilidad.
 - **La IA es explicativa:** La IA futura nunca será la fuente de verdad clínica; el profesional de salud mantiene siempre la decisión final.
-- **Sistema Visual Graphite + Bone + Aubergine:** UI sobria de alto contraste clínico, separando estrictamente los colores de marca de los tokens semánticos clínicos (`critical`, `warning`, `safe`, `low`, `missing`).
+- **Sistema Visual Graphite + Bone + Aubergine:** Interfaz sobria de alto contraste clínico, separando estrictamente los colores de marca de los tokens semánticos clínicos (`critical`, `warning`, `safe`, `low`, `missing`).
 
 ---
 

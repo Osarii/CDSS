@@ -1,7 +1,7 @@
 export type { DataAvailabilityState } from '../common/schema'
 export { dataAvailabilityStateSchema } from '../common/schema'
-export type { ClinicalDataPoint, ClinicalContext, ClinicalContextSourceInput } from './schema'
-export { clinicalDataPointSchema, clinicalContextSchema, clinicalContextSourceInputSchema } from './schema'
+export type { ClinicalDataPoint, ClinicalDataPointRecord, ClinicalContext, ClinicalContextSourceInput } from './schema'
+export { clinicalDataPointSchema, clinicalDataPointRecordSchema, clinicalContextSchema, clinicalContextSourceInputSchema } from './schema'
 export { buildClinicalContext } from './builder'
 export type {
   FailedRequirement,

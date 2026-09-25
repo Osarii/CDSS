@@ -1,19 +1,28 @@
-# Data Context Pack
+# Data Context Pack — SAMED (CDSS)
 
-Compact orientation for working with data access and synthetic storage in CDSS-CR.
+Compact orientation for working with data access and synthetic storage in SAMED (technical project: CDSS).
 
 ## 1. Adapter Boundary
-- **CURRENT:** All data access is governed by the `ClinicalDataAdapter` interface (`src/services/adapters/ClinicalDataAdapter.ts`), with `JsonServerAdapter` (`src/services/adapters/JsonServerAdapter.ts`) currently structured as a development stub.
-- **TARGET:** Full adapter implementation bridging stored mock/scenario data to the application layer.
+- **CURRENT:** All clinical data access is governed by the `ClinicalDataAdapter` interface (`src/services/adapters/ClinicalDataAdapter.ts`), fully implemented by `JsonServerAdapter` (`src/services/adapters/JsonServerAdapter.ts`).
+  - Supports both HTTP transport (JSON Server on port 3001) and direct normalized database ingestion.
+  - Exposes `getPatients()`, `getPatientById()`, `getMedications()`, `getFindings()`, `getScenarios()`, `getScenarioById()`, `getScenarioSourceInput()`, and `getScenarioContext()`.
+  - Enforces referential integrity and detects/rejects orphan and cross-patient inconsistent references across all 7 referenced entity types.
+  - All external data entering via adapters is validated against canonical Zod schemas before domain consumption.
 - **Rule:** UI components and domain services must remain decoupled from specific backend transport formats.
 
 ## 2. Mock Storage (JSON Server) & Synthetic Fixtures
-- **CURRENT:** Synthetic entity records stored in `db.json` (`patients`, `medications`, `medicationExposures`, `allergies`, `conditions`, `observations`) populated from `SYN-001` through `SYN-008`, alongside the typed scenario catalog in `src/data/scenarios/`, exposure fixtures in `src/data/scenarios/exposures.ts`, and `buildClinicalContext` (`src/domain/clinical-context/builder.ts`) assembling source records deterministically. Stored `db.json` fixtures are persistence records and are not yet actively integrated through adapter queries.
+- **CURRENT:** `db.json` is the canonical normalized synthetic source for all scenario and clinical data.
+  - Normalized collections: `patients`, `medications`, `medicationExposures`, `allergies`, `conditions`, `observations`, `clinicalDataPoints`, `scenarios`.
+  - Scenarios reference normalized source records by ID (`patientId`, `medicationIds`, `medicationExposureIds`, `allergyIds`, `conditionIds`, `observationIds`, `clinicalDataPointIds`) rather than duplicating clinical snapshots.
+  - `db.json` does NOT store prebuilt `ClinicalContext` objects.
+  - Raw availability states (`AVAILABLE`, `MISSING`, `UNKNOWN`, `STALE`, `UNAVAILABLE`) and medication exposure metadata (`therapyContext`, `status`, `startedAt`, `endedAt`) are preserved with exact fidelity without coercion or normalization.
+  - Verified against TypeScript fixtures `SYN-001` through `SYN-008` as regression oracle (producing equivalent `ClinicalContextSourceInput` and `ClinicalContext` snapshots).
 - **Entity & Boundary Roles:**
-  - **Medication:** Current prototype medication/regimen record (`id`, `code`, `name`, `dosage`, `route`), capturing scenario-level prescribed medications rather than a pure pharmacological catalog definition. Medication IDs are never implicit patient foreign keys.
+  - **Medication:** Current prototype medication/regimen record (`id`, `code`, `name`, `dosage`, `route`). Prescribed medications rather than a pure pharmacological catalog definition. Medication IDs are never implicit patient foreign keys.
   - **MedicationExposure:** Patient-specific temporal relationship to a medication (`id`, `patientId`, `medicationId`, `therapyContext: 'chronic' | 'acute' | 'unknown'`, `status: 'active' | 'stopped' | 'unknown'`, `startedAt?`, `endedAt?`).
-  - **ClinicalContext:** Derived evaluation snapshot assembled from patient-linked source records (boundary defined by `ClinicalContextSourceInput` and produced by `buildClinicalContext`, containing patient, medications, medicationExposures, allergies, conditions, observations, dataPoints, and timestamp).
-- **TARGET:** Data adapter layer connecting stored mock/scenario records directly to `buildClinicalContext` for deterministic rule engine evaluation and UI presentation.
+  - **ClinicalDataPointRecord:** Normalized data point record in `db.json` (`id`, `patientId`, `key`, `value`, `status`, `timestamp?`, `source?`).
+  - **NormalizedScenario:** Scenario definition referencing normalized collections (`id`, `scenarioId`, `title`, `description`, `evaluationFocus`, `patientId`, `medicationIds`, `medicationExposureIds`, `allergyIds`, `conditionIds`, `observationIds`, `clinicalDataPointIds`, `evaluationTimestamp`).
+  - **ClinicalContext:** Derived evaluation snapshot assembled from patient-linked source records via `buildClinicalContext` (`src/domain/clinical-context/builder.ts`).
 
 
 ## 3. Zod Boundary Validation

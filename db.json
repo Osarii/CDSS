@@ -1271,6 +1271,822 @@
       "timestamp": "2026-03-20T10:00:00Z"
     }
   ],
+  "clinicalDataPoints": [
+    {
+      "id": "cdp-syn-001-hba1c",
+      "patientId": "pat-syn-001",
+      "key": "hba1c",
+      "value": 6.8,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:00:00Z"
+    },
+    {
+      "id": "cdp-syn-001-serum_creatinine",
+      "patientId": "pat-syn-001",
+      "key": "serum_creatinine",
+      "value": 0.9,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:00:00Z"
+    },
+    {
+      "id": "cdp-syn-001-egfr",
+      "patientId": "pat-syn-001",
+      "key": "egfr",
+      "value": 82,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:00:00Z"
+    },
+    {
+      "id": "cdp-syn-001-potassium",
+      "patientId": "pat-syn-001",
+      "key": "potassium",
+      "value": 4.3,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:00:00Z"
+    },
+    {
+      "id": "cdp-syn-001-systolic_bp",
+      "patientId": "pat-syn-001",
+      "key": "systolic_bp",
+      "value": 126,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:00:00Z"
+    },
+    {
+      "id": "cdp-syn-001-diastolic_bp",
+      "patientId": "pat-syn-001",
+      "key": "diastolic_bp",
+      "value": 78,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:00:00Z"
+    },
+    {
+      "id": "cdp-syn-002-temperature",
+      "patientId": "pat-syn-002",
+      "key": "temperature",
+      "value": 38.4,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "cdp-syn-002-wbc_count",
+      "patientId": "pat-syn-002",
+      "key": "wbc_count",
+      "value": 14.2,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "cdp-syn-002-serum_creatinine",
+      "patientId": "pat-syn-002",
+      "key": "serum_creatinine",
+      "value": 1.1,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "cdp-syn-002-egfr",
+      "patientId": "pat-syn-002",
+      "key": "egfr",
+      "value": 64,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "cdp-syn-002-systolic_bp",
+      "patientId": "pat-syn-002",
+      "key": "systolic_bp",
+      "value": 138,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "cdp-syn-002-diastolic_bp",
+      "patientId": "pat-syn-002",
+      "key": "diastolic_bp",
+      "value": 84,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "cdp-syn-003-potassium",
+      "patientId": "pat-syn-003",
+      "key": "potassium",
+      "value": 5.3,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:30:00Z"
+    },
+    {
+      "id": "cdp-syn-003-serum_creatinine",
+      "patientId": "pat-syn-003",
+      "key": "serum_creatinine",
+      "value": 1.8,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:30:00Z"
+    },
+    {
+      "id": "cdp-syn-003-egfr",
+      "patientId": "pat-syn-003",
+      "key": "egfr",
+      "value": 38,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:30:00Z"
+    },
+    {
+      "id": "cdp-syn-003-heart_rate",
+      "patientId": "pat-syn-003",
+      "key": "heart_rate",
+      "value": 124,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:30:00Z"
+    },
+    {
+      "id": "cdp-syn-003-systolic_bp",
+      "patientId": "pat-syn-003",
+      "key": "systolic_bp",
+      "value": 144,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:30:00Z"
+    },
+    {
+      "id": "cdp-syn-003-diastolic_bp",
+      "patientId": "pat-syn-003",
+      "key": "diastolic_bp",
+      "value": 88,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:30:00Z"
+    },
+    {
+      "id": "cdp-syn-003-qtc",
+      "patientId": "pat-syn-003",
+      "key": "qtc",
+      "value": 468,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:30:00Z"
+    },
+    {
+      "id": "cdp-syn-004-serum_creatinine",
+      "patientId": "pat-syn-004",
+      "key": "serum_creatinine",
+      "value": null,
+      "status": "MISSING"
+    },
+    {
+      "id": "cdp-syn-004-egfr",
+      "patientId": "pat-syn-004",
+      "key": "egfr",
+      "value": null,
+      "status": "MISSING"
+    },
+    {
+      "id": "cdp-syn-004-potassium",
+      "patientId": "pat-syn-004",
+      "key": "potassium",
+      "value": 4.5,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T08:45:00Z"
+    },
+    {
+      "id": "cdp-syn-004-systolic_bp",
+      "patientId": "pat-syn-004",
+      "key": "systolic_bp",
+      "value": 132,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T08:45:00Z"
+    },
+    {
+      "id": "cdp-syn-004-diastolic_bp",
+      "patientId": "pat-syn-004",
+      "key": "diastolic_bp",
+      "value": 80,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T08:45:00Z"
+    },
+    {
+      "id": "cdp-syn-005-serum_creatinine",
+      "patientId": "pat-syn-005",
+      "key": "serum_creatinine",
+      "value": 2.8,
+      "status": "STALE",
+      "timestamp": "2025-03-15T08:00:00Z"
+    },
+    {
+      "id": "cdp-syn-005-egfr",
+      "patientId": "pat-syn-005",
+      "key": "egfr",
+      "value": 23,
+      "status": "STALE",
+      "timestamp": "2025-03-15T08:00:00Z"
+    },
+    {
+      "id": "cdp-syn-005-potassium",
+      "patientId": "pat-syn-005",
+      "key": "potassium",
+      "value": 5.1,
+      "status": "STALE",
+      "timestamp": "2025-03-15T08:00:00Z"
+    },
+    {
+      "id": "cdp-syn-005-uric_acid",
+      "patientId": "pat-syn-005",
+      "key": "uric_acid",
+      "value": 8.6,
+      "status": "STALE",
+      "timestamp": "2025-03-15T08:00:00Z"
+    },
+    {
+      "id": "cdp-syn-005-systolic_bp",
+      "patientId": "pat-syn-005",
+      "key": "systolic_bp",
+      "value": 146,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:00:00Z"
+    },
+    {
+      "id": "cdp-syn-005-diastolic_bp",
+      "patientId": "pat-syn-005",
+      "key": "diastolic_bp",
+      "value": 90,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:00:00Z"
+    },
+    {
+      "id": "cdp-syn-006-hemoglobin",
+      "patientId": "pat-syn-006",
+      "key": "hemoglobin",
+      "value": 11.4,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:15:00Z"
+    },
+    {
+      "id": "cdp-syn-006-platelet_count",
+      "patientId": "pat-syn-006",
+      "key": "platelet_count",
+      "value": 215,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:15:00Z"
+    },
+    {
+      "id": "cdp-syn-006-serum_creatinine",
+      "patientId": "pat-syn-006",
+      "key": "serum_creatinine",
+      "value": 1.3,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:15:00Z"
+    },
+    {
+      "id": "cdp-syn-006-egfr",
+      "patientId": "pat-syn-006",
+      "key": "egfr",
+      "value": 51,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:15:00Z"
+    },
+    {
+      "id": "cdp-syn-006-systolic_bp",
+      "patientId": "pat-syn-006",
+      "key": "systolic_bp",
+      "value": 144,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:15:00Z"
+    },
+    {
+      "id": "cdp-syn-006-diastolic_bp",
+      "patientId": "pat-syn-006",
+      "key": "diastolic_bp",
+      "value": 88,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T10:15:00Z"
+    },
+    {
+      "id": "cdp-syn-007-inr",
+      "patientId": "pat-syn-007",
+      "key": "inr",
+      "value": 3.4,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:00:00Z"
+    },
+    {
+      "id": "cdp-syn-007-qtc",
+      "patientId": "pat-syn-007",
+      "key": "qtc",
+      "value": 482,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:00:00Z"
+    },
+    {
+      "id": "cdp-syn-007-serum_creatinine",
+      "patientId": "pat-syn-007",
+      "key": "serum_creatinine",
+      "value": 1.9,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:00:00Z"
+    },
+    {
+      "id": "cdp-syn-007-egfr",
+      "patientId": "pat-syn-007",
+      "key": "egfr",
+      "value": 35,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:00:00Z"
+    },
+    {
+      "id": "cdp-syn-007-potassium",
+      "patientId": "pat-syn-007",
+      "key": "potassium",
+      "value": 4.2,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:00:00Z"
+    },
+    {
+      "id": "cdp-syn-007-heart_rate",
+      "patientId": "pat-syn-007",
+      "key": "heart_rate",
+      "value": 64,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:00:00Z"
+    },
+    {
+      "id": "cdp-syn-007-systolic_bp",
+      "patientId": "pat-syn-007",
+      "key": "systolic_bp",
+      "value": 112,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:00:00Z"
+    },
+    {
+      "id": "cdp-syn-007-diastolic_bp",
+      "patientId": "pat-syn-007",
+      "key": "diastolic_bp",
+      "value": 70,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T09:00:00Z"
+    },
+    {
+      "id": "cdp-syn-008-serum_creatinine",
+      "patientId": "pat-syn-008",
+      "key": "serum_creatinine",
+      "value": null,
+      "status": "MISSING"
+    },
+    {
+      "id": "cdp-syn-008-egfr",
+      "patientId": "pat-syn-008",
+      "key": "egfr",
+      "value": null,
+      "status": "UNAVAILABLE"
+    },
+    {
+      "id": "cdp-syn-008-potassium",
+      "patientId": "pat-syn-008",
+      "key": "potassium",
+      "value": 5.4,
+      "status": "STALE",
+      "timestamp": "2026-03-20T10:00:00Z"
+    },
+    {
+      "id": "cdp-syn-008-digoxin_level",
+      "patientId": "pat-syn-008",
+      "key": "digoxin_level",
+      "value": null,
+      "status": "UNKNOWN"
+    },
+    {
+      "id": "cdp-syn-008-heart_rate",
+      "patientId": "pat-syn-008",
+      "key": "heart_rate",
+      "value": 52,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T08:00:00Z"
+    },
+    {
+      "id": "cdp-syn-008-systolic_bp",
+      "patientId": "pat-syn-008",
+      "key": "systolic_bp",
+      "value": 96,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T08:00:00Z"
+    },
+    {
+      "id": "cdp-syn-008-diastolic_bp",
+      "patientId": "pat-syn-008",
+      "key": "diastolic_bp",
+      "value": 58,
+      "status": "AVAILABLE",
+      "timestamp": "2026-09-24T08:00:00Z"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "SYN-001",
+      "scenarioId": "SYN-001",
+      "title": "Baseline Evaluation Context — Outpatient Type 2 Diabetes & Hypertension",
+      "description": "Outpatient context with documented diabetes and hypertension, concurrent metformin and lisinopril therapy, and available laboratory data.",
+      "evaluationFocus": [
+        "routine_outpatient_therapy_review",
+        "glycemic_and_blood_pressure_monitoring",
+        "baseline_data_completeness_check"
+      ],
+      "patientId": "pat-syn-001",
+      "medicationIds": [
+        "med-syn-001-1",
+        "med-syn-001-2"
+      ],
+      "medicationExposureIds": [
+        "exp-syn-001-1",
+        "exp-syn-001-2"
+      ],
+      "allergyIds": [],
+      "conditionIds": [
+        "cond-syn-001-1",
+        "cond-syn-001-2"
+      ],
+      "observationIds": [
+        "obs-syn-001-1",
+        "obs-syn-001-2",
+        "obs-syn-001-3",
+        "obs-syn-001-4",
+        "obs-syn-001-5",
+        "obs-syn-001-6"
+      ],
+      "clinicalDataPointIds": [
+        "cdp-syn-001-hba1c",
+        "cdp-syn-001-serum_creatinine",
+        "cdp-syn-001-egfr",
+        "cdp-syn-001-potassium",
+        "cdp-syn-001-systolic_bp",
+        "cdp-syn-001-diastolic_bp"
+      ],
+      "evaluationTimestamp": "2026-09-24T12:00:00Z"
+    },
+    {
+      "id": "SYN-002",
+      "scenarioId": "SYN-002",
+      "title": "Allergy Evaluation Context — Cellulitis with Documented Beta-Lactam Hypersensitivity",
+      "description": "67-year-old female with documented penicillin and sulfamethoxazole allergy history, acute lower limb cellulitis, and concurrent prescriptions including amoxicillin-clavulanate.",
+      "evaluationFocus": [
+        "beta_lactam_allergy_history_comparison",
+        "sulfonamide_allergy_history_comparison",
+        "concurrent_antimicrobial_and_chronic_regimen_review"
+      ],
+      "patientId": "pat-syn-002",
+      "medicationIds": [
+        "med-syn-002-1",
+        "med-syn-002-2",
+        "med-syn-002-3",
+        "med-syn-002-4",
+        "med-syn-002-5"
+      ],
+      "medicationExposureIds": [
+        "exp-syn-002-1",
+        "exp-syn-002-2",
+        "exp-syn-002-3",
+        "exp-syn-002-4",
+        "exp-syn-002-5"
+      ],
+      "allergyIds": [
+        "all-syn-002-1",
+        "all-syn-002-2"
+      ],
+      "conditionIds": [
+        "cond-syn-002-1",
+        "cond-syn-002-2",
+        "cond-syn-002-3",
+        "cond-syn-002-4"
+      ],
+      "observationIds": [
+        "obs-syn-002-1",
+        "obs-syn-002-2",
+        "obs-syn-002-3",
+        "obs-syn-002-4",
+        "obs-syn-002-5",
+        "obs-syn-002-6"
+      ],
+      "clinicalDataPointIds": [
+        "cdp-syn-002-temperature",
+        "cdp-syn-002-wbc_count",
+        "cdp-syn-002-serum_creatinine",
+        "cdp-syn-002-egfr",
+        "cdp-syn-002-systolic_bp",
+        "cdp-syn-002-diastolic_bp"
+      ],
+      "evaluationTimestamp": "2026-09-24T12:00:00Z"
+    },
+    {
+      "id": "SYN-003",
+      "scenarioId": "SYN-003",
+      "title": "Polypharmacy Evaluation Context — Atrial Fibrillation with CKD & Concomitant Regimens",
+      "description": "65-year-old male with hypertension, Stage 3b CKD, and atrial fibrillation, receiving enalapril, furosemide, spironolactone, bisoprolol, atorvastatin, and amiodarone.",
+      "evaluationFocus": [
+        "renin_angiotensin_diuretic_regimen_review",
+        "antiarrhythmic_concomitant_regimen_review",
+        "potassium_and_creatinine_monitoring",
+        "qtc_and_heart_rate_monitoring"
+      ],
+      "patientId": "pat-syn-003",
+      "medicationIds": [
+        "med-syn-003-1",
+        "med-syn-003-2",
+        "med-syn-003-3",
+        "med-syn-003-4",
+        "med-syn-003-5",
+        "med-syn-003-6"
+      ],
+      "medicationExposureIds": [
+        "exp-syn-003-1",
+        "exp-syn-003-2",
+        "exp-syn-003-3",
+        "exp-syn-003-4",
+        "exp-syn-003-5",
+        "exp-syn-003-6"
+      ],
+      "allergyIds": [],
+      "conditionIds": [
+        "cond-syn-003-1",
+        "cond-syn-003-2",
+        "cond-syn-003-3",
+        "cond-syn-003-4"
+      ],
+      "observationIds": [
+        "obs-syn-003-1",
+        "obs-syn-003-2",
+        "obs-syn-003-3",
+        "obs-syn-003-4",
+        "obs-syn-003-5",
+        "obs-syn-003-6",
+        "obs-syn-003-7"
+      ],
+      "clinicalDataPointIds": [
+        "cdp-syn-003-potassium",
+        "cdp-syn-003-serum_creatinine",
+        "cdp-syn-003-egfr",
+        "cdp-syn-003-heart_rate",
+        "cdp-syn-003-systolic_bp",
+        "cdp-syn-003-diastolic_bp",
+        "cdp-syn-003-qtc"
+      ],
+      "evaluationTimestamp": "2026-09-24T12:00:00Z"
+    },
+    {
+      "id": "SYN-004",
+      "scenarioId": "SYN-004",
+      "title": "Renal Evaluation Context — Direct Anticoagulant & Metformin with Missing Data Points",
+      "description": "72-year-old female with diabetes, heart failure, and peripheral artery disease prescribed dabigatran, metformin, ramipril, empagliflozin, and carvedilol, with serum creatinine and eGFR unrecorded in the evaluation snapshot.",
+      "evaluationFocus": [
+        "renal_function_data_availability_gate",
+        "anticoagulant_renal_parameters_review",
+        "biguanide_renal_parameters_review"
+      ],
+      "patientId": "pat-syn-004",
+      "medicationIds": [
+        "med-syn-004-1",
+        "med-syn-004-2",
+        "med-syn-004-3",
+        "med-syn-004-4",
+        "med-syn-004-5"
+      ],
+      "medicationExposureIds": [
+        "exp-syn-004-1",
+        "exp-syn-004-2",
+        "exp-syn-004-3",
+        "exp-syn-004-4",
+        "exp-syn-004-5"
+      ],
+      "allergyIds": [],
+      "conditionIds": [
+        "cond-syn-004-1",
+        "cond-syn-004-2",
+        "cond-syn-004-3",
+        "cond-syn-004-4"
+      ],
+      "observationIds": [
+        "obs-syn-004-1",
+        "obs-syn-004-2",
+        "obs-syn-004-3"
+      ],
+      "clinicalDataPointIds": [
+        "cdp-syn-004-serum_creatinine",
+        "cdp-syn-004-egfr",
+        "cdp-syn-004-potassium",
+        "cdp-syn-004-systolic_bp",
+        "cdp-syn-004-diastolic_bp"
+      ],
+      "evaluationTimestamp": "2026-09-24T12:00:00Z"
+    },
+    {
+      "id": "SYN-005",
+      "scenarioId": "SYN-005",
+      "title": "Renal Evaluation Context — Allopurinol Regimen with Historical Laboratory Data",
+      "description": "70-year-old male with CKD Stage 4, gout, hypertension, and diabetes prescribed allopurinol, with available renal function laboratory results dated 18 months prior to evaluation.",
+      "evaluationFocus": [
+        "laboratory_data_freshness_gate",
+        "xanthine_oxidase_inhibitor_renal_context_review",
+        "uric_acid_and_renal_parameters_monitoring"
+      ],
+      "patientId": "pat-syn-005",
+      "medicationIds": [
+        "med-syn-005-1",
+        "med-syn-005-2",
+        "med-syn-005-3",
+        "med-syn-005-4",
+        "med-syn-005-5"
+      ],
+      "medicationExposureIds": [
+        "exp-syn-005-1",
+        "exp-syn-005-2",
+        "exp-syn-005-3",
+        "exp-syn-005-4",
+        "exp-syn-005-5"
+      ],
+      "allergyIds": [],
+      "conditionIds": [
+        "cond-syn-005-1",
+        "cond-syn-005-2",
+        "cond-syn-005-3",
+        "cond-syn-005-4"
+      ],
+      "observationIds": [
+        "obs-syn-005-1",
+        "obs-syn-005-2",
+        "obs-syn-005-3",
+        "obs-syn-005-4",
+        "obs-syn-005-5",
+        "obs-syn-005-6"
+      ],
+      "clinicalDataPointIds": [
+        "cdp-syn-005-serum_creatinine",
+        "cdp-syn-005-egfr",
+        "cdp-syn-005-potassium",
+        "cdp-syn-005-uric_acid",
+        "cdp-syn-005-systolic_bp",
+        "cdp-syn-005-diastolic_bp"
+      ],
+      "evaluationTimestamp": "2026-09-24T12:00:00Z"
+    },
+    {
+      "id": "SYN-006",
+      "scenarioId": "SYN-006",
+      "title": "Concurrent Prescriptions Evaluation Context — Multiple NSAIDs with Concurrent SSRI & Gastroprotection",
+      "description": "68-year-old female with osteoarthritis and chronic low back pain prescribed ibuprofen and naproxen concurrently, alongside escitalopram and omeprazole.",
+      "evaluationFocus": [
+        "concurrent_nsaid_prescriptions_inspection",
+        "concurrent_nsaid_ssri_prescriptions_inspection",
+        "platelet_count_and_hemoglobin_monitoring",
+        "renal_function_monitoring"
+      ],
+      "patientId": "pat-syn-006",
+      "medicationIds": [
+        "med-syn-006-1",
+        "med-syn-006-2",
+        "med-syn-006-3",
+        "med-syn-006-4",
+        "med-syn-006-5"
+      ],
+      "medicationExposureIds": [
+        "exp-syn-006-1",
+        "exp-syn-006-2",
+        "exp-syn-006-3",
+        "exp-syn-006-4",
+        "exp-syn-006-5"
+      ],
+      "allergyIds": [],
+      "conditionIds": [
+        "cond-syn-006-1",
+        "cond-syn-006-2",
+        "cond-syn-006-3",
+        "cond-syn-006-4",
+        "cond-syn-006-5"
+      ],
+      "observationIds": [
+        "obs-syn-006-1",
+        "obs-syn-006-2",
+        "obs-syn-006-3",
+        "obs-syn-006-4",
+        "obs-syn-006-5",
+        "obs-syn-006-6"
+      ],
+      "clinicalDataPointIds": [
+        "cdp-syn-006-hemoglobin",
+        "cdp-syn-006-platelet_count",
+        "cdp-syn-006-serum_creatinine",
+        "cdp-syn-006-egfr",
+        "cdp-syn-006-systolic_bp",
+        "cdp-syn-006-diastolic_bp"
+      ],
+      "evaluationTimestamp": "2026-09-24T12:00:00Z"
+    },
+    {
+      "id": "SYN-007",
+      "scenarioId": "SYN-007",
+      "title": "Complex Overlapping Regimens Context — Anticoagulant, Antiarrhythmic & Antimicrobial Regimens",
+      "description": "74-year-old male with heart failure, persistent atrial fibrillation, and CKD Stage 3b receiving warfarin, amiodarone, and newly prescribed ciprofloxacin, with recorded penicillin allergy history.",
+      "evaluationFocus": [
+        "concomitant_warfarin_amiodarone_ciprofloxacin_review",
+        "inr_and_qtc_measurement_evaluation",
+        "antimicrobial_renal_clearance_review",
+        "allergy_history_antimicrobial_review"
+      ],
+      "patientId": "pat-syn-007",
+      "medicationIds": [
+        "med-syn-007-1",
+        "med-syn-007-2",
+        "med-syn-007-3",
+        "med-syn-007-4",
+        "med-syn-007-5",
+        "med-syn-007-6"
+      ],
+      "medicationExposureIds": [
+        "exp-syn-007-1",
+        "exp-syn-007-2",
+        "exp-syn-007-3",
+        "exp-syn-007-4",
+        "exp-syn-007-5",
+        "exp-syn-007-6"
+      ],
+      "allergyIds": [
+        "all-syn-007-1"
+      ],
+      "conditionIds": [
+        "cond-syn-007-1",
+        "cond-syn-007-2",
+        "cond-syn-007-3",
+        "cond-syn-007-4",
+        "cond-syn-007-5"
+      ],
+      "observationIds": [
+        "obs-syn-007-1",
+        "obs-syn-007-2",
+        "obs-syn-007-3",
+        "obs-syn-007-4",
+        "obs-syn-007-5",
+        "obs-syn-007-6",
+        "obs-syn-007-7",
+        "obs-syn-007-8"
+      ],
+      "clinicalDataPointIds": [
+        "cdp-syn-007-inr",
+        "cdp-syn-007-qtc",
+        "cdp-syn-007-serum_creatinine",
+        "cdp-syn-007-egfr",
+        "cdp-syn-007-potassium",
+        "cdp-syn-007-heart_rate",
+        "cdp-syn-007-systolic_bp",
+        "cdp-syn-007-diastolic_bp"
+      ],
+      "evaluationTimestamp": "2026-09-24T12:00:00Z"
+    },
+    {
+      "id": "SYN-008",
+      "scenarioId": "SYN-008",
+      "title": "Multi-State Availability Evaluation Context — Heart Failure & Digoxin Regimen with Partial Data",
+      "description": "79-year-old female transferred from a care facility with heart failure, CKD Stage 4, and atrial fibrillation prescribed digoxin, spironolactone, and sacubitril-valsartan, with evaluation data points across multiple availability states.",
+      "evaluationFocus": [
+        "multi_state_data_availability_gate",
+        "digoxin_and_heart_rate_review",
+        "potassium_availability_state_evaluation",
+        "renal_data_availability_for_anticoagulation"
+      ],
+      "patientId": "pat-syn-008",
+      "medicationIds": [
+        "med-syn-008-1",
+        "med-syn-008-2",
+        "med-syn-008-3",
+        "med-syn-008-4",
+        "med-syn-008-5"
+      ],
+      "medicationExposureIds": [
+        "exp-syn-008-1",
+        "exp-syn-008-2",
+        "exp-syn-008-3",
+        "exp-syn-008-4",
+        "exp-syn-008-5"
+      ],
+      "allergyIds": [],
+      "conditionIds": [
+        "cond-syn-008-1",
+        "cond-syn-008-2",
+        "cond-syn-008-3",
+        "cond-syn-008-4",
+        "cond-syn-008-5"
+      ],
+      "observationIds": [
+        "obs-syn-008-1",
+        "obs-syn-008-2",
+        "obs-syn-008-3",
+        "obs-syn-008-4"
+      ],
+      "clinicalDataPointIds": [
+        "cdp-syn-008-serum_creatinine",
+        "cdp-syn-008-egfr",
+        "cdp-syn-008-potassium",
+        "cdp-syn-008-digoxin_level",
+        "cdp-syn-008-heart_rate",
+        "cdp-syn-008-systolic_bp",
+        "cdp-syn-008-diastolic_bp"
+      ],
+      "evaluationTimestamp": "2026-09-24T12:00:00Z"
+    }
+  ],
   "rules": [],
   "findings": [],
   "auditEvents": []

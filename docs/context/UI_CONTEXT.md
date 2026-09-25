@@ -1,10 +1,13 @@
-# UI Context Pack
+# UI Context Pack — SAMED
 
-Compact orientation for working on the CDSS-CR interface.
+Compact orientation for working on the SAMED clinical interface (technical project: CDSS).
 
 ## 1. Design Authority & Visual Identity
+- **Product Brand:** SAMED (*Sistema de Apoyo Médico para Evaluación y Decisión*).
+- **Tagline:** *"SAMED apoya la decisión. El profesional toma la decisión."*
+- **Architecture Role:** Product brand = **SAMED** | Technical project / repository = **CDSS**.
 - **Primary Source:** `DESIGN.md` defines the approved visual identity: Graphite + Bone + Aubergine.
-- **Current Token Status (PENDING ALIGNMENT):** Design tokens in `src/styles/tokens.css` and `src/index.css` are scheduled for final consolidation and cleanup in Phase 0.6 (resolving shadcn default overrides). Exact values are pending alignment, not frozen.
+- **Current Token Status:** Design tokens in `src/styles/tokens.css` and `src/index.css` enforce Graphite + Bone + Aubergine with high clinical contrast.
 - **Semantic Separation:** Clinical severity colors (`critical`, `warning`, `safe`, `missing`) are strictly decoupled from brand/accent colors. Never use healthcare-blue as primary brand identity.
 
 ## 2. Current Implementation vs. Target Architecture
