@@ -36,8 +36,8 @@ Compact orientation for working within the CDSS-CR clinical domain models and bo
 
 
 ### Rules Engine
-- **CURRENT:** `src/domain/rules/schema.ts` (`ruleDefinitionSchema`: `id`, `version`, `name`, `description`, `severity`, `enabled`, `requiredDataKeys`) and `src/domain/rules/engine.ts` (`createRuleEngine` returning `Engine` from `json-rules-engine`).
-- **TARGET:** Synthetic demo rule definitions for drug-drug interactions and dosage alerts.
+- **CURRENT:** `src/domain/rules/schema.ts` (`ruleDefinitionSchema`), `src/domain/rules/demoRules.ts` (`DEMO_ALG_001`, `DEMO_DDI_001`, `DEMO_REN_001`), and `src/domain/rules/evaluator.ts` (`evaluateDemoRule`, `evaluateDemoRules`). Evaluates Required Data Gate before rule execution, blocking non-usable/missing data and generating deterministic findings through `buildClinicalFindingFromRule` on trigger. Prototype rules, thresholds (e.g. eGFR <= 50), and pairings are synthetic demonstration logic and NOT validated clinical guidance.
+- **TARGET:** Expanded clinical rule sets validated by clinicians.
 
 ### Findings
 - **CURRENT:** `src/domain/findings/` defines `clinicalFindingSchema`, `clinicalFindingInputSchema`, and pure deterministic builders `buildClinicalFinding`, `buildFinding`, `buildClinicalFindingFromRule`, `buildClinicalFindings` (`src/domain/findings/builder.ts`). Explicitly preserves traceability (`patientId`, `ruleId`, `ruleVersion`, `timestamp`), severity (`critical`, `warning`, `low`, `info`), titles/details, and data keys (`supportingDataKeys`, `missingDataKeys`) with `isDeterministic: true`. Does not infer clinical conclusions inside the Finding layer.

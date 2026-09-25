@@ -7,9 +7,9 @@
 ---
 
 ## 1. Execution Coordinates
-- **Current Phase:** Deterministic Findings v1 Complete -> Next: DEMO Rules v1
+- **Current Phase:** DEMO Rules v1 Complete -> Next: Synthetic DB Normalization + Adapter Integration
 - **Current Branch:** `main`
-- **Last Important Commit:** `34a3f4f` (Finalize Deterministic Findings v1 metadata)
+- **Last Important Commit:** `519b839` (docs: finalize findings identity invariant)
 - **Last Update Date:** 2026-09-25
 
 ## 2. Phase Status
@@ -27,12 +27,13 @@
   - Clinical Context Builder v1 (`buildClinicalContext` pure deterministic assembler, patient-linked medication exposure resolution, preservation of medication exposure metadata in canonical `ClinicalContext` snapshot, cross-patient leak protection, data point availability preservation, full scenario suite) (`d2b5738`)
   - Required Data Gate v1 (`evaluateClinicalContextDataGate` integrating `ClinicalContext` snapshots with `RuleDefinition.requiredDataKeys`, selective key evaluation, failed requirement status & reason preservation, blocking non-usable/not-present data without assuming normal status, scenario suite verified) (`34a3f4f`)
   - Deterministic Findings v1 (`buildClinicalFinding`, `buildFinding`, `buildClinicalFindingFromRule`, `buildClinicalFindings` pure deterministic builders, timestamped automatic IDs scoped to the v1 identity invariant, explicit traceability and severity preservation, strict rule version preservation, supportingDataKeys & missingDataKeys preservation, canonical schema validation, test suite verified) (`34a3f4f`)
-- **Current Work:** Deterministic Findings v1 Finalized
-- **Next Allowed Phase / Task:** DEMO Rules v1
+  - DEMO Rules v1 (`DEMO-ALG-001`, `DEMO-DDI-001`, `DEMO-REN-001` synthetic prototype rules, `evaluateDemoRule` and `evaluateDemoRules`, selective data gate pre-check, blocking non-usable data without generating findings, deterministic finding generation via builder, scenario suite verified; conditions, pairings, and thresholds like eGFR <= 50 explicitly framed as non-authoritative synthetic demonstration logic)
+- **Current Work:** DEMO Rules v1 Safety-Framed & Finalized
+- **Next Allowed Phase / Task:** Synthetic DB Normalization + Adapter Integration
 
 
 - **Explicit Tasks NOT to Start Yet:**
-  - DO NOT implement final clinical screens (Dashboard, Medication Review).
+  - DO NOT implement final clinical screens (Dashboard, Medication Review; Dashboard Visual Baseline remains a later milestone).
   - DO NOT implement final clinical rule sets or invent unvalidated guidance.
   - DO NOT connect to real EDUS / FHIR or external clinical APIs.
   - DO NOT alter synthetic data schemas under `src/domain/` without explicit prompt instruction.

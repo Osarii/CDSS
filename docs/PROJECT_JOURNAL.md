@@ -547,10 +547,55 @@ El constructor de hallazgos clínicos determinísticos `buildClinicalFinding` qu
 
 ---
 
+### 2026-09-25 — DEMO Rules v1
+
+**Phase:** DEMO Rules v1
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.8 Flash
+**Ruleset activado:** DOMAIN+RULES+TEST+DOCS
+**Context packs consultados:** `DOMAIN_CONTEXT.md`, `RULES_CONTEXT.md`, `TEST_CONTEXT.md`
+
+**Objetivo**
+
+Implementar las primeras tres reglas sintéticas/demo claramente delimitadas (`DEMO-ALG-001`, `DEMO-DDI-001`, `DEMO-REN-001`) con evaluación determinística mediante `json-rules-engine`, precedidas obligatoriamente por la compuerta de datos requeridos (`evaluateClinicalContextDataGate`), garantizando que ninguna regla bloqueada genere hallazgos y que toda regla activada genere exactamente un `ClinicalFinding` determinístico y trazable sin inventar guías clínicas reales.
+
+**Decisiones clave y cambios**
+
+- **Reglas sintéticas de demostración (`src/domain/rules/demoRules.ts`):** Definición explícita de tres reglas prototipo con `id`, `version`, `name`, `description`, `severity`, `enabled` y `requiredDataKeys`:
+  - `DEMO-ALG-001` (crítica, alergia a beta-lactámicos en presencia de penicilina + amoxicilina-clavulanato, sin claves de laboratorio requeridas).
+  - `DEMO-DDI-001` (advertencia, interacción amiodarona + espironolactona con monitoreo requerido de `potassium`).
+  - `DEMO-REN-001` (advertencia, alerta de dosificación en insuficiencia renal con eGFR <= 50 mL/min/1.73m2 y monitoreo requerido de `serum_creatinine` y `egfr`).
+- **Evaluador determinístico con compuerta de datos obligatoria (`src/domain/rules/evaluator.ts`):** Implementación de `evaluateDemoRule` y `evaluateDemoRules`:
+  1. Si la regla está deshabilitada (`enabled: false`), se omite (`status: 'skipped'`) sin generar hallazgos.
+  2. La compuerta de datos requeridos (`evaluateClinicalContextDataGate`) se ejecuta obligatoriamente ANTES de la evaluación del motor. Ante datos faltantes, obsoletos, desconocidos o ausentes (`MISSING`, `STALE`, `UNKNOWN`, `UNAVAILABLE`, `NOT_PRESENT`), la regla se bloquea (`status: 'blocked'`) y NO genera ningún `ClinicalFinding`.
+  3. Extracción determinística de hechos del contexto clínico (`extractEvaluationFacts`) y ejecución en `json-rules-engine`.
+  4. Si la regla se activa (`triggered`), genera exactamente un `ClinicalFinding` determinístico utilizando `buildClinicalFindingFromRule`, preservando `ruleId`, `ruleVersion`, `severity`, `title`, `detail`, `supportingDataKeys`, `missingDataKeys: []` y `timestamp`.
+- **Encuadre explícito de seguridad clínica (lógica de demostración sintética no autoritativa):** Se documentó explícitamente en el código (`demoRules.ts`), descripciones de reglas y paquetes de contexto que las condiciones, umbrales numéricos (como eGFR <= 50 mL/min/1.73m2) y emparejamientos de fármacos son lógica de demostración sintética para verificación del pipeline y NO representan guías clínicas validadas ni recomendaciones médicas autoritativas.
+- **Suite de pruebas focalizadas con escenarios SYN (`src/domain/rules/demoRules.test.ts`):** 22 pruebas automatizadas cubriendo:
+  - Activación esperada: `DEMO-ALG-001` en SYN-002, `DEMO-DDI-001` en SYN-003, `DEMO-REN-001` en SYN-003.
+  - No activación segura: `DEMO-ALG-001` en SYN-001, `DEMO-DDI-001` en SYN-001, `DEMO-REN-001` en SYN-001 (eGFR 82 > 50).
+  - Bloqueo por compuerta de datos: `DEMO-REN-001` en SYN-004 (datos renales MISSING), en SYN-005 (creatinina STALE) y ante claves UNAVAILABLE o ausentes.
+  - Evaluación por lotes (`evaluateDemoRules`): conteo exacto de hallazgos por escenario (0 en SYN-001, 1 en SYN-002, 2 en SYN-003, 0 en SYN-004).
+  - Idempotencia, inmutabilidad y diferenciación de identificadores por timestamp de evaluación.
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS (0 errors, 0 warnings)
+- npm run test: PASS (10 files, 141 tests passed)
+- npm run build: PASS (Vite + TypeScript compilation)
+
+**Resultado**
+
+El pipeline de reglas determinísticas DEMO Rules v1 queda completamente integrado y encuadrado bajo premisas de seguridad clínica, verificando la compuerta de datos como prerrequisito ineludible y emitiendo hallazgos clínicos determinísticos trazables hacia las reglas prototipo.
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:
 
-- Primeras reglas DEMO.
+- Normalización de Synthetic DB e integración de adaptadores (`ClinicalDataAdapter` / `JsonServerAdapter`).
 - Dashboard Visual Baseline integrado.
 - Medication Review Visual Baseline integrado.
