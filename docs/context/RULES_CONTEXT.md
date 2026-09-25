@@ -12,7 +12,7 @@ Compact orientation for working with clinical decision rules in CDSS-CR.
 - **Invariant:** Missing required data prevents assumption of normal or safe status (`UNKNOWN !== NORMAL`, `MISSING !== NORMAL`, `STALE !== NORMAL`, `UNAVAILABLE !== NORMAL`).
 
 ## 3. Findings Relationship
-- **CURRENT:** `buildClinicalFinding` and `buildClinicalFindingFromRule` (`src/domain/findings/builder.ts`) assemble canonical `ClinicalFinding` objects from explicit evaluation outcomes and triggered `RuleDefinition`s, preserving `patientId`, `ruleId`, `ruleVersion`, `severity`, `title`, `detail`, `supportingDataKeys`, `missingDataKeys`, `timestamp`, and `isDeterministic: true`. The Finding layer does not invent or infer clinical truth; findings reflect exclusively deterministic evaluation events.
+- **CURRENT:** `buildClinicalFinding` and `buildClinicalFindingFromRule` (`src/domain/findings/builder.ts`) assemble canonical `ClinicalFinding` objects from explicit evaluation outcomes and triggered `RuleDefinition`s, preserving `patientId`, `ruleId`, `ruleVersion`, `severity`, `title`, `detail`, `supportingDataKeys`, `missingDataKeys`, `timestamp`, and `isDeterministic: true`. The Finding layer does not invent or infer clinical truth; findings reflect exclusively deterministic evaluation events. Automatic IDs are scoped to the v1 invariant: `patientId` + `ruleId` + `ruleVersion` + `timestamp` defines one finding identity per evaluation loop.
 - **TARGET:** Direct wiring between rule evaluation events and finding generation in the deterministic evaluation loop.
 
 ## 4. AI Separation & Guideline Invariant

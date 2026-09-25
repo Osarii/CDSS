@@ -354,6 +354,24 @@ describe('Deterministic Findings v1 — Builder & Factory', () => {
       )
     })
 
+    it('resolves to the same automatic finding ID for two inputs sharing the v1 invariant (patientId, ruleId, ruleVersion, timestamp)', () => {
+      const runA = buildClinicalFinding({
+        ...validFindingInput,
+        title: 'Title A',
+        detail: 'Detail A',
+      })
+      const runB = buildClinicalFinding({
+        ...validFindingInput,
+        title: 'Title B',
+        detail: 'Detail B',
+      })
+
+      expect(runA.id).toBe(runB.id)
+      expect(runA.id).toBe(
+        'finding-pat-syn-003-rule-ddi-amiodarone-spironolactone-1.2.0-2026-09-24T18:00:00Z'
+      )
+    })
+
     it('preserves explicit custom IDs unchanged across evaluations', () => {
       const customIdT1 = buildClinicalFinding({
         ...validFindingInput,

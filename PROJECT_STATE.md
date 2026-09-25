@@ -9,8 +9,8 @@
 ## 1. Execution Coordinates
 - **Current Phase:** Deterministic Findings v1 Complete -> Next: DEMO Rules v1
 - **Current Branch:** `main`
-- **Last Important Commit:** `d2b5738` (Finalize Clinical Context Builder v1)
-- **Last Update Date:** 2026-09-24
+- **Last Important Commit:** `34a3f4f` (Finalize Deterministic Findings v1 metadata)
+- **Last Update Date:** 2026-09-25
 
 ## 2. Phase Status
 - **Completed Phases:**
@@ -25,8 +25,8 @@
   - Synthetic Clinical Scenarios v1 (`SYN-001` through `SYN-008`, typed catalog, multi-state availability tests, raw synthetic fixtures stored in `db.json`) (`aa3232b`)
   - Medication Exposure + Clinical Context Source Boundary (`MedicationExposure` typed/Zod model, 39 synthetic exposures in `src/data/scenarios/exposures.ts` & `db.json`, SYN-003 physician temporal structure preserved, `clinicalContextSourceInputSchema` boundary) (`e15e72f`)
   - Clinical Context Builder v1 (`buildClinicalContext` pure deterministic assembler, patient-linked medication exposure resolution, preservation of medication exposure metadata in canonical `ClinicalContext` snapshot, cross-patient leak protection, data point availability preservation, full scenario suite) (`d2b5738`)
-  - Required Data Gate v1 (`evaluateClinicalContextDataGate` integrating `ClinicalContext` snapshots with `RuleDefinition.requiredDataKeys`, selective key evaluation, failed requirement status & reason preservation, blocking non-usable/not-present data without assuming normal status, scenario suite verified)
-  - Deterministic Findings v1 (`buildClinicalFinding`, `buildFinding`, `buildClinicalFindingFromRule`, `buildClinicalFindings` pure deterministic builders, collision-free timestamped automatic IDs, explicit traceability and severity preservation, strict rule version preservation, supportingDataKeys & missingDataKeys preservation, canonical schema validation, test suite verified)
+  - Required Data Gate v1 (`evaluateClinicalContextDataGate` integrating `ClinicalContext` snapshots with `RuleDefinition.requiredDataKeys`, selective key evaluation, failed requirement status & reason preservation, blocking non-usable/not-present data without assuming normal status, scenario suite verified) (`34a3f4f`)
+  - Deterministic Findings v1 (`buildClinicalFinding`, `buildFinding`, `buildClinicalFindingFromRule`, `buildClinicalFindings` pure deterministic builders, timestamped automatic IDs scoped to the v1 identity invariant, explicit traceability and severity preservation, strict rule version preservation, supportingDataKeys & missingDataKeys preservation, canonical schema validation, test suite verified) (`34a3f4f`)
 - **Current Work:** Deterministic Findings v1 Finalized
 - **Next Allowed Phase / Task:** DEMO Rules v1
 
@@ -48,6 +48,7 @@
 - **Visual Identity:** Graphite + Bone + Aubergine. Clinical semantic tokens are decoupled from brand colors.
 - **Prompt Gate:** `PROMPT_CONTRACT.md` is the only file read permitted before validation. Invalid prompts immediately cancel all execution.
 - **Token Efficiency:** Serena for symbol navigation, RTK for shell compression, Ponytail/YAGNI for abstractions. Never preload all rules.
+- **Finding Identity (v1):** `patientId` + `ruleId` + `ruleVersion` + `timestamp` defines one automatic `ClinicalFinding` identity. The deterministic loop emits at most one finding for that identity. Multiple findings for the same rule/evaluation require explicit discriminators or caller-supplied IDs.
 
 ## 5. Canonical File Locations
 - **Prompt Gate & Router:** [PROMPT_CONTRACT.md](./PROMPT_CONTRACT.md), [.agents/rules/00-rule-router.md](./.agents/rules/00-rule-router.md), [.agents/rules/01-prompt-gate.md](./.agents/rules/01-prompt-gate.md)

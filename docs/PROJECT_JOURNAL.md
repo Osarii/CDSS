@@ -472,7 +472,7 @@ El ensamblador de contexto clínico `buildClinicalContext` queda completamente f
 
 **Phase:** Required Data Gate v1
 **Status:** COMPLETE
-**Commit:** pending (GIT: NONE)
+**Commit:** `34a3f4f`
 **Agent/model:** Antigravity / Gemini 3.8 Flash
 **Ruleset activado:** DOMAIN+DATA+TEST+DOCS
 **Context packs consultados:** `DOMAIN_CONTEXT.md`, `RULES_CONTEXT.md`
@@ -516,7 +516,7 @@ La compuerta de datos obligatorios `evaluateClinicalContextDataGate` queda forma
 
 **Phase:** Deterministic Findings v1
 **Status:** COMPLETE
-**Commit:** pending (GIT: NONE)
+**Commit:** `34a3f4f`
 **Agent/model:** Antigravity / Gemini 3.8 Flash
 **Ruleset activado:** DOMAIN+TEST+DOCS
 **Context packs consultados:** `DOMAIN_CONTEXT.md`, `RULES_CONTEXT.md`
@@ -527,7 +527,7 @@ Implementar el constructor/factoría determinístico puro de hallazgos clínicos
 
 **Decisiones clave y cambios**
 
-- **Constructor determinístico puro (`src/domain/findings/builder.ts`):** Función pura `buildClinicalFinding` libre de efectos secundarios que valida la entrada mediante `clinicalFindingInputSchema`, construye el hallazgo con `isDeterministic: true`, genera identificadores determinísticos reproducibles libres de colisiones incluyendo la identidad de evaluación temporal (`finding-${patientId}-${ruleId}-${ruleVersion}-${timestamp}`), preserva identificadores personalizados explícitos cuando se suministran, y valida el objeto resultante contra `clinicalFindingSchema`.
+- **Constructor determinístico puro (`src/domain/findings/builder.ts`):** Función pura `buildClinicalFinding` libre de efectos secundarios que valida la entrada mediante `clinicalFindingInputSchema`, construye el hallazgo con `isDeterministic: true`, genera identificadores determinísticos reproducibles basados en la invariante v1 de identidad (`finding-${patientId}-${ruleId}-${ruleVersion}-${timestamp}` asegura identidad única por regla y ciclo temporal, múltiples hallazgos por regla requerirían discriminadores externos), preserva identificadores personalizados explícitos cuando se suministran, y valida el objeto resultante contra `clinicalFindingSchema`.
 - **Preservación explícita de trazabilidad:** Se preservan íntegramente `patientId`, `ruleId`, `ruleVersion`, `severity`, `title`, `detail`, `supportingDataKeys`, `missingDataKeys` y `timestamp`.
 - **Integración con definiciones de reglas (`buildClinicalFindingFromRule`):** Helper puro que mapea directamente un `RuleDefinition` (`id`, `version`, `name`, `severity`) junto con los detalles de evaluación a un `ClinicalFinding`, preservando la versión exacta de la regla sin omisiones ni valores por defecto tácitos.
 - **Inmutabilidad y aislamiento de referencias:** Clonación defensiva de arreglos (`supportingDataKeys`, `missingDataKeys`) para impedir que mutaciones externas en el objeto de entrada o en el hallazgo construido alteren el estado de datos.
