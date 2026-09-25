@@ -12,7 +12,8 @@ Images belong in:
 
 Document decisions and milestones that a future developer or agent would genuinely need to understand why the project looks and behaves the way it does.
 
-Do not turn the journal into a raw activity log.
+`PROJECT_JOURNAL.md` must remain milestone/history-oriented and must NOT become a per-prompt activity log.
+For active progress tracking, use `PROJECT_STATE.md` with its `COMPLETE | IN_PROGRESS | PENDING | BLOCKED` system.
 
 ## Document when DOC=YES
 

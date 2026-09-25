@@ -1,8 +1,9 @@
 # CDSS-CR — Current Project State
 
-> **Canonical changing-state summary.**
-> Provides the smallest current-state summary needed for a coding agent to understand where CDSS-CR currently is without reconstructing project history.
-> **Rule:** Only important milestones may update this file; routine tasks must not update it unnecessarily. Replace obsolete state rather than appending indefinitely.
+> **Canonical current-state and active-progress document.**
+> Provides the smallest current-state summary needed for a coding agent to understand where CDSS-CR currently is.
+> **Rule:** Must be updated after any execution task that materially changes active milestone progress, current work, blockers, verification state, next allowed task, or important architectural state.
+> **Rule:** Do NOT update for conversational prompts, read-only analysis, verification-only runs, trivial formatting, typos, or routine commands. Replace obsolete state rather than accumulating history.
 
 ---
 
@@ -10,32 +11,22 @@
 - **Product Brand:** SAMED — *Sistema de Apoyo Médico para Evaluación y Decisión*
 - **Tagline:** *"SAMED apoya la decisión. El profesional toma la decisión."*
 - **Architecture Role:** Product brand = **SAMED** | Technical project / repository = **CDSS**
-- **Current Phase:** SAMED Branding Aligned -> Next: Dashboard Visual Baseline v1
+- **Current Work:** Dashboard Visual Baseline v1 preparation
+- **Next Allowed Task:** Dashboard Visual Baseline v1
 - **Current Branch:** `main`
-- **Last Important Commit:** `519b839` (docs: finalize findings identity invariant)
+- **Last Important Commit:** `da59204`
 - **Last Update Date:** 2026-09-25
 
-## 2. Phase Status
-- **Completed Phases:**
-  - Phase 0: Development Environment & Architecture Scaffolding (`bbae9c6`)
-  - Phase 0.5: Starter Boilerplate Cleanup (`4b456f2`)
-  - Agent Infrastructure: Rule Library & Prompt Router (`c1bc956`, `ead3430`, `8605383`)
-  - Prompt Gate & Curated Journal Setup (`bc0969b`)
-  - Context & Token Optimization Infrastructure (`d7d7037`, `f1f7c89`)
-  - Context & Documentation Integrity (`bb8c8e3`, `b92cd86`)
-  - Phase 0.6: Design System Alignment (`e76a7cf`, `d8b3de7`)
-  - Phase 1: Domain Model v1 (canonical Zod schemas, ClinicalContext snapshot, severity model, AuditEvent) (`564b7b7`)
-  - Synthetic Clinical Scenarios v1 (`SYN-001` through `SYN-008`, typed catalog, multi-state availability tests, raw synthetic fixtures stored in `db.json`) (`aa3232b`)
-  - Medication Exposure + Clinical Context Source Boundary (`MedicationExposure` typed/Zod model, 39 synthetic exposures in `src/data/scenarios/exposures.ts` & `db.json`, SYN-003 physician temporal structure preserved, `clinicalContextSourceInputSchema` boundary) (`e15e72f`)
-  - Clinical Context Builder v1 (`buildClinicalContext` pure deterministic assembler, patient-linked medication exposure resolution, preservation of medication exposure metadata in canonical `ClinicalContext` snapshot, cross-patient leak protection, data point availability preservation, full scenario suite) (`d2b5738`)
-  - Required Data Gate v1 (`evaluateClinicalContextDataGate` integrating `ClinicalContext` snapshots with `RuleDefinition.requiredDataKeys`, selective key evaluation, failed requirement status & reason preservation, blocking non-usable/not-present data without assuming normal status, scenario suite verified) (`34a3f4f`)
-  - Deterministic Findings v1 (`buildClinicalFinding`, `buildFinding`, `buildClinicalFindingFromRule`, `buildClinicalFindings` pure deterministic builders, timestamped automatic IDs scoped to the v1 identity invariant, explicit traceability and severity preservation, strict rule version preservation, supportingDataKeys & missingDataKeys preservation, canonical schema validation, test suite verified) (`34a3f4f`)
-  - DEMO Rules v1 (`DEMO-ALG-001`, `DEMO-DDI-001`, `DEMO-REN-001` synthetic prototype rules, `evaluateDemoRule` and `evaluateDemoRules`, selective data gate pre-check, blocking non-usable data without generating findings, deterministic finding generation via builder, scenario suite verified; conditions, pairings, and thresholds like eGFR <= 50 explicitly framed as non-authoritative synthetic demonstration logic)
-  - Synthetic DB Normalization + Adapter Integration (`db.json` normalized synthetic source with collections `patients`, `medications`, `medicationExposures`, `allergies`, `conditions`, `observations`, `clinicalDataPoints`, `scenarios`; `JsonServerAdapter` behind `ClinicalDataAdapter` assembling `ClinicalContextSourceInput` and feeding `buildClinicalContext()`; canonical Zod validation at boundaries; referential integrity enforcement across 7 entity types; 8/8 regression equivalence against `SYN-001` through `SYN-008`)
-  - SAMED Product Branding Alignment (Product-facing name: SAMED — *Sistema de Apoyo Médico para Evaluación y Decisión*; Tagline: *"SAMED apoya la decisión. El profesional toma la decisión."*; architecture role decoupled: product brand = SAMED, technical project/repository = CDSS; titles, headers, navigation, descriptive copy, context packs and README aligned; technical architecture, schemas, entities and adapters preserved)
-- **Current Work:** SAMED Product Branding Aligned & Verified
-- **Next Allowed Phase / Task:** Dashboard Visual Baseline v1
+## 2. Current Progress
+- COMPLETE: SAMED Product Branding Alignment
+- IN_PROGRESS: PROJECT_STATE progress tracking policy implementation
+- PENDING: Dashboard Visual Baseline v1 implementation
 
+## 3. Completed Phases (Compacted)
+- Phase 0 - 0.6: Scaffolding, Boilerplate Cleanup, Design System Alignment
+- Agent Infrastructure: Rule Library, Prompt Router, Prompt Gate, Context Optimization
+- Phase 1: Domain Model v1, Synthetic Scenarios v1, Context Builder v1, Data Gate v1, Deterministic Findings v1, DEMO Rules v1
+- Data: Synthetic DB Normalization + Adapter Integration
 
 - **Explicit Tasks NOT to Start Yet:**
   - DO NOT implement final clinical screens (Dashboard, Medication Review; Dashboard Visual Baseline remains a later milestone).

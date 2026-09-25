@@ -72,6 +72,19 @@ Combine with `+` (e.g. `RULESET:DOMAIN+DATA`). The agent router ([.agents/rules/
 
 ---
 
+## PROJECT_STATE Tracking Policy
+
+Agents must automatically update `PROJECT_STATE.md` after any execution task that materially changes:
+- active milestone progress, current work, blockers, verification state, next allowed task, or important architectural state.
+
+Do NOT update `PROJECT_STATE.md` for:
+- conversational prompts, read-only analysis, verification-only runs with no state change, trivial formatting, typo-only changes, or routine commands with no material project impact.
+
+- `GIT: NONE` must never fabricate a commit SHA.
+- `Last Important Commit` must only change when the referenced commit actually exists in the repository.
+
+---
+
 ## Invalid prompt behavior
 
 If any required field is missing or invalid, or an invalid tool value is specified:
