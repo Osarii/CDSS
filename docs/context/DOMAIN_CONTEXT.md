@@ -47,6 +47,19 @@ Compact orientation for working within the SAMED clinical domain models and boun
 ### Audit
 - **CURRENT:** `src/domain/audit/schema.ts` defines `auditEventSchema` (`id`, `action`, `userId`, `timestamp`, `payloadSummary`).
 
+### Prescription & Proposed Regimens
+- **CURRENT:** `src/domain/prescription/schema.ts` defines `prescriptionDraftSchema` and `prescriptionItemSchema`. Represents authentic physician-authored proposed prescriptions. Strictly separated from AI outputs; must never be fabricated when absent.
+- **TARGET:** Prescription authoring and order-entry workflows.
+
+### Dual AI Roles & Comparison Layer
+- **CURRENT:** `src/domain/ai/` and `src/services/ai/` define:
+  - `clinicalAssessmentSummarySchema`: Structured summary from Clinical Assistant (permitted full ClinicalContext + deterministic findings); cannot author/approve prescriptions.
+  - `pharmacyReviewInputSchema`: Strictly filtered medication-relevant input for Pharmacy Assistant; raw ClinicalContext is blocked from leaking.
+  - `pharmacyReviewSchema`: Independent pharmacy review (`NO_ADDITIONAL_CONCERNS`, `REVIEW_RECOMMENDED`, `BLOCKED_BY_MISSING_DATA`).
+  - `reviewComparisonSchema` & `compareReviews`: Deterministic comparison exposing shared considerations, assistant-only points, unresolved discrepancies, and missing-data disagreements without ever declaring a winner.
+  - `src/services/ai/`: Provider-agnostic interfaces (`ClinicalAssistantProvider`, `PharmacyAssistantProvider`), deterministic mock implementations, and `executeDualAIRoles` orchestrator.
+- **TARGET:** Integration with secure external LLM providers and clinical explanation UI panels.
+
 ---
 
 ## 2. Mandatory Domain Invariants
@@ -54,3 +67,6 @@ Compact orientation for working within the SAMED clinical domain models and boun
 - **Gate Precedence:** Incomplete required data points prevent rule evaluation (`canProceed: false`).
 - **Deterministic Truth:** AI never authors findings. Findings derive strictly from deterministic evaluation.
 - **Clinician Authority:** The healthcare professional retains final decision-making power.
+- **Dual AI Separation:** Pharmacy Assistant receives strictly controlled medication input, never raw ClinicalContext.
+- **AI Non-Authorship:** AI assistants cannot author or approve prescriptions; proposed prescriptions must never be fabricated.
+- **Comparison Neutrality:** ReviewComparison exposes discrepancies neutrally and never declares which AI is correct.

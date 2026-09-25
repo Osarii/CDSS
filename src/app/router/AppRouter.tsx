@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { PlaceholderScreen } from '@/components/layout/PlaceholderScreen'
 import { Dashboard } from '@/features/dashboard/Dashboard'
+import { MedicationReview } from '@/features/medication-review/MedicationReview'
 
 export function AppRouter() {
   return (
@@ -24,15 +25,7 @@ export function AppRouter() {
               />
             }
           />
-          <Route
-            path="/medication-review"
-            element={
-              <PlaceholderScreen
-                title="Revisión Farmacoterapéutica"
-                detail="Revisión detallada de medicación, interacciones y posología. Planificado para el siguiente ciclo."
-              />
-            }
-          />
+          <Route path="/medication-review" element={<MedicationReview />} />
           <Route
             path="/alerts"
             element={

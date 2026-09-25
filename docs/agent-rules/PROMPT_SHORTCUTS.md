@@ -34,6 +34,21 @@ PRESERVE: <optional DEC-XXX IDs>
 GIT: <NONE | COMMIT | PUSH>
 ```
 
+### Targeted Fix Template
+```text
+TASK: <single clear objective>
+RULESET: <alias from 00-rule-router.md>
+SCOPE: <paths>
+SOURCE_COMMIT: <commit SHA or ref>
+LOCATOR: <AUTO | path[:start-end] [| symbol=Name]>
+ISSUE: <concise problem, cause, and fix boundary diagnosis>
+ACCEPTANCE: <observable criteria>
+STOP: <execution boundary>
+DOC: NO
+VERIFY: TARGETED
+GIT: NONE
+```
+
 ---
 
 ## Canonical Examples
@@ -76,4 +91,34 @@ TOOLS: DEEP
 CONTEXT: DEEP
 VERIFY: DOMAIN
 PRESERVE: DEC-001, DEC-006
+```
+
+### Example D — Targeted Fix (Review Locators)
+```text
+TASK: Fix alert count consistency.
+RULESET: UI+TEST
+SCOPE:
+src/features/dashboard/Dashboard.tsx
+src/features/dashboard/Dashboard.test.tsx
+
+SOURCE_COMMIT: abc1234
+
+LOCATOR:
+src/features/dashboard/Dashboard.tsx:684-713
+symbol=AlertInspectorTrigger
+
+ISSUE:
+Badge count and rendered alerts use different data sources.
+
+ACCEPTANCE:
+- Use one canonical alert collection.
+- Preserve unrelated UI behavior.
+- Add regression coverage.
+
+STOP:
+Stop after the localized fix and verification.
+
+DOC: NO
+VERIFY: TARGETED
+GIT: NONE
 ```

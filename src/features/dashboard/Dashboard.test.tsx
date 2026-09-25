@@ -749,8 +749,8 @@ describe('AppShell', () => {
       </MemoryRouter>
     )
     const pendingBadges = screen.getAllByText('EN DESARROLLO')
-    // 5 routes are pending (all except dashboard)
-    expect(pendingBadges).toHaveLength(5)
+    // 4 routes are pending (all except dashboard and medication-review)
+    expect(pendingBadges).toHaveLength(4)
   })
 
   it('renders children in the main workspace area', () => {

@@ -79,3 +79,14 @@ Compact registry of durable project decisions and invariants. These IDs (`DEC-XX
 - `src/domain/common/schema.ts`
 - `src/domain/clinical-context/requiredDataGate.ts`
 - `src/domain/findings/schema.ts`
+
+## DEC-011 — SAMED Dual AI Roles Architecture (Clinical & Pharmacy Assistants)
+**Status:** ACTIVE
+**Decision:** SAMED implements two independent downstream AI roles: (1) Clinical Assistant, which receives the full permitted ClinicalContext snapshot and deterministic findings to produce a structured clinical assessment summary without prescription creation or approval authority; and (2) Pharmacy Assistant, which receives strictly controlled, medication-relevant PharmacyReviewInput (proposed physician PrescriptionDraft, relevant diagnoses, allergies, current medications, relevant observations, deterministic findings, and explicit unavailable data) and never the raw ClinicalContext. An independent, deterministic ReviewComparison layer reconciles shared considerations, assistant-only considerations, unresolved discrepancies, and missing-data disagreements without ever declaring a winner or deciding which AI is correct. Deterministic data and findings remain the single source of truth, and the licensed clinician retains sole decision-making authority.
+**Canonical references:**
+- `src/domain/ai/schema.ts`
+- `src/domain/ai/inputFilter.ts`
+- `src/domain/ai/comparison.ts`
+- `src/domain/prescription/schema.ts`
+- `src/services/ai/types.ts`
+- `src/services/ai/orchestrator.ts`

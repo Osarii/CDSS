@@ -36,6 +36,9 @@ Optional fields (with defaults when omitted):
 - `VERIFY: <AUTO | DOCS | TARGETED | UI | DOMAIN | FULL>` (Default: `AUTO`)
 - `REFS: <references>`
 - `PRESERVE: <list of DEC-XXX decision IDs>`
+- `SOURCE_COMMIT: <commit SHA or git ref>`
+- `LOCATOR: <AUTO | path[:start-end] [| symbol=Name]>`
+- `ISSUE: <concise problem, cause, and fix boundary diagnosis>`
 
 ---
 
@@ -60,6 +63,15 @@ Combine with `+` (e.g. `RULESET:DOMAIN+DATA`). The agent router ([.agents/rules/
 - **BUDGET:** `AUTO` or limits: `FILES: <n>`, `FULL_READS: <n>`, `COMMANDS: <n>`. If exceeded, pause, explain reason, and record escalation.
 - **VERIFY:** Tiered profiles (`DOCS`, `TARGETED`, `DOMAIN`, `UI`, `FULL`, `AUTO`) defined in [docs/agent-rules/VERIFY_PROFILES.md](./docs/agent-rules/VERIFY_PROFILES.md).
 - **PRESERVE:** Optional reminder of decision IDs from [docs/architecture/DECISIONS.md](./docs/architecture/DECISIONS.md).
+- **LOCATOR & SOURCE_COMMIT (Targeted Fixes):**
+  - Optional. Prompts without LOCATOR continue working unchanged.
+  - Supported formats: `LOCATOR: AUTO`, multiline (`<path>[:start-end]` then `symbol=<name>`), or piped (`<path>[:start-end] | symbol=<name>`). Line numbers are optional hints; path + symbol is the durable locator. Invalid syntax triggers immediate prompt rejection.
+  - Core token-efficiency principle: `locator -> smallest relevant read -> incremental expansion only if required`.
+  - *Concrete LOCATOR:* inspect specified file slice/symbol FIRST; do not start with full-file read or broad scans; prefer symbol navigation.
+  - *`LOCATOR: AUTO`:* find target symbol/range via Serena/targeted search, then continue strictly from that localized slice.
+  - *Context expansion:* expand context incrementally around target only if slice is insufficient.
+  - *`SOURCE_COMMIT`:* lines correspond to that commit; if working tree shifted, locate by symbol rather than trusting stale line numbers.
+- **ISSUE:** Optional concise diagnosis block: observed problem, localized cause, expected fix boundary.
 
 ---
 
@@ -133,4 +145,17 @@ TOOLS: AUTO
 CONTEXT: AUTO
 BUDGET: AUTO
 VERIFY: AUTO
+GIT: NONE
+
+### Targeted Fix Template
+TASK:
+RULESET:
+SCOPE:
+SOURCE_COMMIT:
+LOCATOR:
+ISSUE:
+ACCEPTANCE:
+STOP:
+DOC: NO
+VERIFY: TARGETED
 GIT: NONE

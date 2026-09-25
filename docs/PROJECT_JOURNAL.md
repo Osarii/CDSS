@@ -738,6 +738,131 @@ El panel clínico SAMED v1 queda implementado, verificado y listo para revisión
 
 ---
 
+### 2026-09-25 — Repository-Review Locators for Targeted Fixes
+
+**Phase:** Agent Infrastructure & Workflow Governance
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.8 Flash
+
+**Objective**
+
+Integrar el sistema de localizadores de revisión externa (`LOCATOR`, `SOURCE_COMMIT`, `ISSUE`) al contrato de ejecución de prompts y al Prompt Gate, estableciendo una jerarquía determinística de eficiencia de tokens (`locator -> smallest relevant read -> incremental expansion`) para diagnósticos y correcciones focalizadas.
+
+**Accepted prompt**
+
+<details>
+<summary>Prompt utilizado</summary>
+
+```text
+TASK: Integrate repository-review locators into the execution prompt system for targeted fixes.
+RULESET: AGENT+REPO+DOCS
+SCOPE:
+PROMPT_CONTRACT.md
+.agents/rules/01-prompt-gate.md
+docs/agent-rules/
+PROJECT_STATE.md
+docs/PROJECT_JOURNAL.md
+```
+</details>
+
+**Important decisions**
+
+- **Campos opcionales en el Prompt Contract:** `LOCATOR`, `SOURCE_COMMIT` e `ISSUE` son campos opcionales; prompts existentes sin estos campos siguen funcionando sin cambios.
+- **Sintaxis de localizadores soportada:** `LOCATOR: AUTO`, multilínea (`<path>[:start-end]\nsymbol=<name>`) o con barra vertical (`<path>[:start-end] | symbol=<name>`). La sintaxis inválida causa rechazo inmediato en el Prompt Gate en lugar de ser ignorada.
+- **Semántica de líneas y símbolos:** Los números de línea son sugerencias vinculadas a `SOURCE_COMMIT`; si el árbol de trabajo se ha desplazado, `path + symbol` constituye el localizador durable.
+- **Jerarquía de eficiencia de tokens:** Con un localizador concreto, se inspecciona primero el segmento o símbolo indicado; no se realizan lecturas completas de archivo ni escaneos amplios; la expansión de contexto es incremental y solo si la porción localizada resulta insuficiente. Con `LOCATOR: AUTO`, se busca primero el símbolo o rango relevante y se opera desde ese segmento.
+- **Flujo de revisión documentado:** `cambios en repo -> commit/push -> revisión externa -> diagnóstico FILE+LINES+SYMBOL+CAUSE -> prompt Antigravity con LOCATOR -> corrección localizada -> verificación dirigida`.
+
+**Changed/created**
+
+- `PROMPT_CONTRACT.md`
+- `.agents/rules/01-prompt-gate.md`
+- `docs/agent-rules/workflows/diff-first.md`
+- `docs/agent-rules/PROMPT_SHORTCUTS.md`
+- `docs/agent-rules/core/context-budget.md`
+- `PROJECT_STATE.md`
+- `docs/PROJECT_JOURNAL.md`
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS
+- npm run test: PASS (13 files, 231 tests passed)
+- npm run build: PASS
+
+**Result**
+
+El flujo de correcciones dirigidas basadas en revisiones de código queda formalizado, integrado en el Prompt Gate y documentado con plantillas canónicas y salvaguardas de tokens.
+
+---
+
+### 2026-09-25 — SAMED Dual AI Roles v1
+
+**Phase:** Phase 1 / AI & Decision Support Architecture
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.8 Flash
+
+**Objective**
+
+Implementar la arquitectura de doble rol de IA independiente para SAMED (Clinical Assistant y Pharmacy Assistant) con contratos Zod canónicos, aislamiento de contexto para evitar fugas del ClinicalContext hacia el Pharmacy Assistant, preservación explícita de datos no disponibles/faltantes, capa determinística de comparación de revisiones sin arbitraje de veracidad y ejecución mock desacoplada mediante interfaces de servicio agnósticas.
+
+**Accepted prompt**
+
+<details>
+<summary>Prompt utilizado</summary>
+
+```text
+TASK: Implement SAMED Dual AI Roles v1.
+RULESET: DOMAIN+DATA+RULES+TEST+DOCS
+SCOPE:
+src/domain/ai/
+src/services/ai/
+src/domain/prescription/
+src/domain/clinical-context/
+src/domain/findings/
+docs/context/
+docs/architecture/DECISIONS.md
+PROJECT_STATE.md
+```
+</details>
+
+**Important decisions**
+
+- **Jerarquía de verdad inalterable:** Los datos determinísticos y los hallazgos de reglas clínicas son la única fuente de verdad; los modelos de IA son explicativos/sintéticos y nunca pueden sobreescribir hallazgos determinísticos. El profesional sanitario retiene en todo momento la autoridad decisoria final.
+- **Aislamiento de contexto del Pharmacy Assistant:** El Pharmacy Assistant no recibe el `ClinicalContext` crudo, sino únicamente un `PharmacyReviewInput` estrictamente filtrado (propuesta de prescripción médica, diagnósticos relevantes, alergias, fármacos activos, observaciones seleccionadas, hallazgos deterministas y datos explícitamente no disponibles).
+- **Invariante de prescripción médica:** La entidad `PrescriptionDraft` representa una prescripción propuesta autorada por un médico (`authorPhysicianId`). Los asistentes de IA no pueden crear ni aprobar prescripciones, y una prescripción nunca se fabrica si está ausente.
+- **Estados de revisión farmacéutica:** `NO_ADDITIONAL_CONCERNS`, `REVIEW_RECOMMENDED` y `BLOCKED_BY_MISSING_DATA`.
+- **Capa determinística ReviewComparison:** Compara de forma pura ambas revisiones exponiendo consideraciones compartidas, consideraciones exclusivas de cada asistente, discrepancias no resueltas y desacuerdos en datos faltantes. La capa de comparación nunca decide cuál IA tiene la razón.
+- **Frontera de servicios agnóstica:** Las interfaces `ClinicalAssistantProvider` y `PharmacyAssistantProvider` residen en `src/services/ai/` con implementaciones deterministas mock para v1, sin conectar LLMs externos ni invocar IA dentro de componentes React.
+- **DEC-011 registrado:** Se formalizó la decisión arquitectónica en `docs/architecture/DECISIONS.md`.
+
+**Changed/created**
+
+- `src/domain/prescription/schema.ts`, `src/domain/prescription/index.ts`
+- `src/domain/ai/schema.ts`, `src/domain/ai/inputFilter.ts`, `src/domain/ai/comparison.ts`, `src/domain/ai/index.ts`
+- `src/domain/index.ts`
+- `src/services/ai/types.ts`, `src/services/ai/mockProviders.ts`, `src/services/ai/orchestrator.ts`, `src/services/ai/index.ts`
+- `src/domain/ai/ai.test.ts`
+- `docs/architecture/DECISIONS.md`
+- `docs/context/DOMAIN_CONTEXT.md`
+- `PROJECT_STATE.md`
+- `docs/PROJECT_JOURNAL.md`
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS
+- npm run test: PASS (14 files, 239 tests passed)
+- npm run build: PASS
+
+**Result**
+
+La arquitectura de doble rol de IA queda completamente implementada, tipada con esquemas Zod rigurosos, probada con 8 pruebas focalizadas de invariantes y documentada en los paquetes de contexto y registro de decisiones de SAMED.
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:

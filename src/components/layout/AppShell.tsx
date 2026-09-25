@@ -21,7 +21,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { to: '/dashboard', label: 'Panel clínico', icon: <LayoutDashboard size={18} />, implemented: true },
   { to: '/patients', label: 'Pacientes', icon: <Users size={18} />, implemented: false },
-  { to: '/medication-review', label: 'Rev. farmacoterapéutica', icon: <Pill size={18} />, implemented: false },
+  { to: '/medication-review', label: 'Rev. farmacoterapéutica', icon: <Pill size={18} />, implemented: true },
   { to: '/alerts', label: 'Alertas clínicas', icon: <AlertTriangle size={18} />, implemented: false, badge: '3' },
   { to: '/knowledge-base', label: 'Base de conocimiento', icon: <BookOpen size={18} />, implemented: false },
   { to: '/audit', label: 'Auditoría', icon: <ClipboardList size={18} />, implemented: false },

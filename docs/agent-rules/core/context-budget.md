@@ -3,10 +3,11 @@
 Use this policy on every CDSS-CR task.
 
 ## Repository exploration
-1. Prefer Serena symbol/index tools before opening whole files.
-2. Read only files relevant to the requested change.
-3. Do not recursively dump the repository unless the task explicitly requires it.
-4. Reuse information already learned during the current task; do not reread unchanged files.
+1. When a LOCATOR is provided, follow the explicit token-efficiency hierarchy: `locator -> smallest relevant read -> incremental expansion only if required`.
+2. Prefer Serena symbol/index tools before opening whole files.
+3. Read only files and slices relevant to the requested change; never begin with full-file reads when a locator or symbol is specified.
+4. Do not recursively dump the repository unless the task explicitly requires it.
+5. Reuse information already learned during the current task; do not reread unchanged files.
 
 ## Terminal
 1. Prefer RTK for verbose commands.
