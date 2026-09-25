@@ -435,7 +435,7 @@ Frontera de exposición a medicamentos y entrada fuente de contexto clínico for
 
 **Phase:** Clinical Context Builder v1
 **Status:** COMPLETE
-**Commit:** pending (GIT: NONE)
+**Commit:** `d2b5738`
 **Agent/model:** Antigravity / Gemini 3.8 Flash
 **Ruleset activado:** DOMAIN+DATA+TEST+DOCS
 **Context packs consultados:** `DATA_CONTEXT.md`, `DOMAIN_CONTEXT.md`
