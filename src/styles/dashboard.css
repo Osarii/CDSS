@@ -1,0 +1,426 @@
+/* =============================================================
+   SAMED Clinical Intelligence Workspace — Dashboard CSS
+   1:1 Reference Convergence: Graphite + Bone + Aubergine
+   Design System Baseline: 1440x900 Desktop Target Viewport
+   ============================================================= */
+
+/* ------------------------------------------------------------------
+   Tokens & Color Theme Variables
+   ------------------------------------------------------------------ */
+:root {
+  --graphite-950: #151419;
+  --graphite-900: #1c1b21;
+  --graphite-800: #27252d;
+  --graphite-700: #35323c;
+
+  --bone-50: #faf7f1;
+  --bone-100: #f4efe7;
+  --bone-200: #e9e1d7;
+  --bone-white: #ffffff;
+
+  --aubergine-700: #4d2f5c;
+  --aubergine-600: #62406f;
+  --aubergine-500: #775382;
+  --aubergine-300: #b89bc4;
+  --aubergine-100: #eee5f1;
+
+  --text-primary: #242126;
+  --text-secondary: #5f5962;
+  --text-muted: #7d767f;
+  --text-inverse: #f8f5f0;
+
+  --clinical-critical: #c83f49;
+  --clinical-critical-surface: #f8e5e7;
+  --clinical-critical-border: #e9a8ae;
+
+  --clinical-warning: #c88728;
+  --clinical-warning-surface: #f7edd7;
+  --clinical-warning-border: #e6c58d;
+
+  --clinical-safe: #3f765b;
+  --clinical-safe-surface: #e5efe9;
+  --clinical-safe-border: #a9c8b5;
+
+  --clinical-low: #6d6672;
+  --clinical-low-surface: #efecf0;
+  --clinical-low-border: #cfc8d2;
+
+  --clinical-missing: #b97821;
+  --clinical-missing-surface: #f6e8ca;
+  --clinical-missing-border: #ddb66d;
+
+  --surface-container: #f0eee8;
+  --surface-container-high: #ebe8e2;
+  --surface-container-low: #f6f3ed;
+  --outline-variant: #cec3ce;
+}
+
+/* ------------------------------------------------------------------
+   App Shell — 220px fixed desktop sidebar + fluid main
+   ------------------------------------------------------------------ */
+.app-shell {
+  display: flex;
+  min-height: 100dvh;
+  background-color: var(--bone-100);
+}
+
+.app-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100dvh;
+  width: 220px;
+  background-color: var(--graphite-900);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  user-select: none;
+  border-right: 1px solid var(--graphite-800);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-demo-notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 12px;
+  padding: 5px 8px;
+  background-color: var(--graphite-800);
+  border: 1px dashed var(--clinical-missing);
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--clinical-missing);
+  text-transform: uppercase;
+}
+
+.sidebar-demo-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--clinical-missing);
+  flex-shrink: 0;
+  animation: demo-pulse 2s ease-in-out infinite;
+}
+
+@keyframes demo-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ------------------------------------------------------------------
+   Alert Inspector Trigger & Professional Pulse Animations
+   ------------------------------------------------------------------ */
+@keyframes alert-subtle-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.72;
+  }
+}
+
+.alert-trigger-pulse {
+  animation: alert-subtle-pulse 1.8s ease-in-out infinite;
+}
+
+.alert-trigger-pulse--critical {
+  animation: alert-subtle-pulse 1.8s ease-in-out infinite;
+}
+
+.alert-trigger-pulse--warning {
+  animation: alert-subtle-pulse 1.8s ease-in-out infinite;
+}
+
+/* Stop or reduce animation when inspector is open */
+.alert-trigger-active,
+.alert-trigger-active .alert-trigger-pulse,
+.alert-trigger-active .alert-trigger-pulse--critical,
+.alert-trigger-active .alert-trigger-pulse--warning {
+  animation: none !important;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .alert-trigger-pulse,
+  .alert-trigger-pulse--critical,
+  .alert-trigger-pulse--warning,
+  .sidebar-demo-dot,
+  .shimmer-block {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: 220px;
+  background-color: var(--bone-100);
+  min-height: 100dvh;
+}
+
+@media (max-width: 900px) {
+  .app-sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+  .app-main {
+    margin-left: 0;
+  }
+  .app-shell {
+    flex-direction: column;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Top Clinical Header (Sticky / Fixed)
+   ------------------------------------------------------------------ */
+.clinical-top-header {
+  position: sticky;
+  top: 0;
+  height: 56px;
+  background-color: rgba(250, 247, 241, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 40;
+  border-bottom: 1px solid var(--bone-200);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  gap: 16px;
+}
+
+/* ------------------------------------------------------------------
+   Dashboard Layout Container
+   ------------------------------------------------------------------ */
+.dashboard-container {
+  padding: 0 24px 48px;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------------------
+   Typography utility classes (Matching Stitch specifications)
+   ------------------------------------------------------------------ */
+.font-display-brand { font-family: var(--font-heading, 'Source Serif 4', Georgia, serif); font-size: 36px; line-height: 42px; font-weight: 600; }
+.font-page-title    { font-family: var(--font-heading, 'Source Serif 4', Georgia, serif); }
+.text-page-title    { font-size: 28px; line-height: 34px; font-weight: 600; }
+
+.font-section-title { font-family: var(--font-sans, 'Inter Variable', sans-serif); }
+.text-section-title { font-size: 20px; line-height: 26px; font-weight: 600; }
+
+.font-card-title    { font-family: var(--font-sans, 'Inter Variable', sans-serif); }
+.text-card-title    { font-size: 16px; line-height: 22px; font-weight: 600; }
+
+.font-body-regular  { font-family: var(--font-sans, 'Inter Variable', sans-serif); }
+.text-body-regular  { font-size: 14px; line-height: 21px; font-weight: 400; }
+
+.font-body-strong   { font-family: var(--font-sans, 'Inter Variable', sans-serif); }
+.text-body-strong   { font-size: 14px; line-height: 21px; font-weight: 600; }
+
+.font-small         { font-family: var(--font-sans, 'Inter Variable', sans-serif); }
+.text-small         { font-size: 12px; line-height: 17px; font-weight: 400; }
+
+.font-label         { font-family: var(--font-sans, 'Inter Variable', sans-serif); }
+.text-label         { font-size: 11px; line-height: 15px; letter-spacing: 0.04em; font-weight: 600; }
+
+.font-micro         { font-family: var(--font-sans, 'Inter Variable', sans-serif); }
+.text-micro         { font-size: 10px; line-height: 14px; font-weight: 500; }
+
+/* ------------------------------------------------------------------
+   Spacing utilities (Matching Stitch px-space-*, p-space-*, gap-space-*)
+   ------------------------------------------------------------------ */
+.p-space-xs  { padding: 0.25rem; }
+.p-space-sm  { padding: 0.5rem; }
+.p-space-md  { padding: 1rem; }
+.p-space-lg  { padding: 1.5rem; }
+.p-space-xl  { padding: 2rem; }
+
+.px-space-xs { padding-left: 0.25rem; padding-right: 0.25rem; }
+.px-space-sm { padding-left: 0.5rem; padding-right: 0.5rem; }
+.px-space-md { padding-left: 1rem; padding-right: 1rem; }
+.px-space-lg { padding-left: 1.5rem; padding-right: 1.5rem; }
+.px-space-xl { padding-left: 2rem; padding-right: 2rem; }
+
+.py-space-xs { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-space-sm { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.py-space-md { padding-top: 1rem; padding-bottom: 1rem; }
+.py-space-lg { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+
+.gap-space-xs { gap: 0.25rem; }
+.gap-space-sm { gap: 0.5rem; }
+.gap-space-md { gap: 1rem; }
+.gap-space-lg { gap: 1.5rem; }
+.gap-space-xl { gap: 2rem; }
+
+.mb-space-xs { margin-bottom: 0.25rem; }
+.mb-space-sm { margin-bottom: 0.5rem; }
+.mb-space-md { margin-bottom: 1rem; }
+.mb-space-lg { margin-bottom: 1.5rem; }
+
+.mt-space-xs { margin-top: 0.25rem; }
+.mt-space-sm { margin-top: 0.5rem; }
+.mt-space-md { margin-top: 1rem; }
+.mt-space-lg { margin-top: 1.5rem; }
+.mt-space-xl { margin-top: 2rem; }
+
+.pt-space-xs { padding-top: 0.25rem; }
+.pt-space-sm { padding-top: 0.5rem; }
+.pt-space-md { padding-top: 1rem; }
+.pt-space-lg { padding-top: 1.5rem; }
+
+.pb-space-xs { padding-bottom: 0.25rem; }
+.pb-space-sm { padding-bottom: 0.5rem; }
+.pb-space-md { padding-bottom: 1rem; }
+.pb-space-lg { padding-bottom: 1.5rem; }
+
+/* ------------------------------------------------------------------
+   Color classes for exact Stitch reference styling
+   ------------------------------------------------------------------ */
+.bg-graphite-950 { background-color: var(--graphite-950); }
+.bg-graphite-900 { background-color: var(--graphite-900); }
+.bg-graphite-800 { background-color: var(--graphite-800); }
+.bg-graphite-700 { background-color: var(--graphite-700); }
+
+.bg-bone-50    { background-color: var(--bone-50); }
+.bg-bone-100   { background-color: var(--bone-100); }
+.bg-bone-200   { background-color: var(--bone-200); }
+.bg-bone-white { background-color: var(--bone-white); }
+
+.bg-aubergine-700 { background-color: var(--aubergine-700); }
+.bg-aubergine-600 { background-color: var(--aubergine-600); }
+.bg-aubergine-500 { background-color: var(--aubergine-500); }
+.bg-aubergine-300 { background-color: var(--aubergine-300); }
+.bg-aubergine-100 { background-color: var(--aubergine-100); }
+
+.text-text-primary   { color: var(--text-primary); }
+.text-text-secondary { color: var(--text-secondary); }
+.text-text-muted     { color: var(--text-muted); }
+.text-text-inverse   { color: var(--text-inverse); }
+
+.text-aubergine-700 { color: var(--aubergine-700); }
+.text-aubergine-600 { color: var(--aubergine-600); }
+.text-aubergine-500 { color: var(--aubergine-500); }
+.text-aubergine-300 { color: var(--aubergine-300); }
+
+.text-bone-white { color: var(--bone-white); }
+.text-bone-200   { color: var(--bone-200); }
+
+.bg-clinical-critical         { background-color: var(--clinical-critical); }
+.text-clinical-critical       { color: var(--clinical-critical); }
+.bg-clinical-critical-surface { background-color: var(--clinical-critical-surface); }
+.border-clinical-critical     { border-color: var(--clinical-critical); }
+.border-clinical-critical-border { border-color: var(--clinical-critical-border); }
+
+.bg-clinical-warning         { background-color: var(--clinical-warning); }
+.text-clinical-warning       { color: var(--clinical-warning); }
+.bg-clinical-warning-surface { background-color: var(--clinical-warning-surface); }
+.border-clinical-warning     { border-color: var(--clinical-warning); }
+.border-clinical-warning-border { border-color: var(--clinical-warning-border); }
+
+.bg-clinical-safe         { background-color: var(--clinical-safe); }
+.text-clinical-safe       { color: var(--clinical-safe); }
+.bg-clinical-safe-surface { background-color: var(--clinical-safe-surface); }
+.border-clinical-safe     { border-color: var(--clinical-safe); }
+.border-clinical-safe-border { border-color: var(--clinical-safe-border); }
+
+.bg-clinical-low         { background-color: var(--clinical-low); }
+.text-clinical-low       { color: var(--clinical-low); }
+.bg-clinical-low-surface { background-color: var(--clinical-low-surface); }
+.border-clinical-low     { border-color: var(--clinical-low); }
+.border-clinical-low-border { border-color: var(--clinical-low-border); }
+
+.bg-clinical-missing         { background-color: var(--clinical-missing); }
+.text-clinical-missing       { color: var(--clinical-missing); }
+.bg-clinical-missing-surface { background-color: var(--clinical-missing-surface); }
+.border-clinical-missing     { border-color: var(--clinical-missing); }
+.border-clinical-missing-border { border-color: var(--clinical-missing-border); }
+
+.bg-surface-container { background-color: var(--surface-container); }
+.border-bone-100      { border-color: var(--bone-100); }
+.border-bone-200      { border-color: var(--bone-200); }
+
+/* ------------------------------------------------------------------
+   Card Shadows & Elevation
+   ------------------------------------------------------------------ */
+.stitch-card {
+  background-color: var(--bone-white);
+  border: 1px solid var(--bone-200);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 10px rgba(24, 20, 28, 0.05);
+}
+
+/* ------------------------------------------------------------------
+   State feedback: Loading Shimmer
+   ------------------------------------------------------------------ */
+.shimmer-block {
+  background: linear-gradient(90deg, var(--bone-200) 25%, var(--bone-100) 50%, var(--bone-200) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.shimmer-block--wide   { width: 100%; }
+.shimmer-block--medium { width: 80%; }
+.shimmer-block--short  { height: 16px; margin-bottom: 8px; }
+
+/* ------------------------------------------------------------------
+   Placeholder Screen (Other Routes)
+   ------------------------------------------------------------------ */
+.placeholder-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  min-height: 60dvh;
+  gap: 12px;
+  text-align: center;
+}
+
+.placeholder-title {
+  font-family: var(--font-heading, 'Source Serif 4', serif);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.placeholder-detail {
+  font-size: 13px;
+  color: var(--text-secondary);
+  max-width: 400px;
+}
+
+.placeholder-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border: 1px solid var(--bone-200);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background-color: var(--bone-50);
+}
+
+.placeholder-icon {
+  color: var(--text-muted);
+  opacity: 0.6;
+}

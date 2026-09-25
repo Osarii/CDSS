@@ -685,9 +685,62 @@ La identidad de marca del producto queda formalizada como SAMED con su lema clí
 
 ---
 
+### 2026-09-25 — Dashboard Visual Baseline v1
+
+**Phase:** Dashboard Visual Baseline v1
+**Status:** IMPLEMENTED_REVIEW_PENDING
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.8 Flash
+**Ruleset activado:** UI+LAYOUT+DATA+TEST
+**Context packs consultados:** `UI_CONTEXT.md`, `DATA_CONTEXT.md`
+**Ref visual:** `DASHBOARD_BASELINE_V1` → `IMPLEMENTED_REVIEW_PENDING` (ver `docs/design/VISUAL_INDEX.md`)
+
+**Objetivo**
+
+Reemplazar el placeholder `/dashboard` con el primer panel clínico real de SAMED: una estación de trabajo clínica con shell de aplicación reutilizable (sidebar + área de trabajo principal) que consume datos exclusivamente a través de `ClinicalDataAdapter` / `JsonServerAdapter` y hooks TanStack Query, siguiendo el sistema visual Graphite + Bone + Aubergine sin patrones decorativos de dashboard genérico.
+
+**Decisiones clave y cambios**
+
+- **Shell de aplicación reutilizable (`src/components/layout/AppShell.tsx`):** Sidebar con marca SAMED, navegación con `NavLink` (active states), aviso de datos sintéticos permanentemente visible, badges `EN DESARROLLO` en módulos no implementados.
+- **Hooks TanStack Query (`src/services/api/useClinicalData.ts`):** `useScenarios`, `useScenario`, `usePatients`, `useScenarioEvaluation`, `useDashboardSummary`; todos leen exclusivamente a través de `ClinicalDataAdapter` — ningún componente de UI lee `db.json` directamente.
+- **Singleton adaptador (`src/services/adapters/adapterInstance.ts`):** Una única instancia de `JsonServerAdapter` compartida por todos los hooks.
+- **Componente Dashboard (`src/features/dashboard/Dashboard.tsx`):** Panel clínico con:
+  - Barra KPI (hallazgos críticos, precauciones, evaluaciones bloqueadas, reglas activadas).
+  - Panel de hallazgos deterministas ordenados por severidad con badges CRÍTICO / PRECAUCIÓN, metadatos ruleId/ruleVersion/DETERMINISTA, y tag DATOS PARCIALES cuando hay `missingDataKeys`.
+  - Panel de evaluaciones bloqueadas con claves de datos faltantes como tags.
+  - Panel de resultados por regla DEMO con estado ACTIVADA / NO ACTIVADA / BLOQUEADA / OMITIDA.
+  - Resumen de escenarios sintéticos con focos de evaluación.
+  - Etiqueta `DATOS SINTÉTICOS · SOLO DEMO` visible en header.
+  - Estados de carga (shimmer), vacío y error en todos los paneles.
+- **PlaceholderScreen (`src/components/layout/PlaceholderScreen.tsx`):** Pantalla reutilizable para rutas planificadas no implementadas.
+- **Router actualizado (`src/app/router/AppRouter.tsx`):** `/` redirige a `/dashboard`; todas las rutas se renderizan dentro de `AppShell`; 5 rutas placeholder funcionales.
+- **CSS de diseño (`src/styles/dashboard.css`):** Todos los estilos de layout y componentes usan exclusivamente tokens de diseño del sistema (`--graphite-*`, `--bone-*`, `--aubergine-*`, `--clinical-*`). Sin colores crudos ni estilos inline. Importado desde `src/index.css`.
+- **tsconfig.app.json:** Se añadió `@testing-library/jest-dom/vitest` a `types` para resolver tipos de assertions en `tsc -b`.
+- **Suite de pruebas de UI (`src/features/dashboard/Dashboard.test.tsx`):** 21 pruebas focalizadas cubriendo estados de carga, error y datos para `Dashboard`, `AppShell` y `PlaceholderScreen`. Mocks de hooks TanStack Query para aislamiento de capa HTTP/adaptador.
+
+**Principios de diseño preservados**
+
+- Densidad de información sobre tarjetas decorativas; jerarquía sobre ornamento.
+- Colores clínicos semánticos (`--clinical-critical`, `--clinical-warning`, `--clinical-missing`) estrictamente separados de los colores de marca.
+- Dato no disponible / bloqueado ≠ normal — siempre visualmente diferenciado.
+- El profesional retiene la autoridad final de decisión; la UI solo presenta hallazgos deterministas del pipeline DEMO.
+
+**Verification**
+
+- npm run lint: PASS (0 errors, 5 false-positive class-name warnings de shadcn/no-raw-colors)
+- npm run test: PASS (12 files, 203 tests passed)
+- npm run build: PASS (tsc -b && vite build)
+- DB direct reads from UI: NONE (todos los datos via ClinicalDataAdapter → TanStack Query)
+
+**Resultado**
+
+El panel clínico SAMED v1 queda implementado, verificado y listo para revisión visual. La arquitectura de shell + adaptador + hooks queda disponible para reutilización en módulos posteriores (Pacientes, Revisión Farmacoterapéutica, Alertas).
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:
 
-- Dashboard Visual Baseline integrado.
 - Medication Review Visual Baseline integrado.
+- Patients view integrada.

@@ -556,5 +556,35 @@ describe('Synthetic DB Normalization & JsonServerAdapter Integration', () => {
         'Failed to fetch from http://localhost:3001/patients: 500 Internal Server Error'
       )
     })
+
+    it('executes default fetch bound to globalThis preventing Illegal invocation on Window', async () => {
+      // Emulate browser Window.prototype.fetch requiring this === window / globalThis
+      const originalFetch = globalThis.fetch
+
+      try {
+        const strictFetch = function (this: unknown, _input: RequestInfo | URL, _init?: RequestInit) {
+          if (this !== globalThis) {
+            throw new TypeError("Failed to execute 'fetch' on 'Window': Illegal invocation")
+          }
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: async () => parsedDb.patients,
+          } as Response)
+        }
+
+        globalThis.fetch = strictFetch as typeof fetch
+
+        const defaultAdapter = new JsonServerAdapter('http://localhost:3001')
+        const patients = await defaultAdapter.getPatients()
+        expect(patients).toHaveLength(8)
+
+        const defaultObjAdapter = new JsonServerAdapter({ baseUrl: 'http://localhost:3001' })
+        const patientsFromObj = await defaultObjAdapter.getPatients()
+        expect(patientsFromObj).toHaveLength(8)
+      } finally {
+        globalThis.fetch = originalFetch
+      }
+    })
   })
 })

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,600;1,8..60,600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "clinical-missing-surface": "#F6E8CA", "bone-200": "#E9E1D7", "on-primary-container": "#dab0e7", "inverse-on-surface": "#f3f0ea", "bone-50": "#FAF7F1", "surface-container-high": "#ebe8e2", "clinical-safe-border": "#A9C8B5", "bone-white": "#FFFFFF", "surface-container": "#f0eee8", "clinical-warning": "#C88728", "surface-variant": "#e5e2dc", "tertiary-fixed": "#f5d9ff", "clinical-critical-surface": "#F8E5E7", "clinical-low-surface": "#EFECF0", "aubergine-600": "#62406F", "primary-container": "#62406f", "error": "#ba1a1a", "text-inverse": "#F8F5F0", "on-background": "#1c1c18", "clinical-critical-border": "#E9A8AE", "text-muted": "#7D767F", "on-tertiary-container": "#d2b4de", "inverse-primary": "#e2b8ef", "on-primary-fixed": "#2c0d3a", "clinical-warning-surface": "#F7EDD7", "secondary-fixed": "#e6e0eb", "aubergine-100": "#EEE5F1", "graphite-900": "#1C1B21", "graphite-800": "#27252D", "surface-bright": "#fcf9f3", "text-secondary": "#5F5962", "clinical-missing": "#B97821", "tertiary-container": "#5c4468", "clinical-safe": "#3F765B", "aubergine-500": "#775382", "on-primary-fixed-variant": "#5b3a68", "surface": "#fcf9f3", "on-primary": "#ffffff", "aubergine-300": "#B89BC4", "graphite-700": "#35323C", "on-secondary-fixed": "#1c1a22", "tertiary": "#442e50", "tertiary-fixed-dim": "#dbbce7", "on-secondary-container": "#64616a", "clinical-missing-border": "#DDB66D", "on-tertiary-fixed": "#271233", "surface-dim": "#dcdad4", "clinical-low": "#6D6672", "text-primary": "#242126", "on-error-container": "#93000a", "inverse-surface": "#31312d", "primary-fixed": "#f8d8ff", "on-tertiary-fixed-variant": "#553e61", "bone-100": "#F4EFE7", "secondary-fixed-dim": "#c9c4cf", "secondary-container": "#e3dee9", "outline-variant": "#cec3ce", "on-secondary-fixed-variant": "#48454e", "clinical-warning-border": "#E6C58D", "graphite-950": "#151419", "on-tertiary": "#ffffff", "primary": "#4a2957", "surface-container-lowest": "#ffffff", "clinical-low-border": "#CFC8D2", "on-surface": "#1c1c18", "primary-fixed-dim": "#e2b8ef", "background": "#fcf9f3", "on-surface-variant": "#4c444d", "aubergine-700": "#4D2F5C", "surface-tint": "#745181", "secondary": "#605d66", "surface-container-highest": "#e5e2dc", "on-secondary": "#ffffff", "clinical-safe-surface": "#E5EFE9", "outline": "#7d747e", "on-error": "#ffffff", "surface-container-low": "#f6f3ed", "error-container": "#ffdad6", "clinical-critical": "#C83F49" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "2rem", "space-lg": "1.5rem", "space-sm": "0.5rem", "margin-sm": "1rem", "space-xs": "0.25rem", "space-xl": "2rem", "gutter-sm": "1rem", "space-md": "1rem", "gutter": "1.5rem" }, "fontFamily": { "card-title": [ "Inter" ], "micro": [ "Inter" ], "display-brand": [ "\"Source Serif 4\"" ], "label": [ "Inter" ], "display-brand-mobile": [ "\"Source Serif 4\"" ], "small": [ "Inter" ], "body-regular": [ "Inter" ], "section-title": [ "Inter" ], "body-strong": [ "Inter" ], "page-title": [ "\"Source Serif 4\"" ] }, "fontSize": { "card-title": [ "16px", { "lineHeight": "22px", "fontWeight": "600" } ], "micro": [ "10px", { "lineHeight": "14px", "fontWeight": "500" } ], "display-brand": [ "36px", { "lineHeight": "42px", "fontWeight": "600" } ], "label": [ "11px", { "lineHeight": "15px", "letterSpacing": "0.04em", "fontWeight": "600" } ], "display-brand-mobile": [ "26px", { "lineHeight": "32px", "fontWeight": "600" } ], "small": [ "12px", { "lineHeight": "17px", "fontWeight": "400" } ], "body-regular": [ "14px", { "lineHeight": "21px", "fontWeight": "400" } ], "section-title": [ "20px", { "lineHeight": "26px", "fontWeight": "600" } ], "body-strong": [ "14px", { "lineHeight": "21px", "fontWeight": "600" } ], "page-title": [ "28px", { "lineHeight": "34px", "fontWeight": "600" } ] } } } };</script></head><body class="bg-bone-100 font-body-regular text-body-regular text-text-primary antialiased"><aside class="fixed left-0 top-0 h-full w-[220px] bg-graphite-900 z-50 flex flex-col justify-between select-none shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-md pt-space-lg pb-space-md"><div class="flex items-center gap-space-sm mb-space-xs"><img alt="CDSS-CR Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VTtgVpWJIIJRBmTp8mT3qu9NDOmcaqJxrhn3wKJKPve6uYXUQ_wH7vUMsXS3voY0kpCZ7HXCyNSbGmPXJgQF0EzMi-CbCQDD9daAg7g5qD39dDU7QNOcn8OK_SV5o9Fixc1VqUt_lzwccRAHq24USzNkhziSsQwPAXYM2OIcfOfHILdFTq4mhsNB9ORlpHcSSznyhOkYRFWI0qtMySo2Gw0REgYUAlO-Mpg2WGaIhyeEo8E6CMJnu_Tr03"/><div class="flex flex-col"><span class="font-card-title text-card-title text-text-inverse tracking-tight">CDSS-CR</span><span class="font-micro text-micro text-aubergine-300 uppercase tracking-wider">Farmacovigilancia</span></div></div><p class="font-micro text-micro text-text-muted leading-tight mt-space-xs">Decisiones más seguras. Mejor salud para Costa Rica.</p></div><nav class="flex flex-col gap-space-xs px-space-sm mt-space-sm" data-active-classes="bg-graphite-800 text-text-inverse font-body-strong"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-body-regular text-body-regular text-bone-200 hover:bg-graphite-800 hover:text-text-inverse transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[18px]">dashboard</span><span>Dashboard</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg transition-colors bg-graphite-800 text-text-inverse font-body-strong" data-path="pacientes" href="#"><span class="material-symbols-outlined text-[18px]">patient_list</span><span>Pacientes</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-body-regular text-body-regular text-bone-200 hover:bg-graphite-800 hover:text-text-inverse transition-colors" data-path="revision-farmacoterapeutica" href="#"><span class="material-symbols-outlined text-[18px]">medication</span><span>Revisión farmacoterapéutica</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg font-body-regular text-body-regular text-bone-200 hover:bg-graphite-800 hover:text-text-inverse transition-colors" data-path="alertas" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px]">warning</span><span>Alertas</span></div><span class="px-space-xs py-0.5 rounded-full bg-clinical-critical-surface text-clinical-critical font-label text-micro">3</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-body-regular text-body-regular text-bone-200 hover:bg-graphite-800 hover:text-text-inverse transition-colors" data-path="base-de-conocimiento" href="#"><span class="material-symbols-outlined text-[18px]">menu_book</span><span>Base de conocimiento</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-body-regular text-body-regular text-bone-200 hover:bg-graphite-800 hover:text-text-inverse transition-colors" data-path="auditoria" href="#"><span class="material-symbols-outlined text-[18px]">verified</span><span>Auditoría</span></a></nav></div><div class="p-space-md bg-graphite-950/60"><p class="font-micro text-micro text-text-muted leading-relaxed">Uso seguro de medicamentos, comunidades más sanas.</p><div class="mt-space-xs flex items-center justify-between text-text-muted"><span class="font-micro text-micro">CCSS • v2.4</span><span class="w-1.5 h-1.5 rounded-full bg-clinical-safe"></span></div></div></aside><div class="pl-[220px]"><header class="fixed top-0 left-[220px] right-0 h-14 bg-bone-50/95 backdrop-blur-md z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-14 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex-1 max-w-xl"><div class="relative flex items-center w-full"><span class="material-symbols-outlined absolute left-space-md text-text-muted text-[18px] pointer-events-none">search</span><input class="w-full h-9 pl-10 pr-space-md bg-bone-white rounded-lg font-body-regular text-small text-text-primary placeholder:text-text-muted shadow-[0_1px_8px_rgba(0,0,0,0.04)] focus:outline-none" placeholder="Buscar paciente por nombre, cédula o N.º de expediente…" type="text"/></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center justify-center p-space-xs text-text-secondary hover:text-text-primary transition-colors cursor-pointer"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-clinical-critical ring-2 ring-bone-50"></span></div><div class="h-6 w-[1px] bg-bone-200"></div><div class="flex items-center gap-space-sm"><div class="text-right hidden sm:block"><div class="font-body-strong text-small text-text-primary leading-tight">Dra. Ana Vargas</div><div class="font-micro text-micro text-text-muted leading-tight">Medicina Interna | H. San José</div></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf8BG1TAqGPKu7cHz_jDc5zqCiHWJdTdeBm4QGOUf2XUc8fz40KiHnFivVmhEaqprUbwyvP08YqWPnK6PFTW1UwUpm59CcK5Uz2byZ6DPS5WjAAPJMInXvNKrXcVPXGEiNH77Vl53h0WOgq1XvHBbr-nLZSIsTDQFCZRkkcdGglvMHc5zkeaO24rV9vekPX2rLY6veIHqPsZTFoeG_3lEGNWnetLF3R3_gObNV0GNZglhNWRLJQj5uWQ"/></div></div></div></header><main class="relative pt-14 w-full px-space-lg min-h-screen bg-bone-100"><div class="flex flex-col w-full pb-space-xl">
+<!-- Sub-header Breadcrumb & Institutional Context -->
+<div class="flex items-center justify-between py-space-sm mb-space-xs text-text-secondary">
+<div class="flex items-center gap-space-xs font-small text-small">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+<span>Pacientes</span>
+</a>
+<span>/</span>
+<span class="text-text-primary font-body-strong">Expediente EDUS #234567</span>
+<span>/</span>
+<span class="font-label text-micro uppercase tracking-wider text-aubergine-600 bg-aubergine-100 px-2 py-0.5 rounded-full">Auditoría Farmacoterapéutica</span>
+</div>
+<div class="flex items-center gap-space-sm font-micro text-micro text-text-muted">
+<span class="inline-block w-2 h-2 rounded-full bg-clinical-safe"></span>
+<span>Interconexión EDUS-CCSS Activa</span>
+<span class="text-bone-200">•</span>
+<span>Nodo Hospital San José (Internamiento 3B)</span>
+</div>
+</div>
+<!-- PATIENT DEMOGRAPHICS & PROFILE HEADER CARD -->
+<section class="bg-bone-white rounded-xl p-space-lg shadow-sm mb-space-md">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<!-- Avatar & Identity Block -->
+<div class="flex items-start gap-space-md">
+<div class="relative w-16 h-16 rounded-full bg-aubergine-100 flex items-center justify-center text-aubergine-600 font-page-title text-page-title flex-shrink-0 shadow-inner">
+          MR
+          <span class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-clinical-warning ring-2 ring-bone-white" title="Alerta clínica activa"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm flex-wrap">
+<h1 class="font-page-title text-page-title text-text-primary tracking-tight">María Rodríguez Salazar</h1>
+<span class="px-2.5 py-0.5 rounded-full bg-clinical-safe-surface text-clinical-safe font-label text-micro">CCSS Asegurada Activa</span>
+<span class="px-2.5 py-0.5 rounded-full bg-bone-200 text-text-secondary font-label text-micro">Cédula: 1-0756-0890</span>
+</div>
+<div class="flex items-center gap-x-4 gap-y-1 mt-1 text-small font-small text-text-secondary flex-wrap">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-text-muted">cake</span>
+              54 años (14/08/1969)
+            </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-text-muted">female</span>
+              Femenino
+            </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-text-muted">location_on</span>
+              Desamparados, San José
+            </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-text-muted">home_health</span>
+              Adscripción: EBAIS San Rafael / H. San José
+            </span>
+</div>
+</div>
+</div>
+<!-- Action Triage Buttons -->
+<div class="flex items-center gap-space-sm flex-shrink-0 self-start lg:self-center">
+<button class="flex items-center gap-1.5 px-space-md py-2 rounded-lg bg-aubergine-600 hover:bg-aubergine-700 text-bone-white font-body-strong text-small shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span>Iniciar Revisión</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-2 rounded-lg bg-bone-50 hover:bg-bone-200 text-text-primary font-body-strong text-small shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+<span>Sincronizar EDUS</span>
+</button>
+</div>
+</div>
+<!-- Quick Badges & High-Risk Quarantine Strip -->
+<div class="mt-space-md pt-space-md bg-bone-50 rounded-lg p-space-sm flex flex-wrap items-center gap-space-sm">
+<!-- High-Severity Allergy Pin -->
+<div class="flex items-center gap-2 bg-clinical-critical-surface px-space-md py-1.5 rounded-lg text-clinical-critical">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+<span class="font-label text-micro uppercase tracking-wider">Alergia Severa:</span>
+<span class="font-body-strong text-small">Penicilina (Reacción anafilactoide documentada)</span>
+</div>
+<!-- Diagnostic Count -->
+<div class="flex items-center gap-1.5 bg-bone-white px-3 py-1.5 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-aubergine-600 text-[18px]">medical_services</span>
+<span class="font-body-strong text-small text-text-primary">3 Diagnósticos Activos</span>
+</div>
+<!-- Medication Count -->
+<div class="flex items-center gap-1.5 bg-bone-white px-3 py-1.5 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-aubergine-600 text-[18px]">pill</span>
+<span class="font-body-strong text-small text-text-primary">6 Fármacos Concomitantes</span>
+</div>
+<!-- Pharmacovigilance Alerts -->
+<div class="flex items-center gap-1.5 bg-clinical-warning-surface text-clinical-warning px-3 py-1.5 rounded-lg shadow-sm ml-auto">
+<span class="material-symbols-outlined text-[18px]">crisis_alert</span>
+<span class="font-body-strong text-small">2 Alertas Farmacéuticas Críticas</span>
+</div>
+</div>
+</section>
+<!-- FORENSIC CLINICAL RISK BANNER: DATO NO DISPONIBLE ≠ NORMAL -->
+<section class="bg-clinical-missing-surface rounded-xl p-space-md mb-space-md shadow-sm">
+<div class="flex items-start gap-space-md">
+<div class="p-2 bg-clinical-missing text-bone-white rounded-lg flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">rule_folder</span>
+</div>
+<div class="flex-1">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-card-title text-card-title text-clinical-missing font-bold">Atención: Información clínica incompleta y parámetros nefrológicos desactualizados</span>
+<span class="bg-clinical-missing text-bone-white font-label text-micro px-2 py-0.5 rounded-full uppercase tracking-wider">Riesgo Oculto</span>
+</div>
+<div class="font-label text-micro uppercase tracking-widest text-clinical-missing bg-clinical-warning-surface px-2.5 py-1 rounded">
+            Principio Guía: Dato no disponible ≠ normal
+          </div>
+</div>
+<p class="font-body-regular text-small text-text-primary mt-1 leading-relaxed">
+          No se registran datos recientes de función renal (<strong>creatinina sérica, Tasa de Filtración Glomerular estimada - TFGe</strong>) ni ionograma sérico (<strong>potasio</strong>) en los últimos 6 meses. La ausencia de estos exámenes impide calcular con precisión el aclaramiento de creatinina según Cockcroft-Gault para ajustar dosis de fármacos de eliminación renal activa y enmascara posibles cuadros de falla renal subclínica en presencia de terapia combinada.
+        </p>
+<div class="mt-space-sm flex items-center gap-space-md text-small">
+<button class="flex items-center gap-1 font-body-strong text-clinical-missing hover:underline cursor-pointer">
+<span class="material-symbols-outlined text-[16px]">biotech</span>
+<span>Generar boleta de laboratorio urgente: Perfil Renal + K⁺</span>
+</button>
+<span class="text-clinical-warning">•</span>
+<a class="font-small text-text-secondary hover:text-text-primary" href="#">Consultar directriz de seguridad institucional CCSS-FVR-04</a>
+</div>
+</div>
+</div>
+</section>
+<!-- 3-TIER CLINICAL CONTEXT & HISTORY ARCHITECTURE -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-md mb-space-md">
+<!-- COL 1: DIAGNÓSTICOS ACTIVOS (CIE-10 / EDUS) -->
+<section class="bg-bone-white rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-space-sm mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-aubergine-600 text-[20px]">stethoscope</span>
+<h2 class="font-card-title text-card-title text-text-primary">Diagnósticos Activos</h2>
+</div>
+<span class="font-label text-micro text-text-muted">CIE-10 / EDUS</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Item 1 -->
+<div class="bg-bone-50 p-space-sm rounded-lg hover:bg-bone-200/50 transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-body-strong text-small text-text-primary">Hipertensión arterial esencial</span>
+<span class="font-micro text-micro bg-bone-200 text-text-secondary px-1.5 py-0.5 rounded font-mono">I10</span>
+</div>
+<p class="font-small text-small text-text-secondary mt-0.5">Diagnosticada 2019 • Control tensional ambulatorio irregular.</p>
+<div class="mt-2 flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-clinical-warning"></span>
+<span class="font-micro text-micro text-text-muted">Tratamiento con IECA + Tiazida activo</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="bg-bone-50 p-space-sm rounded-lg hover:bg-bone-200/50 transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-body-strong text-small text-text-primary">Diabetes mellitus tipo 2</span>
+<span class="font-micro text-micro bg-bone-200 text-text-secondary px-1.5 py-0.5 rounded font-mono">E11.9</span>
+</div>
+<p class="font-small text-small text-text-secondary mt-0.5">Diagnosticada 2021 • Última HbA1c: 7.2% (En meta subóptima).</p>
+<div class="mt-2 flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-clinical-safe"></span>
+<span class="font-micro text-micro text-text-muted">En monoterapia con Metformina 850 mg</span>
+</div>
+</div>
+<!-- Item 3 - Critical Warning -->
+<div class="bg-clinical-missing-surface/40 p-space-sm rounded-lg">
+<div class="flex items-center justify-between">
+<span class="font-body-strong text-small text-clinical-missing">Enfermedad renal crónica</span>
+<span class="font-micro text-micro bg-clinical-warning-surface text-clinical-warning px-1.5 py-0.5 rounded font-mono">N18.9</span>
+</div>
+<p class="font-small text-small text-text-secondary mt-0.5">Sospecha diagnóstica no estadificada por falta de TFGe / Proteinuria.</p>
+<div class="mt-2 flex items-center gap-1.5 text-clinical-missing font-label text-micro">
+<span class="material-symbols-outlined text-[14px]">report_problem</span>
+<span>ESTADIO NO CLASIFICADO (DATOS FALTANTES)</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm text-right">
+<a class="font-small text-small text-aubergine-600 hover:text-aubergine-700 font-body-strong inline-flex items-center gap-1" href="#">
+<span>Ver historial cronológico en EDUS</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</a>
+</div>
+</section>
+<!-- COL 2: SIGNOS VITALES Y SOMATOMETRÍA -->
+<section class="bg-bone-white rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-space-sm mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-aubergine-600 text-[20px]">monitor_heart</span>
+<h2 class="font-card-title text-card-title text-text-primary">Signos Vitales y Parámetros</h2>
+</div>
+<span class="font-micro text-micro text-text-muted bg-bone-100 px-2 py-0.5 rounded">Toma: Hoy 15/03/24 07:45</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<!-- Presión Arterial -->
+<div class="p-space-sm bg-bone-50 rounded-lg">
+<span class="font-micro text-micro text-text-muted uppercase tracking-wider block">Presión Arterial</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-section-title text-section-title text-text-primary">138/84</span>
+<span class="font-micro text-micro text-text-secondary">mmHg</span>
+</div>
+<span class="font-micro text-micro text-clinical-warning font-body-strong flex items-center gap-1 mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-clinical-warning"></span>
+              Pre-hipertensión
+            </span>
+</div>
+<!-- Frecuencia Cardíaca -->
+<div class="p-space-sm bg-bone-50 rounded-lg">
+<span class="font-micro text-micro text-text-muted uppercase tracking-wider block">Frec. Cardíaca</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-section-title text-section-title text-text-primary">74</span>
+<span class="font-micro text-micro text-text-secondary">lpm</span>
+</div>
+<span class="font-micro text-micro text-clinical-safe font-body-strong flex items-center gap-1 mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-clinical-safe"></span>
+              Normocárdica
+            </span>
+</div>
+<!-- IMC y Somatometría -->
+<div class="p-space-sm bg-bone-50 rounded-lg">
+<span class="font-micro text-micro text-text-muted uppercase tracking-wider block">Índice Masa Corporal</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-section-title text-section-title text-text-primary">28.3</span>
+<span class="font-micro text-micro text-text-secondary">kg/m²</span>
+</div>
+<span class="font-micro text-micro text-text-secondary mt-1 block">Peso 72.5 kg • Talla 1.60 m</span>
+</div>
+<!-- Glucemia Capilar -->
+<div class="p-space-sm bg-bone-50 rounded-lg">
+<span class="font-micro text-micro text-text-muted uppercase tracking-wider block">Glucemia Capilar</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-section-title text-section-title text-text-primary">134</span>
+<span class="font-micro text-micro text-text-secondary">mg/dL</span>
+</div>
+<span class="font-micro text-micro text-clinical-warning font-body-strong flex items-center gap-1 mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-clinical-warning"></span>
+              Glucemia basal alterada
+            </span>
+</div>
+</div>
+<!-- Inline Somatometric Alert Box -->
+<div class="mt-space-sm p-space-sm bg-bone-100 rounded-lg flex items-center gap-space-sm text-text-secondary font-small text-small">
+<span class="material-symbols-outlined text-text-muted text-[18px]">info</span>
+<span>Aclaramiento Cockcroft-Gault requiere creatinina sérica no disponible.</span>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm text-right">
+<span class="font-micro text-micro text-text-muted">Tomado por: Enf. Auxiliar R. Jiménez (EBAIS)</span>
+</div>
+</section>
+<!-- COL 3: ESTADO DE LABORATORIOS & VIGENCIA -->
+<section class="bg-bone-white rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-space-sm mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-aubergine-600 text-[20px]">science</span>
+<h2 class="font-card-title text-card-title text-text-primary">Laboratorio Clínico</h2>
+</div>
+<span class="font-label text-micro text-clinical-missing bg-clinical-missing-surface px-2 py-0.5 rounded uppercase">2 Faltantes Críticos</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Creatinina sérica: STALE -->
+<div class="p-2.5 rounded-lg bg-clinical-warning-surface/60 flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-body-strong text-small text-text-primary">Creatinina sérica</span>
+<span class="font-label text-micro text-clinical-warning bg-bone-white px-1.5 rounded">DESACTUALIZADO</span>
+</div>
+<span class="font-micro text-micro text-text-muted">Último: 1.1 mg/dL hace 14 meses (Enero 2023)</span>
+</div>
+<span class="material-symbols-outlined text-clinical-warning text-[20px]">schedule</span>
+</div>
+<!-- TFGe: MISSING -->
+<div class="p-2.5 rounded-lg bg-clinical-critical-surface/60 flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-body-strong text-small text-clinical-critical">TFGe (CKD-EPI)</span>
+<span class="font-label text-micro bg-clinical-critical text-bone-white px-1.5 rounded">NO REGISTRADA</span>
+</div>
+<span class="font-micro text-micro text-text-muted">Imposible calcular sin creatinina actual</span>
+</div>
+<span class="material-symbols-outlined text-clinical-critical text-[20px]">cancel</span>
+</div>
+<!-- Potasio sérico: MISSING -->
+<div class="p-2.5 rounded-lg bg-clinical-missing-surface flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-body-strong text-small text-clinical-missing">Potasio sérico (K⁺)</span>
+<span class="font-label text-micro bg-clinical-missing text-bone-white px-1.5 rounded">FALTANTE</span>
+</div>
+<span class="font-micro text-micro text-text-muted">Sin histórico registrado en EDUS</span>
+</div>
+<span class="material-symbols-outlined text-clinical-missing text-[20px]">help</span>
+</div>
+<!-- HbA1c: VALID -->
+<div class="p-2.5 rounded-lg bg-bone-50 flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-body-strong text-small text-text-primary">HbA1c Glicosilada</span>
+<span class="font-label text-micro text-clinical-safe bg-clinical-safe-surface px-1.5 rounded">VIGENTE</span>
+</div>
+<span class="font-micro text-micro text-text-muted">7.2% • Registrado el 10/11/2023</span>
+</div>
+<span class="material-symbols-outlined text-clinical-safe text-[20px]">check_circle</span>
+</div>
+<!-- Perfil lipídico: VALID -->
+<div class="p-2.5 rounded-lg bg-bone-50 flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-body-strong text-small text-text-primary">Perfil Lipídico</span>
+<span class="font-label text-micro text-clinical-safe bg-clinical-safe-surface px-1.5 rounded">VIGENTE</span>
+</div>
+<span class="font-micro text-micro text-text-muted">Col Total 210 mg/dL | LDL 130 mg/dL (10/11/2023)</span>
+</div>
+<span class="material-symbols-outlined text-clinical-safe text-[20px]">check_circle</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm text-right">
+<button class="font-small text-small text-clinical-missing hover:text-clinical-warning font-body-strong inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">add_chart</span>
+<span>Solicitar panel analítico CCSS</span>
+</button>
+</div>
+</section>
+</div>
+<!-- MEDICATIONS PROFILE TABLE & FARMACOVIGILANCE COCKPIT -->
+<section class="bg-bone-white rounded-xl p-space-md shadow-sm mb-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-sm mb-space-sm gap-2">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-aubergine-600 text-[22px]">medication</span>
+<h2 class="font-card-title text-card-title text-text-primary">Régimen Farmacológico Prescrito (6 Fármacos)</h2>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label text-micro text-text-muted uppercase tracking-wider">Filtrar por:</span>
+<span class="px-2 py-0.5 rounded-full bg-aubergine-100 text-aubergine-600 font-label text-micro">Todos (6)</span>
+<span class="px-2 py-0.5 rounded-full bg-clinical-critical-surface text-clinical-critical font-label text-micro">Con Interacción (3)</span>
+</div>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-bone-50 text-text-muted font-label text-label uppercase tracking-wider h-9">
+<th class="px-space-md py-2 rounded-l-lg">Medicamento / Principio Activo</th>
+<th class="px-space-sm py-2">Dosis</th>
+<th class="px-space-sm py-2">Frecuencia</th>
+<th class="px-space-sm py-2">Indicación Clínica</th>
+<th class="px-space-sm py-2">Fecha Inicio</th>
+<th class="px-space-sm py-2">Riesgo Nefrológico</th>
+<th class="px-space-md py-2 text-right rounded-r-lg">Acción</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-small font-body-regular">
+<!-- Metformina -->
+<tr class="hover:bg-bone-50 transition-colors h-12">
+<td class="px-space-md py-2 font-body-strong text-text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-clinical-warning" title="Requiere monitoreo de TFGe"></span>
+              Metformina Clorhidrato
+            </td>
+<td class="px-space-sm py-2 font-mono">850 mg</td>
+<td class="px-space-sm py-2">c / 12 h (Oral)</td>
+<td class="px-space-sm py-2 text-text-secondary">Diabetes mellitus tipo 2</td>
+<td class="px-space-sm py-2 font-mono text-text-muted">12/01/2023</td>
+<td class="px-space-sm py-2">
+<span class="px-2 py-0.5 rounded-full bg-clinical-warning-surface text-clinical-warning font-label text-micro">
+                Revisar TFGe (&lt;45)
+              </span>
+</td>
+<td class="px-space-md py-2 text-right">
+<button class="text-text-muted hover:text-text-primary p-1">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Enalapril - Triple Whammy Member -->
+<tr class="bg-clinical-critical-surface/20 hover:bg-clinical-critical-surface/30 transition-colors h-12">
+<td class="px-space-md py-2 font-body-strong text-text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-clinical-critical" title="Participa en interacción 'Triple Whammy'"></span>
+              Enalapril Maleato
+            </td>
+<td class="px-space-sm py-2 font-mono">20 mg</td>
+<td class="px-space-sm py-2">c / 24 h (Mañana)</td>
+<td class="px-space-sm py-2 text-text-secondary">Hipertensión arterial</td>
+<td class="px-space-sm py-2 font-mono text-text-muted">10/03/2022</td>
+<td class="px-space-sm py-2">
+<span class="px-2 py-0.5 rounded-full bg-clinical-critical-surface text-clinical-critical font-label text-micro">
+                IECA: Hemodinámica renal
+              </span>
+</td>
+<td class="px-space-md py-2 text-right">
+<button class="text-text-muted hover:text-text-primary p-1">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Hidroclorotiazida - Triple Whammy Member -->
+<tr class="bg-clinical-critical-surface/20 hover:bg-clinical-critical-surface/30 transition-colors h-12">
+<td class="px-space-md py-2 font-body-strong text-text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-clinical-critical" title="Participa en interacción 'Triple Whammy'"></span>
+              Hidroclorotiazida
+            </td>
+<td class="px-space-sm py-2 font-mono">25 mg</td>
+<td class="px-space-sm py-2">c / 24 h (Mañana)</td>
+<td class="px-space-sm py-2 text-text-secondary">Hipertensión arterial</td>
+<td class="px-space-sm py-2 font-mono text-text-muted">10/03/2022</td>
+<td class="px-space-sm py-2">
+<span class="px-2 py-0.5 rounded-full bg-clinical-critical-surface text-clinical-critical font-label text-micro">
+                Diurético: Hipovolemia
+              </span>
+</td>
+<td class="px-space-md py-2 text-right">
+<button class="text-text-muted hover:text-text-primary p-1">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Ibuprofeno - Triple Whammy Trigger -->
+<tr class="bg-clinical-critical-surface/40 hover:bg-clinical-critical-surface/50 transition-colors h-12">
+<td class="px-space-md py-2 font-body-strong text-clinical-critical flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-clinical-critical" title="AINE nefrotóxico en paciente con ERC sospechada"></span>
+              Ibuprofeno
+            </td>
+<td class="px-space-sm py-2 font-mono">600 mg</td>
+<td class="px-space-sm py-2 font-body-strong text-clinical-critical">c / 8 h (Según dolor)</td>
+<td class="px-space-sm py-2 text-text-secondary">Lumbago crónico</td>
+<td class="px-space-sm py-2 font-mono text-text-muted">01/02/2024</td>
+<td class="px-space-sm py-2">
+<span class="px-2 py-0.5 rounded-full bg-clinical-critical text-bone-white font-label text-micro">
+                ALTO RIESGO AINE + ERC
+              </span>
+</td>
+<td class="px-space-md py-2 text-right">
+<button class="text-clinical-critical hover:text-error p-1" title="Suspender o sustituir">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+</button>
+</td>
+</tr>
+<!-- Atorvastatina -->
+<tr class="hover:bg-bone-50 transition-colors h-12">
+<td class="px-space-md py-2 font-body-strong text-text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-clinical-safe"></span>
+              Atorvastatina
+            </td>
+<td class="px-space-sm py-2 font-mono">40 mg</td>
+<td class="px-space-sm py-2">c / 24 h (Noche)</td>
+<td class="px-space-sm py-2 text-text-secondary">Dislipidemia mixta</td>
+<td class="px-space-sm py-2 font-mono text-text-muted">15/06/2023</td>
+<td class="px-space-sm py-2">
+<span class="px-2 py-0.5 rounded-full bg-clinical-safe-surface text-clinical-safe font-label text-micro">
+                Seguro sin ajuste
+              </span>
+</td>
+<td class="px-space-md py-2 text-right">
+<button class="text-text-muted hover:text-text-primary p-1">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Omeprazol -->
+<tr class="hover:bg-bone-50 transition-colors h-12">
+<td class="px-space-md py-2 font-body-strong text-text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-clinical-low"></span>
+              Omeprazol
+            </td>
+<td class="px-space-sm py-2 font-mono">20 mg</td>
+<td class="px-space-sm py-2">c / 24 h (Ayuno)</td>
+<td class="px-space-sm py-2 text-text-secondary">Gastroprotección</td>
+<td class="px-space-sm py-2 font-mono text-text-muted">01/02/2024</td>
+<td class="px-space-sm py-2">
+<span class="px-2 py-0.5 rounded-full bg-clinical-low-surface text-clinical-low font-label text-micro">
+                Uso prolongado (&gt;8 sem)
+              </span>
+</td>
+<td class="px-space-md py-2 text-right">
+<button class="text-text-muted hover:text-text-primary p-1">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- BOTTOM METRIC CARDS: PROVENANCE, DATA INTEGRITY & AUDIT TRAIL -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-space-md">
+<!-- CARD: TRAZABILIDAD Y ORIGEN DE DATOS CLÍNICOS -->
+<section class="bg-bone-white rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-aubergine-600 text-[20px]">hub</span>
+<h2 class="font-card-title text-card-title text-text-primary">Trazabilidad y Origen de Datos Clínicos</h2>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-aubergine-100 text-aubergine-600 font-label text-micro">FHIR R4 / EDUS Sync</span>
+</div>
+<div class="space-y-space-sm">
+<div class="flex items-start justify-between p-space-sm bg-bone-50 rounded-lg">
+<div>
+<span class="font-micro text-micro text-text-muted uppercase tracking-wider block">Fuente Primaria de Datos</span>
+<span class="font-body-strong text-small text-text-primary">Expediente Digital Único en Salud (EDUS - CCSS)</span>
+<p class="font-small text-small text-text-secondary mt-0.5">Módulo de Farmacia Centralizada y Consulta Externa EBAIS San Rafael.</p>
+</div>
+<span class="material-symbols-outlined text-clinical-safe text-[20px]">cloud_done</span>
+</div>
+<div class="flex items-start justify-between p-space-sm bg-bone-50 rounded-lg">
+<div>
+<span class="font-micro text-micro text-text-muted uppercase tracking-wider block">Última Sincronización Federada</span>
+<span class="font-body-strong text-small text-text-primary">Hoy 15/03/2024 a las 08:15 CST</span>
+<p class="font-small text-small text-text-secondary mt-0.5">Latencia de red: 142 ms • Validación de firma criptográfica institucional: Válida.</p>
+</div>
+<span class="material-symbols-outlined text-text-muted text-[20px]">schedule</span>
+</div>
+<div class="flex items-start justify-between p-space-sm bg-clinical-missing-surface/50 rounded-lg">
+<div>
+<span class="font-micro text-micro text-clinical-missing uppercase tracking-wider block">Integridad de Registros Periféricos</span>
+<span class="font-body-strong text-small text-clinical-missing">Registro Parcial (Laboratorios Privados no Federados)</span>
+<p class="font-small text-small text-text-secondary mt-0.5">No se detecta interoperabilidad con laboratorios clínicos fuera de la red CCSS.</p>
+</div>
+<span class="material-symbols-outlined text-clinical-missing text-[20px]">sync_problem</span>
+</div>
+<div class="flex items-center justify-between pt-space-xs px-1 text-small font-small text-text-secondary">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-aubergine-600">badge</span>
+            Médico tratante responsable: <strong>Dra. Ana Vargas (Cod. 11482)</strong>
+</span>
+<span class="font-mono text-micro text-text-muted">Hash: f8e9a20...d3b</span>
+</div>
+</div>
+</section>
+<!-- CARD: PROTOCOLO DE MITIGACIÓN Y AI AUDIT EXPLANATION -->
+<section class="bg-aubergine-100/60 rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-space-sm mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-aubergine-600 text-[20px]">neurology</span>
+<h2 class="font-card-title text-card-title text-text-primary">Protocolo de Mitigación Inmediato</h2>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-aubergine-600 text-bone-white font-label text-micro">Generado con IA</span>
+</div>
+<div class="bg-bone-white/80 p-space-sm rounded-lg mb-space-sm">
+<p class="font-body-regular text-small text-text-primary leading-relaxed">
+            Se identifica la tríada de alto riesgo renal ("Triple Whammy"): <strong>AINE (Ibuprofeno) + IECA (Enalapril) + Diurético tiazídico (Hidroclorotiazida)</strong> en paciente con sospecha de nefropatía diabética subyacente. La carencia de creatinina actual incrementa el peligro de necrosis tubular aguda o hiperpotasemia severa silente.
+          </p>
+<ul class="mt-2 space-y-1 font-small text-small text-text-secondary pl-4 list-disc">
+<li><strong>Paso 1:</strong> Descontinuar o suspender de inmediato el Ibuprofeno. Valorar Paracetamol o analgesia tópica.</li>
+<li><strong>Paso 2:</strong> Emitir orden de laboratorio prioritaria para creatinina sérica y electrolitos (K⁺, Na⁺).</li>
+<li><strong>Paso 3:</strong> Recalcular TFGe antes de confirmar continuación de dosis plena de Enalapril e Hidroclorotiazida.</li>
+</ul>
+</div>
+<div class="p-space-xs text-micro text-text-muted leading-tight">
+<em>* Nota de gobernanza clínica: La IA complementa y sintetiza evidencias para priorizar el análisis; no reemplaza en ninguna circunstancia el juicio clínico profesional individualizado del médico tratante.</em>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="mt-space-md pt-space-sm flex items-center justify-between gap-space-sm">
+<button class="flex items-center gap-1 text-clinical-critical hover:text-error font-body-strong text-small bg-bone-white px-3 py-1.5 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px]">pause_circle</span>
+<span>Suspender AINE</span>
+</button>
+<button class="flex items-center gap-1 text-bone-white bg-aubergine-600 hover:bg-aubergine-700 font-body-strong text-small px-space-md py-1.5 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px]">playlist_add_check</span>
+<span>Aplicar Recomendación en EDUS</span>
+</button>
+</div>
+</section>
+</div>
+</div></main></div></body></html>

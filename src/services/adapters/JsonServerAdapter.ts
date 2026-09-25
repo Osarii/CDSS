@@ -61,14 +61,14 @@ export class JsonServerAdapter implements ClinicalDataAdapter {
   constructor(optionsOrBaseUrl?: string | JsonServerAdapterOptions) {
     if (typeof optionsOrBaseUrl === 'string') {
       this.baseUrl = optionsOrBaseUrl
-      this.fetchFn = globalThis.fetch
+      this.fetchFn = (input, init) => globalThis.fetch(input, init)
     } else if (optionsOrBaseUrl) {
       this.baseUrl = optionsOrBaseUrl.baseUrl ?? 'http://localhost:3001'
       this.db = optionsOrBaseUrl.db
-      this.fetchFn = optionsOrBaseUrl.fetch ?? globalThis.fetch
+      this.fetchFn = optionsOrBaseUrl.fetch ?? ((input, init) => globalThis.fetch(input, init))
     } else {
       this.baseUrl = 'http://localhost:3001'
-      this.fetchFn = globalThis.fetch
+      this.fetchFn = (input, init) => globalThis.fetch(input, init)
     }
   }
 

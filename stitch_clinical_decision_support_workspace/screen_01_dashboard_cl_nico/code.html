@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,600;1,8..60,600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "clinical-missing-surface": "#F6E8CA", "bone-200": "#E9E1D7", "on-primary-container": "#dab0e7", "inverse-on-surface": "#f3f0ea", "bone-50": "#FAF7F1", "surface-container-high": "#ebe8e2", "clinical-safe-border": "#A9C8B5", "bone-white": "#FFFFFF", "surface-container": "#f0eee8", "clinical-warning": "#C88728", "surface-variant": "#e5e2dc", "tertiary-fixed": "#f5d9ff", "clinical-critical-surface": "#F8E5E7", "clinical-low-surface": "#EFECF0", "aubergine-600": "#62406F", "primary-container": "#62406f", "error": "#ba1a1a", "text-inverse": "#F8F5F0", "on-background": "#1c1c18", "clinical-critical-border": "#E9A8AE", "text-muted": "#7D767F", "on-tertiary-container": "#d2b4de", "inverse-primary": "#e2b8ef", "on-primary-fixed": "#2c0d3a", "clinical-warning-surface": "#F7EDD7", "secondary-fixed": "#e6e0eb", "aubergine-100": "#EEE5F1", "graphite-900": "#1C1B21", "graphite-800": "#27252D", "surface-bright": "#fcf9f3", "text-secondary": "#5F5962", "clinical-missing": "#B97821", "tertiary-container": "#5c4468", "clinical-safe": "#3F765B", "aubergine-500": "#775382", "on-primary-fixed-variant": "#5b3a68", "surface": "#fcf9f3", "on-primary": "#ffffff", "aubergine-300": "#B89BC4", "graphite-700": "#35323C", "on-secondary-fixed": "#1c1a22", "tertiary": "#442e50", "tertiary-fixed-dim": "#dbbce7", "on-secondary-container": "#64616a", "clinical-missing-border": "#DDB66D", "on-tertiary-fixed": "#271233", "surface-dim": "#dcdad4", "clinical-low": "#6D6672", "text-primary": "#242126", "on-error-container": "#93000a", "inverse-surface": "#31312d", "primary-fixed": "#f8d8ff", "on-tertiary-fixed-variant": "#553e61", "bone-100": "#F4EFE7", "secondary-fixed-dim": "#c9c4cf", "secondary-container": "#e3dee9", "outline-variant": "#cec3ce", "on-secondary-fixed-variant": "#48454e", "clinical-warning-border": "#E6C58D", "graphite-950": "#151419", "on-tertiary": "#ffffff", "primary": "#4a2957", "surface-container-lowest": "#ffffff", "clinical-low-border": "#CFC8D2", "on-surface": "#1c1c18", "primary-fixed-dim": "#e2b8ef", "background": "#fcf9f3", "on-surface-variant": "#4c444d", "aubergine-700": "#4D2F5C", "surface-tint": "#745181", "secondary": "#605d66", "surface-container-highest": "#e5e2dc", "on-secondary": "#ffffff", "clinical-safe-surface": "#E5EFE9", "outline": "#7d747e", "on-error": "#ffffff", "surface-container-low": "#f6f3ed", "error-container": "#ffdad6", "clinical-critical": "#C83F49" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "2rem", "space-lg": "1.5rem", "space-sm": "0.5rem", "margin-sm": "1rem", "space-xs": "0.25rem", "space-xl": "2rem", "gutter-sm": "1rem", "space-md": "1rem", "gutter": "1.5rem" }, "fontFamily": { "card-title": [ "Inter" ], "micro": [ "Inter" ], "display-brand": [ "\"Source Serif 4\"" ], "label": [ "Inter" ], "display-brand-mobile": [ "\"Source Serif 4\"" ], "small": [ "Inter" ], "body-regular": [ "Inter" ], "section-title": [ "Inter" ], "body-strong": [ "Inter" ], "page-title": [ "\"Source Serif 4\"" ] }, "fontSize": { "card-title": [ "16px", { "lineHeight": "22px", "fontWeight": "600" } ], "micro": [ "10px", { "lineHeight": "14px", "fontWeight": "500" } ], "display-brand": [ "36px", { "lineHeight": "42px", "fontWeight": "600" } ], "label": [ "11px", { "lineHeight": "15px", "letterSpacing": "0.04em", "fontWeight": "600" } ], "display-brand-mobile": [ "26px", { "lineHeight": "32px", "fontWeight": "600" } ], "small": [ "12px", { "lineHeight": "17px", "fontWeight": "400" } ], "body-regular": [ "14px", { "lineHeight": "21px", "fontWeight": "400" } ], "section-title": [ "20px", { "lineHeight": "26px", "fontWeight": "600" } ], "body-strong": [ "14px", { "lineHeight": "21px", "fontWeight": "600" } ], "page-title": [ "28px", { "lineHeight": "34px", "fontWeight": "600" } ] } } } };</script></head><body class="bg-bone-100 font-body-regular text-body-regular text-text-primary antialiased"><aside class="fixed left-0 top-0 h-full w-[220px] bg-graphite-900 z-50 flex flex-col justify-between select-none shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-md pt-space-lg pb-space-md"><div class="flex items-center gap-space-sm mb-space-xs"><img alt="CDSS-CR Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VTtgVpWJIIJRBmTp8mT3qu9NDOmcaqJxrhn3wKJKPve6uYXUQ_wH7vUMsXS3voY0kpCZ7HXCyNSbGmPXJgQF0EzMi-CbCQDD9daAg7g5qD39dDU7QNOcn8OK_SV5o9Fixc1VqUt_lzwccRAHq24USzNkhziSsQwPAXYM2OIcfOfHILdFTq4mhsNB9ORlpHcSSznyhOkYRFWI0qtMySo2Gw0REgYUAlO-Mpg2WGaIhyeEo8E6CMJnu_Tr03"/><div class="flex flex-col"><span class="font-card-title text-card-title text-text-inverse tracking-tight">CDSS-CR</span><span class="font-micro text-micro text-aubergine-300 uppercase tracking-wider">Farmacovigilancia</span></div></div><p class="font-micro text-micro text-text-muted leading-tight mt-space-xs">Decisiones más seguras. Mejor salud para Costa Rica.</p></div><nav class="flex flex-col gap-space-xs px-space-sm mt-space-sm" data-active-classes="bg-graphite-800 text-text-inverse font-body-strong"><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg transition-colors bg-graphite-800 text-text-inverse font-body-strong" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[18px]">dashboard</span><span>Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-body-regular text-body-regular text-bone-200 hover:bg-graphite-800 hover:text-text-inverse transition-colors" data-path="pacientes" href="#"><span class="material-symbols-outlined text-[18px]">patient_list</span><span>Pacientes</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-body-regular text-body-regular text-bone-200 hover:bg-graphite-800 hover:text-text-inverse transition-colors" data-path="revision-farmacoterapeutica" href="#"><span class="material-symbols-outlined text-[18px]">medication</span><span>Revisión farmacoterapéutica</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg font-body-regular text-body-regular text-bone-200 hover:bg-graphite-800 hover:text-text-inverse transition-colors" data-path="alertas" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px]">warning</span><span>Alertas</span></div><span class="px-space-xs py-0.5 rounded-full bg-clinical-critical-surface text-clinical-critical font-label text-micro">3</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-body-regular text-body-regular text-bone-200 hover:bg-graphite-800 hover:text-text-inverse transition-colors" data-path="base-de-conocimiento" href="#"><span class="material-symbols-outlined text-[18px]">menu_book</span><span>Base de conocimiento</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-body-regular text-body-regular text-bone-200 hover:bg-graphite-800 hover:text-text-inverse transition-colors" data-path="auditoria" href="#"><span class="material-symbols-outlined text-[18px]">verified</span><span>Auditoría</span></a></nav></div><div class="p-space-md bg-graphite-950/60"><p class="font-micro text-micro text-text-muted leading-relaxed">Uso seguro de medicamentos, comunidades más sanas.</p><div class="mt-space-xs flex items-center justify-between text-text-muted"><span class="font-micro text-micro">CCSS • v2.4</span><span class="w-1.5 h-1.5 rounded-full bg-clinical-safe"></span></div></div></aside><div class="pl-[220px]"><header class="fixed top-0 left-[220px] right-0 h-14 bg-bone-50/95 backdrop-blur-md z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-14 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex-1 max-w-xl"><div class="relative flex items-center w-full"><span class="material-symbols-outlined absolute left-space-md text-text-muted text-[18px] pointer-events-none">search</span><input class="w-full h-9 pl-10 pr-space-md bg-bone-white rounded-lg font-body-regular text-small text-text-primary placeholder:text-text-muted shadow-[0_1px_8px_rgba(0,0,0,0.04)] focus:outline-none" placeholder="Buscar paciente por nombre, cédula o N.º de expediente…" type="text"/></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center justify-center p-space-xs text-text-secondary hover:text-text-primary transition-colors cursor-pointer"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-clinical-critical ring-2 ring-bone-50"></span></div><div class="h-6 w-[1px] bg-bone-200"></div><div class="flex items-center gap-space-sm"><div class="text-right hidden sm:block"><div class="font-body-strong text-small text-text-primary leading-tight">Dra. Ana Vargas</div><div class="font-micro text-micro text-text-muted leading-tight">Medicina Interna | H. San José</div></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf8BG1TAqGPKu7cHz_jDc5zqCiHWJdTdeBm4QGOUf2XUc8fz40KiHnFivVmhEaqprUbwyvP08YqWPnK6PFTW1UwUpm59CcK5Uz2byZ6DPS5WjAAPJMInXvNKrXcVPXGEiNH77Vl53h0WOgq1XvHBbr-nLZSIsTDQFCZRkkcdGglvMHc5zkeaO24rV9vekPX2rLY6veIHqPsZTFoeG_3lEGNWnetLF3R3_gObNV0GNZglhNWRLJQj5uWQ"/></div></div></div></header><main class="relative pt-14 w-full px-space-lg min-h-screen bg-bone-100"><div class="flex flex-col w-full pb-12">
+<!-- Top Archival / Context Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md pt-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="font-label text-label text-aubergine-600 uppercase tracking-widest bg-aubergine-100 px-2 py-0.5 rounded">Expediente Clínico Digital • CCSS</span>
+<span class="w-1 h-1 rounded-full bg-bone-200"></span>
+<span class="font-small text-small text-text-muted">Servicio de Farmacoterapia • Nivel de Atención Especializada</span>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="font-micro text-micro text-text-muted">Última sincronización con EDUS: <strong class="text-text-primary font-body-strong">Hoy 09:42</strong></span>
+<button class="inline-flex items-center gap-1 font-label text-label text-aubergine-700 hover:text-graphite-900 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">history</span> Registro auditoría
+      </button>
+</div>
+</div>
+<!-- Main Tri-Pane / Split Layout Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT & CENTER COCKPIT CANVAS (8 of 12 cols on desktop) -->
+<div class="xl:col-span-8 flex flex-col gap-space-lg min-w-0">
+<!-- 1. Patient Context Card -->
+<section class="bg-bone-white rounded-xl shadow-[0_2px_10px_rgba(24,20,28,0.05)] p-space-lg relative overflow-hidden">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex items-start sm:items-center gap-space-md">
+<div class="w-14 h-14 rounded-xl bg-aubergine-100 flex items-center justify-center text-aubergine-700 shadow-sm shrink-0">
+<span class="material-symbols-outlined text-[32px]">person</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex flex-wrap items-baseline gap-x-space-sm gap-y-0.5">
+<h1 class="font-page-title text-page-title text-text-primary tracking-tight">María Rodríguez</h1>
+<span class="font-small text-small text-text-muted font-normal">54 años · Femenino</span>
+</div>
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-1 mt-0.5 font-small text-small text-text-secondary">
+<span>Cédula: <strong class="font-body-strong text-text-primary tabular-nums">1-0756-0890</strong></span>
+<span class="w-1 h-1 rounded-full bg-bone-200"></span>
+<span>N.º Expediente: <strong class="font-body-strong text-text-primary tabular-nums">234567</strong></span>
+<span class="w-1 h-1 rounded-full bg-bone-200"></span>
+<span>EBAIS: <strong class="font-body-strong text-text-primary">Curridabat Centro</strong></span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm self-end md:self-center shrink-0">
+<button class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-bone-50 hover:bg-surface-container text-aubergine-700 font-body-strong text-small shadow-sm transition-all duration-150" type="button">
+<span>Ver más detalles</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Clinical Tags Row -->
+<div class="flex flex-wrap items-center gap-space-xs pt-space-md mt-space-md bg-gradient-to-r from-bone-50/50 to-transparent p-2 rounded-lg">
+<!-- Allergy Tag -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-clinical-critical-surface text-clinical-critical font-body-strong text-small shadow-sm">
+<span class="material-symbols-outlined text-[16px]">emergency</span>
+<span>Alergia: Penicilina</span>
+</div>
+<!-- Diagnostic Chips -->
+<div class="inline-flex items-center gap-1 px-2.5 py-1 text-text-muted font-label text-label uppercase tracking-wider">
+<span class="material-symbols-outlined text-[15px]">clinical_notes</span>
+<span>Diagnósticos:</span>
+</div>
+<button class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-bone-100 hover:bg-bone-200 text-text-primary font-body-regular text-small shadow-sm transition-colors" type="button">
+<span>Hipertensión arterial</span>
+<span class="material-symbols-outlined text-[14px] text-text-muted">chevron_right</span>
+</button>
+<button class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-bone-100 hover:bg-bone-200 text-text-primary font-body-regular text-small shadow-sm transition-colors" type="button">
+<span>Diabetes mellitus tipo 2</span>
+<span class="material-symbols-outlined text-[14px] text-text-muted">chevron_right</span>
+</button>
+<button class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-bone-100 hover:bg-bone-200 text-text-primary font-body-regular text-small shadow-sm transition-colors" type="button">
+<span>Enfermedad renal crónica</span>
+<span class="material-symbols-outlined text-[14px] text-text-muted">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- 2. Mandatory Missing Information Banner (Safety Barrier) -->
+<section class="bg-clinical-missing-surface rounded-xl p-space-md shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-clinical-warning/20 flex items-center justify-center text-clinical-missing shrink-0 mt-0.5 sm:mt-0">
+<span class="material-symbols-outlined text-[24px]">warning</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-section-title text-card-title text-clinical-missing leading-tight">Información clínica incompleta</span>
+<span class="px-2 py-0.2 rounded font-label text-micro uppercase bg-clinical-warning/20 text-clinical-missing">Atención requerida</span>
+</div>
+<p class="font-body-regular text-small text-text-primary mt-0.5 leading-snug">
+              No se encuentra registro de función renal (creatinina o TFGe) en los últimos 6 meses en ningún establecimiento de la red.
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm bg-bone-white/80 backdrop-blur-sm px-space-md py-2 rounded-lg shrink-0 self-stretch sm:self-auto justify-between sm:justify-start">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-clinical-warning animate-pulse"></span>
+<span class="font-body-strong text-small text-clinical-missing tracking-tight">Dato no disponible ≠ normal</span>
+</div>
+<button class="text-clinical-missing hover:text-text-primary transition-colors ml-1" title="Protocolo CDSS-CR de ausencia de datos" type="button">
+<span class="material-symbols-outlined text-[18px]">info</span>
+</button>
+</div>
+</section>
+<!-- 3. Core Medication & Alerts Dual Module -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Active Medications Table (7 Cols) -->
+<div class="lg:col-span-7 bg-bone-white rounded-xl shadow-[0_2px_10px_rgba(24,20,28,0.05)] p-space-md flex flex-col">
+<div class="flex items-center justify-between gap-space-sm pb-space-sm mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-aubergine-600 text-[20px]">pill</span>
+<h2 class="font-section-title text-card-title text-text-primary">Medicamentos activos <span class="font-body-regular text-text-muted text-small">(6)</span></h2>
+</div>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 bg-aubergine-600 hover:bg-aubergine-700 text-bone-white rounded-lg font-body-strong text-small shadow-sm transition-all duration-150 active:scale-95" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Agregar medicamento</span>
+</button>
+</div>
+<!-- Medication Table -->
+<div class="overflow-x-auto w-full -mx-space-md px-space-md sm:mx-0 sm:px-0">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-bone-50 text-text-muted font-label text-label uppercase tracking-wider">
+<th class="py-2.5 px-3 rounded-l-lg">Medicamento</th>
+<th class="py-2.5 px-2">Dosis</th>
+<th class="py-2.5 px-2">Frecuencia</th>
+<th class="py-2.5 px-2">Indicación</th>
+<th class="py-2.5 px-3 text-right rounded-r-lg">Inicio</th>
+</tr>
+</thead>
+<tbody class="font-body-regular text-small text-text-primary">
+<!-- Metformina (Critical alert item) -->
+<tr class="hover:bg-bone-50/70 transition-colors group">
+<td class="py-3 px-3 relative">
+<span class="absolute left-0 top-2 bottom-2 w-1 bg-clinical-critical rounded-r"></span>
+<div class="flex flex-col">
+<span class="font-body-strong text-text-primary flex items-center gap-1">
+                        Metformina
+                        <span class="material-symbols-outlined text-clinical-critical text-[14px]" title="Alerta farmacológica activa">warning</span>
+</span>
+<span class="font-micro text-micro text-text-muted">Tableta oral</span>
+</div>
+</td>
+<td class="py-3 px-2 tabular-nums">850 mg</td>
+<td class="py-3 px-2 tabular-nums">c/12 h</td>
+<td class="py-3 px-2 text-text-secondary truncate max-w-[120px]" title="Diabetes mellitus tipo 2">Diabetes mellitus tipo 2</td>
+<td class="py-3 px-3 text-right tabular-nums text-text-muted">12/01/2023</td>
+</tr>
+<!-- Enalapril (Triple Whammy element) -->
+<tr class="hover:bg-bone-50/70 transition-colors group">
+<td class="py-3 px-3 relative">
+<span class="absolute left-0 top-2 bottom-2 w-1 bg-clinical-warning rounded-r"></span>
+<div class="flex flex-col">
+<span class="font-body-strong text-text-primary flex items-center gap-1">
+                        Enalapril
+                        <span class="material-symbols-outlined text-clinical-warning text-[14px]" title="Componente IECA en interacción renal">warning</span>
+</span>
+<span class="font-micro text-micro text-text-muted">Comprimido</span>
+</div>
+</td>
+<td class="py-3 px-2 tabular-nums">20 mg</td>
+<td class="py-3 px-2 tabular-nums">c/24 h</td>
+<td class="py-3 px-2 text-text-secondary truncate max-w-[120px]" title="Hipertensión arterial">Hipertensión arterial</td>
+<td class="py-3 px-3 text-right tabular-nums text-text-muted">10/03/2022</td>
+</tr>
+<!-- Hidroclorotiazida -->
+<tr class="hover:bg-bone-50/70 transition-colors group">
+<td class="py-3 px-3 relative">
+<span class="absolute left-0 top-2 bottom-2 w-1 bg-clinical-warning rounded-r"></span>
+<div class="flex flex-col">
+<span class="font-body-strong text-text-primary flex items-center gap-1">
+                        Hidroclorotiazida
+                        <span class="material-symbols-outlined text-clinical-warning text-[14px]" title="Componente diurético en interacción renal">warning</span>
+</span>
+<span class="font-micro text-micro text-text-muted">Tableta</span>
+</div>
+</td>
+<td class="py-3 px-2 tabular-nums">25 mg</td>
+<td class="py-3 px-2 tabular-nums">c/24 h</td>
+<td class="py-3 px-2 text-text-secondary truncate max-w-[120px]" title="Hipertensión arterial">Hipertensión arterial</td>
+<td class="py-3 px-3 text-right tabular-nums text-text-muted">10/03/2022</td>
+</tr>
+<!-- Atorvastatina -->
+<tr class="hover:bg-bone-50/70 transition-colors">
+<td class="py-3 px-3">
+<div class="flex flex-col">
+<span class="font-body-strong text-text-primary">Atorvastatina</span>
+<span class="font-micro text-micro text-text-muted">Tableta recubierta</span>
+</div>
+</td>
+<td class="py-3 px-2 tabular-nums">40 mg</td>
+<td class="py-3 px-2 tabular-nums">c/24 h</td>
+<td class="py-3 px-2 text-text-secondary">Dislipidemia</td>
+<td class="py-3 px-3 text-right tabular-nums text-text-muted">15/06/2023</td>
+</tr>
+<!-- Ibuprofeno (Critical trigger) -->
+<tr class="hover:bg-bone-50/70 transition-colors group">
+<td class="py-3 px-3 relative">
+<span class="absolute left-0 top-2 bottom-2 w-1 bg-clinical-critical rounded-r"></span>
+<div class="flex flex-col">
+<span class="font-body-strong text-clinical-critical flex items-center gap-1">
+                        Ibuprofeno
+                        <span class="material-symbols-outlined text-clinical-critical text-[14px]" title="AINE con alto riesgo nefrotóxico">error</span>
+</span>
+<span class="font-micro text-micro text-text-muted">Cápsula blanda</span>
+</div>
+</td>
+<td class="py-3 px-2 tabular-nums font-body-strong">600 mg</td>
+<td class="py-3 px-2 tabular-nums">c/8 h</td>
+<td class="py-3 px-2 text-clinical-critical font-body-strong">Según necesidad (dolor)</td>
+<td class="py-3 px-3 text-right tabular-nums text-text-muted">01/02/2024</td>
+</tr>
+<!-- Omeprazol -->
+<tr class="hover:bg-bone-50/70 transition-colors">
+<td class="py-3 px-3">
+<div class="flex flex-col">
+<span class="font-body-strong text-text-primary">Omeprazol</span>
+<span class="font-micro text-micro text-text-muted">Cápsula con gránulos</span>
+</div>
+</td>
+<td class="py-3 px-2 tabular-nums">20 mg</td>
+<td class="py-3 px-2 tabular-nums">c/24 h</td>
+<td class="py-3 px-2 text-text-secondary">Protección gástrica</td>
+<td class="py-3 px-3 text-right tabular-nums text-text-muted">01/02/2024</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-auto pt-space-sm flex items-center justify-between font-micro text-micro text-text-muted">
+<span class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-clinical-critical"></span> Alerta de seguridad directa
+            </span>
+<span class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-clinical-warning"></span> Monitorizar en conjunto
+            </span>
+</div>
+</div>
+<!-- Prioritized Alerts Triage (5 Cols) -->
+<div class="lg:col-span-5 bg-bone-white rounded-xl shadow-[0_2px_10px_rgba(24,20,28,0.05)] p-space-md flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between gap-space-sm pb-space-sm mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-clinical-critical text-[20px]">notifications_active</span>
+<h2 class="font-section-title text-card-title text-text-primary">Alertas priorizadas <span class="font-body-regular text-text-muted text-small">(3)</span></h2>
+</div>
+<a class="font-label text-label text-aubergine-600 hover:text-aubergine-700 flex items-center gap-0.5" href="#">
+<span>Ver todas</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+<!-- Stacked Clinical Alert Cards -->
+<div class="flex flex-col gap-space-sm">
+<!-- Card 1: ALTA (Selected State) -->
+<div class="bg-clinical-critical-surface rounded-xl p-space-sm shadow-sm transition-all duration-150 cursor-pointer">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-clinical-critical text-[20px] shrink-0 mt-0.5">error</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full font-label text-micro bg-bone-white text-clinical-critical font-body-strong shadow-xs">
+                          ALTA
+                        </span>
+<span class="font-micro text-micro text-text-muted">Interacción severa</span>
+</div>
+<h3 class="font-body-strong text-body-strong text-text-primary leading-snug">
+                        Riesgo renal por AINE + IECA + diurético
+                      </h3>
+<p class="font-small text-small text-clinical-critical mt-0.5 font-medium">
+                        Función renal desconocida • "Triple Whammy"
+                      </p>
+</div>
+</div>
+<span class="material-symbols-outlined text-clinical-critical text-[18px] shrink-0 mt-1">chevron_right</span>
+</div>
+</div>
+<!-- Card 2: MEDIA -->
+<div class="bg-clinical-warning-surface rounded-xl p-space-sm shadow-sm hover:shadow-md transition-all duration-150 cursor-pointer">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-clinical-warning text-[20px] shrink-0 mt-0.5">warning</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full font-label text-micro bg-bone-white text-clinical-warning font-body-strong shadow-xs">
+                          MEDIA
+                        </span>
+<span class="font-micro text-micro text-text-muted">Contraindicación relativa</span>
+</div>
+<h3 class="font-body-strong text-body-strong text-text-primary leading-snug">
+                        Uso de AINE en ERC
+                      </h3>
+<p class="font-small text-small text-text-secondary mt-0.5">
+                        Mayor riesgo de progresión de ERC y caída de TFGe
+                      </p>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-muted text-[18px] shrink-0 mt-1">chevron_right</span>
+</div>
+</div>
+<!-- Card 3: BAJA -->
+<div class="bg-clinical-low-surface rounded-xl p-space-sm shadow-sm hover:shadow-md transition-all duration-150 cursor-pointer">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-clinical-safe text-[20px] shrink-0 mt-0.5">check_circle</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full font-label text-micro bg-bone-white text-clinical-low font-body-strong shadow-xs">
+                          BAJA
+                        </span>
+<span class="font-micro text-micro text-text-muted">Optimización farmacológica</span>
+</div>
+<h3 class="font-body-strong text-body-strong text-text-primary leading-snug">
+                        Omeprazol: uso prolongado
+                      </h3>
+<p class="font-small text-small text-text-secondary mt-0.5">
+                        Reevaluar indicación actual (&gt; 8 semanas continuas)
+                      </p>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-muted text-[18px] shrink-0 mt-1">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs bg-bone-50 p-2.5 rounded-lg flex items-center justify-between text-text-muted font-micro text-micro">
+<span>Triage automático según protocolo CCSS-FARMA-2024</span>
+<span class="font-body-strong text-aubergine-600">3 activas</span>
+</div>
+</div>
+</div>
+<!-- 4. Module '¿Por qué se generó esta alerta?' (Analytical Tri-Card Group) -->
+<section class="bg-bone-white rounded-xl shadow-[0_2px_10px_rgba(24,20,28,0.05)] p-space-lg">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-aubergine-600 text-[22px]">psychology_alt</span>
+<h2 class="font-page-title text-section-title text-text-primary">¿Por qué se generó esta alerta?</h2>
+</div>
+<span class="font-label text-label text-text-muted uppercase tracking-wider">Regla activa: CR-REN-001</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Card A: Evidencia -->
+<div class="bg-bone-50 rounded-xl p-space-md flex flex-col justify-between shadow-xs">
+<div>
+<div class="flex items-center gap-space-xs mb-space-sm text-aubergine-700">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+<h3 class="font-body-strong text-body-strong text-text-primary">Evidencia</h3>
+</div>
+<p class="font-body-regular text-small text-text-secondary leading-relaxed">
+                La combinación de un <strong class="text-text-primary">AINE + IECA + diurético</strong> se asocia con un aumento sinérgico y desproporcionado de riesgo de lesión renal aguda (interacción clásica <em class="font-body-strong">"triple whammy"</em>).
+              </p>
+</div>
+<div class="mt-space-md pt-space-xs">
+<a class="inline-flex items-center gap-1 font-body-strong text-small text-aubergine-600 hover:text-aubergine-700 transition-colors" href="#">
+<span>Ver referencias (3)</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Card B: Datos Faltantes -->
+<div class="bg-bone-50 rounded-xl p-space-md flex flex-col justify-between shadow-xs">
+<div>
+<div class="flex items-center gap-space-xs mb-space-sm text-clinical-missing">
+<span class="material-symbols-outlined text-[20px]">indeterminate_question_box</span>
+<h3 class="font-body-strong text-body-strong text-text-primary">Datos faltantes</h3>
+</div>
+<p class="font-body-regular text-small text-text-secondary leading-relaxed">
+                No hay registro en el expediente de <strong class="text-text-primary">creatinina sérica, TFGe o potasio</strong> durante los últimos 6 meses de seguimiento.
+              </p>
+<div class="mt-space-sm p-space-xs bg-clinical-missing-surface rounded-lg">
+<span class="font-body-strong text-micro text-clinical-missing block leading-tight">Dato no disponible ≠ normal</span>
+<span class="font-small text-micro text-text-secondary leading-tight mt-0.5 block">La ausencia de registros de laboratorio puede enmascarar un daño renal preexistente.</span>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs">
+<span class="font-label text-micro text-text-muted uppercase">Requiere orden de laboratorio</span>
+</div>
+</div>
+<!-- Card C: Trazabilidad de Regla -->
+<div class="bg-bone-50 rounded-xl p-space-md flex flex-col justify-between shadow-xs">
+<div>
+<div class="flex items-center gap-space-xs mb-space-sm text-aubergine-700">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+<h3 class="font-body-strong text-body-strong text-text-primary">Trazabilidad de regla</h3>
+</div>
+<ul class="space-y-1 font-small text-small text-text-secondary">
+<li><strong class="text-text-primary font-body-strong">Regla:</strong> CR-REN-001</li>
+<li><strong class="text-text-primary font-body-strong">Fuente:</strong> Base CDSS-CR (Farmacopea CCSS)</li>
+<li><strong class="text-text-primary font-body-strong">Actualización:</strong> 15/02/2024</li>
+<li><strong class="text-text-primary font-body-strong">Nivel evidencia:</strong> Alta (GRADE 1A)</li>
+</ul>
+</div>
+<div class="mt-space-md pt-space-xs">
+<a class="inline-flex items-center gap-1 font-body-strong text-small text-aubergine-600 hover:text-aubergine-700 transition-colors" href="#">
+<span>Ver en base de conocimiento</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- RIGHT CONTEXTUAL INTELLIGENCE PANEL (4 of 12 cols on desktop) -->
+<div class="xl:col-span-4 flex flex-col gap-space-lg">
+<!-- Detalle de Alerta Panel -->
+<section class="bg-bone-white rounded-xl shadow-[0_2px_10px_rgba(24,20,28,0.05)] p-space-md relative overflow-hidden">
+<!-- Panel Header -->
+<div class="flex items-center justify-between pb-space-sm mb-space-sm bg-bone-50 -mx-space-md -mt-space-md px-space-md pt-space-sm">
+<div class="flex items-center gap-space-xs text-aubergine-700">
+<span class="material-symbols-outlined text-[18px]">emergency_home</span>
+<span class="font-card-title text-card-title text-text-primary">Detalle de alerta</span>
+</div>
+<div class="flex items-center gap-1 text-text-muted">
+<button class="p-1 hover:text-text-primary rounded" title="Imprimir informe" type="button">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1 hover:text-text-primary rounded" title="Opciones adicionales" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Alert Core Summary Title -->
+<div class="flex items-start justify-between gap-space-sm mt-space-xs">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2.5 py-0.5 rounded-full font-label text-micro bg-clinical-critical-surface text-clinical-critical font-body-strong">
+                ALTA
+              </span>
+<span class="font-micro text-micro text-text-muted">Regla: CR-REN-001</span>
+</div>
+<h2 class="font-card-title text-card-title text-text-primary leading-tight">
+              Riesgo renal por combinación de medicamentos
+            </h2>
+<p class="font-small text-small text-text-secondary mt-0.5">
+              AINE + IECA + diurético ("triple whammy")
+            </p>
+</div>
+</div>
+<!-- Tabbed Inspector Strip -->
+<div class="flex items-center gap-space-xs mt-space-md mb-space-sm bg-bone-50 p-1 rounded-lg">
+<button class="flex-1 py-1 px-2 rounded-md bg-bone-white text-aubergine-700 font-body-strong text-micro text-center shadow-xs" type="button">Resumen</button>
+<button class="flex-1 py-1 px-2 rounded-md text-text-muted hover:text-text-primary font-body-regular text-micro text-center transition-colors" type="button">Evidencia</button>
+<button class="flex-1 py-1 px-2 rounded-md text-text-muted hover:text-text-primary font-body-regular text-micro text-center transition-colors" type="button">Contexto</button>
+<button class="flex-1 py-1 px-2 rounded-md text-text-muted hover:text-text-primary font-body-regular text-micro text-center transition-colors" type="button">Guía</button>
+</div>
+<!-- Mechanism Graphic Banner -->
+<div class="bg-clinical-critical-surface/60 rounded-xl p-space-sm my-space-sm flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-bone-white flex items-center justify-center text-clinical-critical shrink-0 shadow-xs">
+<span class="material-symbols-outlined text-[24px]">file_copy</span>
+</div>
+<p class="font-small text-small text-text-primary leading-snug">
+<strong class="text-clinical-critical font-body-strong">Riesgo aumentado de lesión renal aguda:</strong> Uso concomitante de inhibidor de prostaglandinas renales (AINE) + inhibidor de angiotensina (IECA) + disminución de volumen (diurético).
+          </p>
+</div>
+<!-- Clinical Context Matrix -->
+<div class="space-y-space-xs my-space-md">
+<div class="flex items-start gap-2 text-small">
+<span class="material-symbols-outlined text-[16px] text-text-muted mt-0.5 shrink-0">person_outline</span>
+<div>
+<span class="font-body-strong text-text-primary">Contexto:</span>
+<span class="text-text-secondary"> María Rodríguez, 54 años</span>
+</div>
+</div>
+<div class="flex items-start gap-2 text-small">
+<span class="material-symbols-outlined text-[16px] text-text-muted mt-0.5 shrink-0">medication</span>
+<div>
+<span class="font-body-strong text-text-primary">Fármacos implicados:</span>
+<span class="text-text-secondary"> Ibuprofeno 600mg + Enalapril 20mg + HCTZ 25mg</span>
+</div>
+</div>
+<div class="flex items-start gap-2 text-small">
+<span class="material-symbols-outlined text-[16px] text-text-muted mt-0.5 shrink-0">clinical_notes</span>
+<div>
+<span class="font-body-strong text-text-primary">Comorbilidad:</span>
+<span class="text-text-secondary"> HTA, DM2, Enfermedad renal crónica</span>
+</div>
+</div>
+<div class="flex items-start gap-2 text-small">
+<span class="material-symbols-outlined text-[16px] text-clinical-warning mt-0.5 shrink-0">help_outline</span>
+<div>
+<span class="font-body-strong text-clinical-missing">Laboratorio:</span>
+<span class="text-text-secondary"> Sin registro renal en últimos 6 meses</span>
+</div>
+</div>
+</div>
+<!-- Actionable Recommendations Block -->
+<div class="bg-bone-50 rounded-xl p-space-md mt-space-sm">
+<div class="flex items-center gap-1.5 mb-space-xs text-clinical-safe">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-body-strong text-small text-text-primary">Recomendación sugerida</span>
+</div>
+<ol class="list-decimal list-inside space-y-1.5 font-body-regular text-small text-text-secondary pl-1">
+<li class="leading-snug"><strong class="text-text-primary">Evitar AINE (ibuprofeno):</strong> Prescribir alternativa analgésica más segura (p. ej. Paracetamol hasta 2g/día).</li>
+<li class="leading-snug"><strong class="text-text-primary">Solicitar analítica urgente:</strong> Creatinina sérica, TFGe y electrolitos (K+).</li>
+<li class="leading-snug"><strong class="text-text-primary">Reevaluar dosis de diurético:</strong> Verificar estado hídrico del paciente.</li>
+<li class="leading-snug">Programar control de función renal a las 2 semanas tras el ajuste.</li>
+</ol>
+</div>
+<div class="mt-space-md flex gap-space-sm">
+<button class="flex-1 py-2 px-3 bg-aubergine-600 hover:bg-aubergine-700 text-bone-white rounded-lg font-body-strong text-small shadow-sm transition-all text-center" type="button">
+            Aceptar recomendación
+          </button>
+<button class="py-2 px-3 bg-bone-100 hover:bg-bone-200 text-text-secondary rounded-lg font-body-strong text-small transition-colors" type="button">
+            Posponer
+          </button>
+</div>
+</section>
+<!-- Explicación con IA y Auditoría Panel -->
+<section class="bg-bone-white rounded-xl shadow-[0_2px_10px_rgba(24,20,28,0.05)] p-space-md">
+<!-- Header -->
+<div class="flex items-center justify-between pb-space-sm mb-space-sm">
+<div class="flex items-center gap-space-xs text-aubergine-700">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+<span class="font-card-title text-card-title text-text-primary">Explicación con IA y auditoría</span>
+</div>
+<button class="inline-flex items-center gap-1 font-label text-micro text-text-muted hover:text-aubergine-700 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>Copiar</span>
+</button>
+</div>
+<!-- AI Explanation Box -->
+<div class="bg-aubergine-100 rounded-xl p-space-md shadow-xs relative">
+<div class="flex items-center justify-between mb-space-xs">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-md bg-aubergine-600 text-bone-white flex items-center justify-center font-bold text-[11px]">IA</span>
+<span class="font-body-strong text-small text-aubergine-700">Explicación en lenguaje claro</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-bone-white font-label text-micro text-aubergine-600 shadow-xs">
+<span class="material-symbols-outlined text-[12px]">spark</span>
+              Generado con IA
+            </span>
+</div>
+<p class="font-body-regular text-small text-text-primary leading-relaxed">
+            Esta alerta se genera porque la paciente utiliza concomitantemente <strong>ibuprofeno, enalapril e hidroclorotiazida</strong>. Esta combinación reduce abruptamente el flujo plasmático y la filtración glomerular renal, con mayor peligro si existe deshidratación o antecedentes de nefropatía. Al no existir registros analíticos de creatinina en los últimos seis meses, no es factible descartar una caída subclínica de la TFGe. Se aconseja suspender el antiinflamatorio y ordenar pruebas de laboratorio inmediatas.
+          </p>
+<div class="mt-space-sm pt-space-xs border-t border-aubergine-300/40 flex items-center gap-1.5 text-text-muted font-micro text-micro">
+<span class="material-symbols-outlined text-[14px] text-aubergine-500 shrink-0">info</span>
+<span>La IA complementa, no reemplaza, el juicio clínico profesional.</span>
+</div>
+</div>
+<!-- Audit Trail / Timeline -->
+<div class="mt-space-md">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label text-label uppercase text-text-muted tracking-wider">Línea de tiempo / Auditoría</span>
+<a class="font-label text-micro text-aubergine-600 hover:text-aubergine-700" href="#">Ver auditoría completa →</a>
+</div>
+<div class="space-y-space-xs font-small text-micro">
+<div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-bone-50">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-clinical-critical"></span>
+<span class="font-body-strong tabular-nums text-text-secondary">15/03/2024 10:24</span>
+<span class="text-text-primary">Generación de alerta (regla CR-REN-001)</span>
+</div>
+<span class="text-text-muted font-micro">CDSS-CR</span>
+</div>
+<div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-bone-50">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-aubergine-500"></span>
+<span class="font-body-strong tabular-nums text-text-secondary">15/03/2024 10:26</span>
+<span class="text-text-primary">Visualizada por Dra. Ana Vargas</span>
+</div>
+<span class="text-text-muted font-micro">Usuario</span>
+</div>
+<div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-bone-50">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-aubergine-300"></span>
+<span class="font-body-strong tabular-nums text-text-secondary">15/03/2024 10:28</span>
+<span class="text-text-primary">Consulta de síntesis explicativa IA</span>
+</div>
+<span class="text-text-muted font-micro">Usuario</span>
+</div>
+<div class="flex items-center justify-between p-1.5 rounded-lg bg-bone-50/60">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-bone-200"></span>
+<span class="font-body-strong tabular-nums text-text-secondary">15/03/2024 10:30</span>
+<span class="text-text-secondary">Pendiente registro en nota médica</span>
+</div>
+<span class="text-clinical-warning font-body-strong font-micro">En curso</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Editorial Sub-Footer Credo Banner -->
+<footer class="mt-space-xl pt-space-md border-t border-bone-200 flex flex-col md:flex-row items-center justify-between gap-space-md text-text-muted">
+<div class="flex items-center gap-space-md">
+<div class="font-page-title text-card-title text-text-primary italic">
+        "La decisión correcta, en el momento correcto, para cada persona."
+      </div>
+</div>
+<div class="flex items-center gap-space-lg font-micro text-micro">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-aubergine-600">health_and_safety</span>
+<span>PACIENTES MÁS SEGUROS</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-aubergine-600">clinical_notes</span>
+<span>PROFESIONALES MÁS INFORMADOS</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-aubergine-600">local_hospital</span>
+<span>SISTEMA DE SALUD MÁS FUERTE</span>
+</div>
+</div>
+</footer>
+</div>
+<script>
+  // Micro-interaction handlers
+  document.addEventListener('DOMContentLoaded', () => {
+    const tableRows = document.querySelectorAll('tbody tr');
+    tableRows.forEach(row => {
+      row.addEventListener('click', () => {
+        tableRows.forEach(r => r.classList.remove('bg-bone-100'));
+        row.classList.add('bg-bone-100');
+      });
+    });
+  });
+</script></main></div></body></html>

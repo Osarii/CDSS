@@ -11,25 +11,34 @@
 - **Product Brand:** SAMED — *Sistema de Apoyo Médico para Evaluación y Decisión*
 - **Tagline:** *"SAMED apoya la decisión. El profesional toma la decisión."*
 - **Architecture Role:** Product brand = **SAMED** | Technical project / repository = **CDSS**
-- **Current Work:** Dashboard Visual Baseline v1 preparation
-- **Next Allowed Task:** Dashboard Visual Baseline v1
+- **Current Work:** Scenario-driven alerts complete: static demo alert fallbacks (`DEFAULT_DEMO_ALERTS`) removed; visible alerts sourced strictly from deterministic evaluation of the active scenario; clean 0-alert empty state with disabled pulse/inspector on SYN-001/0-finding scenarios; dynamic cards, count, severity, and inspector on scenarios with findings; regression tests verified; 219/219 tests passing; lint & build clean.
+- **Next Allowed Task:** Next review or next workflow per user direction (Patients / Medication Review halted)
 - **Current Branch:** `main`
-- **Last Important Commit:** `da59204`
+- **Last Important Commit:** `158884b` (tracking policy; dashboard not yet committed)
 - **Last Update Date:** 2026-09-25
 
 ## 2. Current Progress
 - COMPLETE: SAMED Product Branding Alignment
-- IN_PROGRESS: PROJECT_STATE progress tracking policy implementation
-- PENDING: Dashboard Visual Baseline v1 implementation
+- COMPLETE: PROJECT_STATE progress tracking policy implementation
+- COMPLETE: Dashboard Visual Baseline v1 (AppShell + Dashboard + TanStack Query hooks)
+- COMPLETE: Browser runtime fetch invocation fix & regression test
+- COMPLETE: Dashboard 1:1 convergence iteration 1 (desktop sidebar, top header, context card, table, prioritized alerts, analytical group, AI explanation box, credo banner)
+- COMPLETE: Dashboard alert detail density reduction & on-demand contextual inspector (hidden by default, dismissible X, redundant fields removed, full-width canvas expansion when closed)
+- COMPLETE: Dashboard animated alert inspector trigger with active alert counter and severity pulse
+- COMPLETE: Alert inspector count, cards, footer, and pulse state consistency & regression test suite
+- COMPLETE: Scenario-driven alert evaluation & removal of static demo alert fallbacks
+- PENDING: Patients view
 
 ## 3. Completed Phases (Compacted)
 - Phase 0 - 0.6: Scaffolding, Boilerplate Cleanup, Design System Alignment
 - Agent Infrastructure: Rule Library, Prompt Router, Prompt Gate, Context Optimization
 - Phase 1: Domain Model v1, Synthetic Scenarios v1, Context Builder v1, Data Gate v1, Deterministic Findings v1, DEMO Rules v1
 - Data: Synthetic DB Normalization + Adapter Integration
+- Branding: SAMED Product Branding Alignment
+- Dashboard Visual Baseline v1: AppShell + Sidebar + Dashboard page + TanStack Query hooks (useClinicalData), PlaceholderScreen for all other routes; KPI bar, findings panel, blocked evaluations panel, scenario overview, rule evaluation results; loading/empty/error states; synthetic data label visible; 21 focused UI tests (203 total); build + lint clean
 
 - **Explicit Tasks NOT to Start Yet:**
-  - DO NOT implement final clinical screens (Dashboard, Medication Review; Dashboard Visual Baseline remains a later milestone).
+  - DO NOT implement Medication Review or AI explanation panels in the current cycle.
   - DO NOT implement final clinical rule sets or invent unvalidated guidance.
   - DO NOT connect to real EDUS / FHIR or external clinical APIs.
   - DO NOT alter synthetic data schemas under `src/domain/` without explicit prompt instruction.
@@ -57,6 +66,8 @@
 - **Domain Logic:** `src/domain/` (patient, medication, clinical-context, rules, findings, scenarios, audit)
 - **Synthetic Scenarios Catalog:** `src/data/scenarios/` (`SYN-001` through `SYN-008`)
 - **Data Adapters:** `src/services/adapters/ClinicalDataAdapter.ts`
+- **Dashboard & Shell:** `src/features/dashboard/Dashboard.tsx`, `src/components/layout/AppShell.tsx`, `src/styles/dashboard.css`
+- **UI Data Hooks:** `src/services/api/useClinicalData.ts`
 
 ## 6. Established Decisions Summary
 - See [docs/architecture/DECISIONS.md](./docs/architecture/DECISIONS.md) (`DEC-001` through `DEC-010`) for stable architectural, clinical, token, and domain severity decisions.

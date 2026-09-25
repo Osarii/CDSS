@@ -4,6 +4,7 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource/source-serif-4";
 @import "./styles/globals.css";
+@import "./styles/dashboard.css";
 
 @custom-variant dark (&:is(.dark *));
 
