@@ -10,5 +10,6 @@ export * from './clinical-context/requiredDataGate'
 
 export * from './rules/schema'
 export * from './findings/schema'
+export * from './findings/builder'
 export * from './audit/schema'
 export * from './scenarios/schema'

@@ -468,12 +468,89 @@ El ensamblador de contexto clínico `buildClinicalContext` queda completamente f
 
 ---
 
+### 2026-09-24 — Required Data Gate v1
+
+**Phase:** Required Data Gate v1
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.8 Flash
+**Ruleset activado:** DOMAIN+DATA+TEST+DOCS
+**Context packs consultados:** `DOMAIN_CONTEXT.md`, `RULES_CONTEXT.md`
+
+**Objetivo**
+
+Integrar la lógica de compuerta de datos obligatorios (`evaluateClinicalContextDataGate`) con el snapshot canónico `ClinicalContext` y las definiciones de reglas (`RuleDefinition.requiredDataKeys`), garantizando que la evaluación se bloquee determinísticamente ante datos faltantes, obsoletos, desconocidos o no disponibles sin asumir nunca normalidad o seguridad.
+
+**Decisiones clave y cambios**
+
+- **Integración canónica de compuerta (`src/domain/clinical-context/requiredDataGate.ts`):** Se implementó `evaluateClinicalContextDataGate(context, requirement)` aceptando un `ClinicalContext` y una lista de claves requeridas o un `RuleDefinition` (`Pick<RuleDefinition, 'requiredDataKeys'>`).
+- **Evaluación selectiva de claves requeridas:** La compuerta inspecciona únicamente las claves requeridas por la regla en evaluación. La presencia de datos no disponibles en claves no requeridas no bloquea reglas no relacionadas.
+- **Invariante clínico fundamental (`UNKNOWN !== NORMAL`):** Cualquier clave requerida con estado `MISSING`, `UNKNOWN`, `STALE` o `UNAVAILABLE` bloquea la evaluación (`canProceed: false`).
+- **Detección y tipado de causas de fallo (`FailedRequirementReason`):** Se distingue con precisión si el fallo se debe a un dato no utilizable (`NOT_USABLE`: presente pero no disponible o con valor nulo/indefinido) o a una clave requerida ausente en el snapshot (`NOT_PRESENT`: clave no provista en `dataPoints`). Una clave ausente se clasifica como `MISSING` / `NOT_PRESENT` y jamás se interpreta como normal o `AVAILABLE`.
+- **Preservación exhaustiva de fallos:** Se preservan todas las claves fallidas y sus estados específicos en `failedRequirements` y `blockedReasons`.
+- **Pureza y determinismo:** Función estrictamente pura, libre de efectos secundarios y mutaciones sobre `ClinicalContext`. No ejecuta aún reglas de `json-rules-engine` ni genera `Finding`s.
+- **Suite de pruebas focalizadas (`src/domain/clinical-context/requiredDataGate.test.ts`):** 14 pruebas automatizadas verificando:
+  - Paso limpio con datos disponibles en `SYN-001`.
+  - Bloqueo determinístico por datos `MISSING` en `SYN-004` (`serum_creatinine`, `egfr`).
+  - No interferencia de datos no requeridos en `SYN-004`.
+  - Bloqueo determinístico por datos `STALE` en `SYN-005` (`serum_creatinine`, `uric_acid`).
+  - Preservación múltiple de fallos heterogéneos en `SYN-008` (`MISSING`, `UNAVAILABLE`, `STALE`, `UNKNOWN`).
+  - Bloqueo estricto por clave ausente (`NOT_PRESENT`).
+  - Aceptación de objetos `RuleDefinition` directos y manejo seguro de conjuntos vacíos.
+  - Inmutabilidad y determinismo en ejecuciones repetidas.
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS (0 errors, 0 warnings)
+- npm run test: PASS (8 files, 96 tests passed)
+- npm run build: PASS (Vite + TypeScript compilation)
+
+**Resultado**
+
+La compuerta de datos obligatorios `evaluateClinicalContextDataGate` queda formalizada, verificada y lista para integrarse al ciclo de ejecución del motor de reglas determinísticas y a la generación de `Finding`s.
+
+---
+
+### 2026-09-24 — Deterministic Findings v1
+
+**Phase:** Deterministic Findings v1
+**Status:** COMPLETE
+**Commit:** pending (GIT: NONE)
+**Agent/model:** Antigravity / Gemini 3.8 Flash
+**Ruleset activado:** DOMAIN+TEST+DOCS
+**Context packs consultados:** `DOMAIN_CONTEXT.md`, `RULES_CONTEXT.md`
+
+**Objetivo**
+
+Implementar el constructor/factoría determinístico puro de hallazgos clínicos (`buildClinicalFinding`, `buildFinding`, `buildClinicalFindingFromRule`, `buildClinicalFindings`) basado en el esquema canónico `clinicalFindingSchema`, garantizando trazabilidad completa hacia la regla y su versión, preservación inalterada de claves de datos de soporte y faltantes, y rechazo estricto de inferencias o conclusiones clínicas arbitrarias.
+
+**Decisiones clave y cambios**
+
+- **Constructor determinístico puro (`src/domain/findings/builder.ts`):** Función pura `buildClinicalFinding` libre de efectos secundarios que valida la entrada mediante `clinicalFindingInputSchema`, construye el hallazgo con `isDeterministic: true`, genera identificadores determinísticos reproducibles libres de colisiones incluyendo la identidad de evaluación temporal (`finding-${patientId}-${ruleId}-${ruleVersion}-${timestamp}`), preserva identificadores personalizados explícitos cuando se suministran, y valida el objeto resultante contra `clinicalFindingSchema`.
+- **Preservación explícita de trazabilidad:** Se preservan íntegramente `patientId`, `ruleId`, `ruleVersion`, `severity`, `title`, `detail`, `supportingDataKeys`, `missingDataKeys` y `timestamp`.
+- **Integración con definiciones de reglas (`buildClinicalFindingFromRule`):** Helper puro que mapea directamente un `RuleDefinition` (`id`, `version`, `name`, `severity`) junto con los detalles de evaluación a un `ClinicalFinding`, preservando la versión exacta de la regla sin omisiones ni valores por defecto tácitos.
+- **Inmutabilidad y aislamiento de referencias:** Clonación defensiva de arreglos (`supportingDataKeys`, `missingDataKeys`) para impedir que mutaciones externas en el objeto de entrada o en el hallazgo construido alteren el estado de datos.
+- **Rechazo estricto de entradas inválidas:** Validación en esquema canónico (`schema.ts`) que rechaza cadenas vacías en campos obligatorios, severidades no canónicas (`safe`, `unknown`, etc.) y banderas no deterministas (`isDeterministic: false`).
+- **Suite de pruebas automatizadas (`src/domain/findings/builder.test.ts`):** 22 pruebas exhaustivas cubriendo validación de esquemas, preservación de versiones de regla, trazabilidad de auditoría, preservación de claves de soporte/faltantes, determinismo, inmutabilidad, construcción por lotes (`buildClinicalFindings`) e integridad de identificadores (diferenciación temporal de IDs en evaluaciones sucesivas, idempotencia y no colisión en lotes).
+
+**Verification**
+
+- git diff --check: PASS
+- npm run lint: PASS (0 errors, 0 warnings)
+- npm run test: PASS (9 files, 118 tests passed)
+- npm run build: PASS (Vite + TypeScript compilation)
+
+**Resultado**
+
+El constructor de hallazgos clínicos determinísticos `buildClinicalFinding` queda implementado, validado y probado, listo para conectarse con la ejecución de reglas clínicas evaluadas tras el paso por la compuerta de datos.
+
+---
+
 ## Próximos hitos importantes
 
 Registrar aquí únicamente al completarse:
 
-- Required Data Gate v1.
-- Deterministic Findings v1.
 - Primeras reglas DEMO.
 - Dashboard Visual Baseline integrado.
 - Medication Review Visual Baseline integrado.

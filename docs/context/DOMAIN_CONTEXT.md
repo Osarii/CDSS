@@ -30,8 +30,8 @@ Compact orientation for working within the CDSS-CR clinical domain models and bo
   - `clinicalContextSourceInputSchema`: Explicit raw-source input boundary for the Clinical Context Builder (`patient`, `medications`, `medicationExposures`, `allergies`, `conditions`, `observations`, `dataPoints?`, `evaluationTimestamp`).
   - `buildClinicalContext` (`src/domain/clinical-context/builder.ts`): Pure deterministic builder assembling `ClinicalContext` from `ClinicalContextSourceInput`, resolving medications and preserving exposure metadata strictly via `MedicationExposure` records belonging to the patient and resolved medication set, preserving therapyContext, status, startedAt and endedAt without inference or normalization, enforcing source patient referential integrity (rejecting cross-patient or uncataloged references), and preserving raw availability states (`AVAILABLE`, `MISSING`, `UNKNOWN`, `STALE`, `UNAVAILABLE`) without normalization.
   - `clinicalDataPointSchema`: Serializable key-value data point with availability state.
-  - `requiredDataGate.ts`: Evaluates data readiness preserving `failedRequirements` (`key`, `status`).
-- **TARGET:** Pipeline integration feeding assembled `ClinicalContext` snapshots into deterministic rule engine execution and clinical UI review screens.
+  - `requiredDataGate.ts`: Pure deterministic data gate evaluating data readiness before rule execution (`evaluateDataGate`, `evaluateClinicalContextDataGate`), preserving failed requirements (`key`, `status`, `reason`) across availability states (`AVAILABLE`, `MISSING`, `UNKNOWN`, `STALE`, `UNAVAILABLE`) and handling missing required keys (`NOT_PRESENT`) without assuming normal status.
+- **TARGET:** Pipeline integration connecting `evaluateClinicalContextDataGate` directly to deterministic rule engine execution and clinical finding generation.
 
 
 
@@ -40,8 +40,8 @@ Compact orientation for working within the CDSS-CR clinical domain models and bo
 - **TARGET:** Synthetic demo rule definitions for drug-drug interactions and dosage alerts.
 
 ### Findings
-- **CURRENT:** `src/domain/findings/schema.ts` defines `clinicalFindingSchema` (`id`, `patientId`, `ruleId`, `ruleVersion`, `severity: 'critical'|'warning'|'low'|'info'`, `title`, `detail`, `supportingDataKeys`, `missingDataKeys`, `timestamp`, `isDeterministic: true`).
-- **TARGET:** Finding generator converting rule evaluation events into structured finding instances during Deterministic Findings milestone.
+- **CURRENT:** `src/domain/findings/` defines `clinicalFindingSchema`, `clinicalFindingInputSchema`, and pure deterministic builders `buildClinicalFinding`, `buildFinding`, `buildClinicalFindingFromRule`, `buildClinicalFindings` (`src/domain/findings/builder.ts`). Explicitly preserves traceability (`patientId`, `ruleId`, `ruleVersion`, `timestamp`), severity (`critical`, `warning`, `low`, `info`), titles/details, and data keys (`supportingDataKeys`, `missingDataKeys`) with `isDeterministic: true`. Does not infer clinical conclusions inside the Finding layer.
+- **TARGET:** Evaluation pipeline connecting deterministic rule engine outcomes directly to finding generation.
 
 ### Audit
 - **CURRENT:** `src/domain/audit/schema.ts` defines `auditEventSchema` (`id`, `action`, `userId`, `timestamp`, `payloadSummary`).

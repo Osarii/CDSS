@@ -3,3 +3,14 @@ export { dataAvailabilityStateSchema } from '../common/schema'
 export type { ClinicalDataPoint, ClinicalContext, ClinicalContextSourceInput } from './schema'
 export { clinicalDataPointSchema, clinicalContextSchema, clinicalContextSourceInputSchema } from './schema'
 export { buildClinicalContext } from './builder'
+export type {
+  FailedRequirement,
+  FailedRequirementReason,
+  DataGateEvaluationResult,
+  RequiredDataKeysInput,
+} from './requiredDataGate'
+export {
+  isDataPointAvailable,
+  evaluateDataGate,
+  evaluateClinicalContextDataGate,
+} from './requiredDataGate'

@@ -7,7 +7,7 @@
 ---
 
 ## 1. Execution Coordinates
-- **Current Phase:** Clinical Context Builder v1 Complete -> Next: Required Data Gate v1
+- **Current Phase:** Deterministic Findings v1 Complete -> Next: DEMO Rules v1
 - **Current Branch:** `main`
 - **Last Important Commit:** `d2b5738` (Finalize Clinical Context Builder v1)
 - **Last Update Date:** 2026-09-24
@@ -25,8 +25,10 @@
   - Synthetic Clinical Scenarios v1 (`SYN-001` through `SYN-008`, typed catalog, multi-state availability tests, raw synthetic fixtures stored in `db.json`) (`aa3232b`)
   - Medication Exposure + Clinical Context Source Boundary (`MedicationExposure` typed/Zod model, 39 synthetic exposures in `src/data/scenarios/exposures.ts` & `db.json`, SYN-003 physician temporal structure preserved, `clinicalContextSourceInputSchema` boundary) (`e15e72f`)
   - Clinical Context Builder v1 (`buildClinicalContext` pure deterministic assembler, patient-linked medication exposure resolution, preservation of medication exposure metadata in canonical `ClinicalContext` snapshot, cross-patient leak protection, data point availability preservation, full scenario suite) (`d2b5738`)
-- **Current Work:** Clinical Context Builder v1 Complete
-- **Next Allowed Phase / Task:** Required Data Gate v1
+  - Required Data Gate v1 (`evaluateClinicalContextDataGate` integrating `ClinicalContext` snapshots with `RuleDefinition.requiredDataKeys`, selective key evaluation, failed requirement status & reason preservation, blocking non-usable/not-present data without assuming normal status, scenario suite verified)
+  - Deterministic Findings v1 (`buildClinicalFinding`, `buildFinding`, `buildClinicalFindingFromRule`, `buildClinicalFindings` pure deterministic builders, collision-free timestamped automatic IDs, explicit traceability and severity preservation, strict rule version preservation, supportingDataKeys & missingDataKeys preservation, canonical schema validation, test suite verified)
+- **Current Work:** Deterministic Findings v1 Finalized
+- **Next Allowed Phase / Task:** DEMO Rules v1
 
 
 - **Explicit Tasks NOT to Start Yet:**
