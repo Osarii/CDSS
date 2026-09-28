@@ -11,6 +11,17 @@ describe('n8n Workflows Validation (Gemini Clinical & Qwen Pharmacy)', () => {
   const clinicalWorkflowPath = path.join(rootDir, 'n8n/clinical-assistant-workflow.json')
   const pharmacyWorkflowPath = path.join(rootDir, 'n8n/pharmacy-assistant-workflow.json')
 
+  function executeN8nCodeNode(jsCode: string, item: unknown) {
+    const fn = new Function('$input', '$', jsCode)
+    const $input = {
+      first: () => ({ json: item }),
+    }
+    const $ = () => ({
+      first: () => ({ json: {} }),
+    })
+    return fn($input, $)
+  }
+
   // ----------------------------------------------------------------
   // 1. File existence and JSON parsability
   // ----------------------------------------------------------------
@@ -71,29 +82,113 @@ describe('n8n Workflows Validation (Gemini Clinical & Qwen Pharmacy)', () => {
       expect(httpNode.parameters.jsonBody).toContain('clinical_assistant')
     })
 
-    it('normalizes response into canonical ClinicalAssessmentSummary schema', () => {
-      const mockNormalizedOutput = {
-        id: 'ca-summary-pat-syn-001-1727500000000',
-        patientId: 'pat-syn-001',
-        summary: 'Síntesis clínica de demostración generada para paciente pat-syn-001.',
-        clinicalConsiderations: [
-          'Se identificaron 1 hallazgos determinísticos activos.',
-        ],
-        dataAvailabilityGaps: [
+    it('strictly normalizes valid candidate output without fabricating missing fields', () => {
+      const normalizeNode = clinicalWorkflow.nodes.find(
+        (n: { name: string }) => n.name === 'Normalize Response'
+      )
+      const validCandidate = {
+        candidates: [
           {
-            key: 'serum_creatinine',
-            status: 'MISSING',
-            reason: 'Dato analítico no registrado',
+            content: {
+              parts: [
+                {
+                  text: JSON.stringify({
+                    id: 'ca-summary-pat-syn-001-1727500000000',
+                    patientId: 'pat-syn-001',
+                    summary: 'Síntesis clínica válida generada por Gemini.',
+                    clinicalConsiderations: ['Observación relevante 1'],
+                    dataAvailabilityGaps: [
+                      {
+                        key: 'serum_creatinine',
+                        status: 'MISSING',
+                        reason: 'Dato analítico no registrado',
+                      },
+                    ],
+                    deterministicFindingsReferenced: ['finding-001'],
+                    generatedAt: '2026-09-28T10:00:00.000Z',
+                    role: 'clinical_assistant',
+                  }),
+                },
+              ],
+            },
           },
         ],
-        deterministicFindingsReferenced: ['finding-001'],
+      }
+
+      const result = executeN8nCodeNode(normalizeNode.parameters.jsCode, validCandidate)
+      expect(result).toHaveLength(1)
+      expect(result[0].json.error).toBeUndefined()
+      const validated = clinicalAssessmentSummarySchema.parse(result[0].json)
+      expect(validated.id).toBe('ca-summary-pat-syn-001-1727500000000')
+      expect(validated.patientId).toBe('pat-syn-001')
+      expect(validated.role).toBe('clinical_assistant')
+    })
+
+    it('rejects incomplete Gemini outputs missing required contract fields', () => {
+      const normalizeNode = clinicalWorkflow.nodes.find(
+        (n: { name: string }) => n.name === 'Normalize Response'
+      )
+
+      const baseValid = {
+        id: 'ca-summary-pat-syn-001-1727500000000',
+        patientId: 'pat-syn-001',
+        summary: 'Síntesis clínica válida.',
+        clinicalConsiderations: ['Observación'],
+        dataAvailabilityGaps: [{ key: 'k1', status: 'AVAILABLE' }],
+        deterministicFindingsReferenced: ['f1'],
         generatedAt: '2026-09-28T10:00:00.000Z',
         role: 'clinical_assistant',
       }
 
-      const validated = clinicalAssessmentSummarySchema.parse(mockNormalizedOutput)
-      expect(validated.role).toBe('clinical_assistant')
-      expect(validated.patientId).toBe('pat-syn-001')
+      const requiredKeys: (keyof typeof baseValid)[] = [
+        'id',
+        'patientId',
+        'summary',
+        'clinicalConsiderations',
+        'dataAvailabilityGaps',
+        'deterministicFindingsReferenced',
+        'generatedAt',
+        'role',
+      ]
+
+      for (const key of requiredKeys) {
+        const incomplete = { ...baseValid }
+        delete (incomplete as Record<string, unknown>)[key]
+
+        const item = {
+          candidates: [{ content: { parts: [{ text: JSON.stringify(incomplete) }] } }],
+        }
+
+        const result = executeN8nCodeNode(normalizeNode.parameters.jsCode, item)
+        expect(result[0].json.error).toBe(true)
+        expect(result[0].json.code).toBe('INVALID_CLINICAL_ASSESSMENT_STRUCTURE')
+        expect(() => clinicalAssessmentSummarySchema.parse(result[0].json)).toThrow()
+      }
+    })
+
+    it('rejects Gemini outputs with malformed dataAvailabilityGaps items', () => {
+      const normalizeNode = clinicalWorkflow.nodes.find(
+        (n: { name: string }) => n.name === 'Normalize Response'
+      )
+
+      const invalidGap = {
+        id: 'ca-summary-1',
+        patientId: 'pat-1',
+        summary: 'Summary',
+        clinicalConsiderations: [],
+        dataAvailabilityGaps: [{ key: '', status: 'INVALID_STATUS' }],
+        deterministicFindingsReferenced: [],
+        generatedAt: '2026-09-28T10:00:00.000Z',
+        role: 'clinical_assistant',
+      }
+
+      const item = {
+        candidates: [{ content: { parts: [{ text: JSON.stringify(invalidGap) }] } }],
+      }
+
+      const result = executeN8nCodeNode(normalizeNode.parameters.jsCode, item)
+      expect(result[0].json.error).toBe(true)
+      expect(result[0].json.code).toBe('INVALID_CLINICAL_ASSESSMENT_STRUCTURE')
     })
   })
 
@@ -117,15 +212,36 @@ describe('n8n Workflows Validation (Gemini Clinical & Qwen Pharmacy)', () => {
       expect(rawHeader).not.toMatch(/gsk_[0-9A-Za-z]{40,}/) // No real Groq API key
     })
 
-    it('enforces JSON Schema Mode with strict validation in Groq request', () => {
+    it('enforces JSON Schema Mode with full strict:true compliance for Groq', () => {
       const httpNode = pharmacyWorkflow.nodes.find(
         (n: { type: string }) => n.type === 'n8n-nodes-base.httpRequest'
       )
-      expect(httpNode.parameters.jsonBody).toContain('json_schema')
-      expect(httpNode.parameters.jsonBody).toContain('pharmacy_review')
-      expect(httpNode.parameters.jsonBody).toContain('BLOCKED_BY_MISSING_DATA')
-      expect(httpNode.parameters.jsonBody).toContain('REVIEW_RECOMMENDED')
-      expect(httpNode.parameters.jsonBody).toContain('NO_ADDITIONAL_CONCERNS')
+      const rawJsonBody = httpNode.parameters.jsonBody
+      // Extract json_schema substring or verify properties
+      expect(rawJsonBody).toContain('"strict": true')
+      expect(rawJsonBody).toContain('"additionalProperties": false')
+
+      // Verify all properties of root object are required
+      const requiredRootProps = [
+        'id',
+        'patientId',
+        'prescriptionDraftId',
+        'status',
+        'summary',
+        'pharmacologicalConsiderations',
+        'requiredDataGaps',
+        'deterministicFindingsReferenced',
+        'reviewedAt',
+        'role',
+      ]
+
+      for (const prop of requiredRootProps) {
+        expect(rawJsonBody).toContain(`"${prop}"`)
+      }
+
+      // Verify requiredDataGaps schema: strict object with nullable reason and all required properties
+      expect(rawJsonBody).toContain('"reason": {\n                  "type": ["string", "null"]')
+      expect(rawJsonBody).toContain('"required": ["key", "status", "reason"]')
     })
 
     it('enforces controlled input boundary: does not leak or process raw ClinicalContext', () => {
@@ -144,77 +260,161 @@ describe('n8n Workflows Validation (Gemini Clinical & Qwen Pharmacy)', () => {
       expect(code).toContain('Ensure raw ClinicalContext is strictly not passed to Qwen')
     })
 
-    it('normalizes response into canonical PharmacyReview schema', () => {
-      const mockNormalizedOutput = {
+    it('strictly normalizes valid message content without fabricating missing fields', () => {
+      const normalizeNode = pharmacyWorkflow.nodes.find(
+        (n: { name: string }) => n.name === 'Normalize Response'
+      )
+      const validMessage = {
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                id: 'pr-review-pat-syn-001-1727500000000',
+                patientId: 'pat-syn-001',
+                prescriptionDraftId: 'draft-001',
+                status: 'BLOCKED_BY_MISSING_DATA',
+                summary: 'Revisión farmacéutica independiente válida.',
+                pharmacologicalConsiderations: ['Consideración 1'],
+                requiredDataGaps: [
+                  {
+                    key: 'serum_creatinine',
+                    status: 'MISSING',
+                    reason: null,
+                  },
+                ],
+                deterministicFindingsReferenced: ['finding-001'],
+                reviewedAt: '2026-09-28T10:00:00.000Z',
+                role: 'pharmacy_assistant',
+              }),
+            },
+          },
+        ],
+      }
+
+      const result = executeN8nCodeNode(normalizeNode.parameters.jsCode, validMessage)
+      expect(result).toHaveLength(1)
+      expect(result[0].json.error).toBeUndefined()
+      const validated = pharmacyReviewSchema.parse(result[0].json)
+      expect(validated.role).toBe('pharmacy_assistant')
+      expect(validated.status).toBe('BLOCKED_BY_MISSING_DATA')
+      expect(validated.prescriptionDraftId).toBe('draft-001')
+    })
+
+    it('rejects incomplete Qwen outputs missing required contract fields', () => {
+      const normalizeNode = pharmacyWorkflow.nodes.find(
+        (n: { name: string }) => n.name === 'Normalize Response'
+      )
+
+      const baseValid = {
         id: 'pr-review-pat-syn-001-1727500000000',
         patientId: 'pat-syn-001',
         prescriptionDraftId: 'draft-001',
-        status: 'BLOCKED_BY_MISSING_DATA',
-        summary: 'Revisión farmacéutica independiente de propuesta draft-001.',
-        pharmacologicalConsiderations: [
-          'Evaluación bloqueada por datos analíticos renales ausentes.',
-        ],
-        requiredDataGaps: [
-          {
-            key: 'serum_creatinine',
-            status: 'MISSING',
-            reason: 'Dato analítico no registrado',
-          },
-        ],
-        deterministicFindingsReferenced: ['finding-001'],
+        status: 'NO_ADDITIONAL_CONCERNS',
+        summary: 'Revisión farmacéutica válida.',
+        pharmacologicalConsiderations: ['Obs'],
+        requiredDataGaps: [{ key: 'k1', status: 'AVAILABLE', reason: null }],
+        deterministicFindingsReferenced: ['f1'],
         reviewedAt: '2026-09-28T10:00:00.000Z',
         role: 'pharmacy_assistant',
       }
 
-      const validated = pharmacyReviewSchema.parse(mockNormalizedOutput)
-      expect(validated.role).toBe('pharmacy_assistant')
-      expect(validated.status).toBe('BLOCKED_BY_MISSING_DATA')
+      const requiredKeys: (keyof typeof baseValid)[] = [
+        'id',
+        'patientId',
+        'prescriptionDraftId',
+        'status',
+        'summary',
+        'pharmacologicalConsiderations',
+        'requiredDataGaps',
+        'deterministicFindingsReferenced',
+        'reviewedAt',
+        'role',
+      ]
+
+      for (const key of requiredKeys) {
+        const incomplete = { ...baseValid }
+        delete (incomplete as Record<string, unknown>)[key]
+
+        const item = {
+          choices: [{ message: { content: JSON.stringify(incomplete) } }],
+        }
+
+        const result = executeN8nCodeNode(normalizeNode.parameters.jsCode, item)
+        expect(result[0].json.error).toBe(true)
+        expect(result[0].json.code).toBe('INVALID_PHARMACY_REVIEW_STRUCTURE')
+        expect(() => pharmacyReviewSchema.parse(result[0].json)).toThrow()
+      }
     })
 
-    it('returns explicit error responses for malformed or error outputs instead of fabricating valid summaries', () => {
+    it('rejects Qwen outputs with invalid status or malformed requiredDataGaps', () => {
       const normalizeNode = pharmacyWorkflow.nodes.find(
         (n: { name: string }) => n.name === 'Normalize Response'
       )
-      expect(normalizeNode).toBeDefined()
-      const code = normalizeNode.parameters.jsCode
 
-      // Verify code returns controlled error on API error or malformed structure
-      expect(code).toContain("code: 'GROQ_API_ERROR'")
-      expect(code).toContain("code: 'MALFORMED_PROVIDER_OUTPUT'")
-      expect(code).toContain("code: 'INVALID_PHARMACY_REVIEW_STRUCTURE'")
-
-      // Verify error response is rejected by SAMED Zod schema
-      const errorOutput = {
-        error: true,
-        code: 'MALFORMED_PROVIDER_OUTPUT',
-        message: 'Failed to parse Qwen provider response',
+      const invalidStatus = {
+        id: 'pr-1',
+        patientId: 'pat-1',
+        prescriptionDraftId: 'draft-1',
+        status: 'NON_EXISTENT_STATUS',
+        summary: 'Summary',
+        pharmacologicalConsiderations: [],
+        requiredDataGaps: [],
+        deterministicFindingsReferenced: [],
+        reviewedAt: '2026-09-28T10:00:00.000Z',
+        role: 'pharmacy_assistant',
       }
-      expect(() => pharmacyReviewSchema.parse(errorOutput)).toThrow()
+
+      const item = {
+        choices: [{ message: { content: JSON.stringify(invalidStatus) } }],
+      }
+
+      const result = executeN8nCodeNode(normalizeNode.parameters.jsCode, item)
+      expect(result[0].json.error).toBe(true)
+      expect(result[0].json.code).toBe('INVALID_PHARMACY_REVIEW_STRUCTURE')
+    })
+
+    it('returns explicit error responses on Groq API failure', () => {
+      const normalizeNode = pharmacyWorkflow.nodes.find(
+        (n: { name: string }) => n.name === 'Normalize Response'
+      )
+
+      const errorOutput = {
+        error: {
+          message: 'Rate limit reached',
+          type: 'requests',
+          code: 'rate_limit_exceeded',
+        },
+      }
+
+      const result = executeN8nCodeNode(normalizeNode.parameters.jsCode, errorOutput)
+      expect(result[0].json.error).toBe(true)
+      expect(result[0].json.code).toBe('GROQ_API_ERROR')
+      expect(result[0].json.message).toContain('Rate limit reached')
+      expect(() => pharmacyReviewSchema.parse(result[0].json)).toThrow()
     })
   })
 
   describe('Clinical Assistant Workflow Error Rejection', () => {
     const clinicalWorkflow = JSON.parse(fs.readFileSync(clinicalWorkflowPath, 'utf8'))
 
-    it('returns explicit error responses for malformed or error outputs instead of fabricating valid summaries', () => {
+    it('returns explicit error responses on Gemini API failure', () => {
       const normalizeNode = clinicalWorkflow.nodes.find(
         (n: { name: string }) => n.name === 'Normalize Response'
       )
-      expect(normalizeNode).toBeDefined()
-      const code = normalizeNode.parameters.jsCode
 
-      // Verify code returns controlled error on API error or malformed structure
-      expect(code).toContain("code: 'GEMINI_API_ERROR'")
-      expect(code).toContain("code: 'MALFORMED_PROVIDER_OUTPUT'")
-      expect(code).toContain("code: 'INVALID_CLINICAL_ASSESSMENT_STRUCTURE'")
-
-      // Verify error response is rejected by SAMED Zod schema
       const errorOutput = {
-        error: true,
-        code: 'MALFORMED_PROVIDER_OUTPUT',
-        message: 'Failed to parse Gemini provider response',
+        error: {
+          code: 429,
+          message: 'Resource exhausted',
+          status: 'RESOURCE_EXHAUSTED',
+        },
       }
-      expect(() => clinicalAssessmentSummarySchema.parse(errorOutput)).toThrow()
+
+      const result = executeN8nCodeNode(normalizeNode.parameters.jsCode, errorOutput)
+      expect(result[0].json.error).toBe(true)
+      expect(result[0].json.code).toBe('GEMINI_API_ERROR')
+      expect(result[0].json.message).toContain('Resource exhausted')
+      expect(() => clinicalAssessmentSummarySchema.parse(result[0].json)).toThrow()
     })
   })
 })

@@ -11,7 +11,7 @@
 - **Product Brand:** SAMED — *Sistema de Apoyo Médico para Evaluación y Decisión*
 - **Tagline:** *"SAMED apoya la decisión. El profesional toma la decisión."*
 - **Architecture Role:** Product brand = **SAMED** | Technical project / repository = **CDSS**
-- **Current Work:** Updated the SAMED Clinical Assistant n8n workflow from legacy `gemini-3-flash-preview` to `gemini-3.8-flash`. Verified compatibility of structured output schema and preserved webhook path and provider boundaries. All tests (275 total) and builds passed successfully.
+- **Current Work:** Fixed final strict-output validation defects in Gemini and Qwen n8n workflows. Made Qwen JSON schema fully compliant with Groq `strict: true` (all properties required, `additionalProperties: false`, `reason` as nullable string in `requiredDataGaps`). Removed all fabrication/repair fallbacks from `Normalize Response` nodes in both workflows, returning explicit controlled error responses (`error: true`) when required contract fields or types are missing. Added comprehensive regression tests. 15 workflow tests (279 total across 16 suites), 0 linter errors, production build clean, `git diff --check` clean.
 - **Next Allowed Task:** Next task per user direction.
 - **Current Branch:** `main`
 - **Last Important Commit:** `5d44aa6` (fix: enforce clinical findings single source of truth)
@@ -36,6 +36,7 @@
 - COMPLETE: SAMED Remote AI Provider Boundary (Gemini Clinical Assistant + Qwen Pharmacy Assistant via n8n webhooks, Zod domain validation, error/timeout handling, provider boundary isolation, 13 focused tests)
 - COMPLETE: Importable n8n workflows generated for Gemini Clinical Assistant & Qwen Pharmacy Assistant (structured JSON schemas, boundary isolation, 9 focused tests)
 - COMPLETE: Hardened SAMED n8n AI workflow boundary & error handling verification (authoritative findings wording, explicit controlled error responses for malformed model output, Zod rejection boundary, deterministic findings preservation, 11 workflow tests, 275 total across 16 test files)
+- COMPLETE: Strict-output schema & validation defects fix in n8n workflows (Groq strict:true compatibility with nullable required properties, zero fallback fabrication in normalization nodes, 15 workflow tests, 279 total tests)
 - PENDING: Patients view
 
 ## 3. Completed Phases (Compacted)
