@@ -695,6 +695,128 @@ describe('Dashboard Visual Baseline — 1:1 Stitch Converged', () => {
       expect(screen.getByTestId('no-active-alerts-message')).toHaveTextContent('Sin alertas clínicas activas')
       expect(screen.queryAllByRole('button', { name: /seleccionar alerta/i })).toHaveLength(0)
     })
+
+    it('renders only real context.allergies and does not inject scenario-based Penicilina fallback', () => {
+      // Empty allergies
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: {
+          context: {
+            patient: { id: 'pat-syn-001', syntheticIdentifier: 'SYN-001', age: 60, gender: 'male' },
+            medications: [],
+            medicationExposures: [],
+            allergies: [],
+            conditions: [],
+            observations: [],
+            dataPoints: {},
+            timestamp: '2026-09-25T10:00:00.000Z',
+          } as never,
+          evaluation: {
+            findings: [],
+            results: [],
+          },
+        },
+        isLoading: false,
+        error: null,
+      } as never)
+
+      const { unmount } = renderWithProviders(<Dashboard />)
+      expect(screen.queryByText(/penicilina/i)).not.toBeInTheDocument()
+      unmount()
+
+      // Populated allergies
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: {
+          context: {
+            patient: { id: 'pat-syn-001', syntheticIdentifier: 'SYN-001', age: 60, gender: 'male' },
+            medications: [],
+            medicationExposures: [],
+            allergies: [{ id: 'all-1', patientId: 'pat-syn-001', substance: 'Sulfamidas', criticality: 'high' }],
+            conditions: [],
+            observations: [],
+            dataPoints: {},
+            timestamp: '2026-09-25T10:00:00.000Z',
+          } as never,
+          evaluation: {
+            findings: [],
+            results: [],
+          },
+        },
+        isLoading: false,
+        error: null,
+      } as never)
+
+      renderWithProviders(<Dashboard />)
+      expect(screen.getByText(/alergia:.*sulfamidas/i)).toBeInTheDocument()
+      expect(screen.queryByText(/penicilina/i)).not.toBeInTheDocument()
+    })
+
+    it('renders missing analytical data section 4.2 only when evaluation contains blocked results', () => {
+      // Clean evaluation without blocked rules
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: {
+          context: {} as never,
+          evaluation: {
+            findings: [],
+            results: [{ ruleId: 'RULE-1', status: 'not_triggered' as const }],
+          },
+        },
+        isLoading: false,
+        error: null,
+      } as never)
+
+      const { unmount } = renderWithProviders(<Dashboard />)
+      expect(screen.queryByLabelText(/aviso de información clínica incompleta/i)).not.toBeInTheDocument()
+      unmount()
+
+      // Blocked evaluation
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: {
+          context: {} as never,
+          evaluation: {
+            findings: [],
+            results: [mockBlockedResult],
+          },
+        },
+        isLoading: false,
+        error: null,
+      } as never)
+
+      renderWithProviders(<Dashboard />)
+      expect(screen.getByLabelText(/aviso de información clínica incompleta/i)).toBeInTheDocument()
+      expect(screen.getByText(/para la regla DEMO-REN-001/i)).toBeInTheDocument()
+    })
+
+    it('hides why-alert-generated section and renders clean neutral empty state in medications table when empty', () => {
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: {
+          context: {
+            patient: { id: 'pat-syn-001', syntheticIdentifier: 'SYN-001', age: 60, gender: 'male' },
+            medications: [],
+            medicationExposures: [],
+            allergies: [],
+            conditions: [],
+            observations: [],
+            dataPoints: {},
+            timestamp: '2026-09-25T10:00:00.000Z',
+          } as never,
+          evaluation: {
+            findings: [],
+            results: [],
+          },
+        },
+        isLoading: false,
+        error: null,
+      } as never)
+
+      renderWithProviders(<Dashboard />)
+
+      // Section 4.4 not rendered
+      expect(screen.queryByText(/¿Por qué se generó esta alerta\?/i)).not.toBeInTheDocument()
+
+      // Table shows neutral empty state
+      expect(screen.getByText(/sin prescripciones registradas en este escenario simulado/i)).toBeInTheDocument()
+      expect(screen.queryByText(/Riesgo de interacción/i)).not.toBeInTheDocument()
+    })
   })
 })
 

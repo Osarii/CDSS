@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, within } from '@testing-library/react'
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
 import { MedicationReview } from '@/features/medication-review/MedicationReview'
@@ -200,8 +200,16 @@ function buildEvaluationPayload(findings: ClinicalFinding[] = [mockFindingCritic
       results: [
         {
           ruleId: 'DEMO-REN-001',
+          ruleVersion: '1.0.0',
           status: 'blocked' as const,
-          reason: 'Faltan parámetros requeridos: serum_creatinine, egfr',
+          gateResult: {
+            canProceed: false,
+            blockedReasons: ['MISSING'],
+            failedRequirements: [
+              { key: 'serum_creatinine', status: 'MISSING', reason: 'NOT_PRESENT' },
+              { key: 'egfr', status: 'MISSING', reason: 'NOT_PRESENT' },
+            ],
+          },
         },
       ],
     },
@@ -328,7 +336,7 @@ describe('MedicationReview — SAMED Visual Baseline v1', () => {
     expect(screen.getByText('fármacos concurrentes (Simulados)')).toBeInTheDocument()
 
     expect(screen.getByText('Hallazgo de alta prioridad')).toBeInTheDocument()
-    expect(screen.getByText('Priorizado (Triple combinación)')).toBeInTheDocument()
+    expect(screen.getAllByText('Alerta Triple Combinación Nefrotóxica').length).toBeGreaterThanOrEqual(1)
 
     expect(screen.getByText('Revisión Analítica Pendiente')).toBeInTheDocument()
     expect(screen.getByText('Vigilancia Temporal')).toBeInTheDocument()
@@ -395,34 +403,12 @@ describe('MedicationReview — SAMED Visual Baseline v1', () => {
     expect(screen.getByText(/análisis del medicamento seleccionado: enalapril/i)).toBeInTheDocument()
   })
 
-  // ----------------------------------------------------------------
-  // 7. Hemodynamic Mechanism Illustration Block
-  // ----------------------------------------------------------------
-  it('renders hemodynamic illustration block with 3 interactive nodes', () => {
-    renderWithProviders(<MedicationReview />)
 
-    expect(screen.getByRole('heading', { name: /relación considerada por la regla de demostración/i })).toBeInTheDocument()
-    expect(screen.getByText(/contenido clínico ilustrativo · pendiente de validación experta/i)).toBeInTheDocument()
-    expect(screen.getByText(/modelo farmacológico considerado por la regla/i)).toBeInTheDocument()
-
-    // 3 nodes
-    expect(screen.getByText('AINE (Ibuprofeno)')).toBeInTheDocument()
-    expect(screen.getByText('Vasodilatación renal atenuada')).toBeInTheDocument()
-    expect(screen.getByText('Modelo de arteriola aferente')).toBeInTheDocument()
-
-    expect(screen.getByText('IECA (Enalapril)')).toBeInTheDocument()
-    expect(screen.getByText('Resistencia eferente reducida')).toBeInTheDocument()
-    expect(screen.getByText('Modelo de arteriola eferente')).toBeInTheDocument()
-
-    expect(screen.getByText('Diurético (HCTZ)')).toBeInTheDocument()
-    expect(screen.getByText('Volumen intravascular')).toBeInTheDocument()
-    expect(screen.getByText('Flujo renal de referencia')).toBeInTheDocument()
-  })
-
-  // ----------------------------------------------------------------
   // 8. Right Detail Inspector
   // ----------------------------------------------------------------
-  it('renders right inspector with pauta, findings, profile, recommendations, AI explanation, and actions', () => {
+  // 8. Right Detail Inspector with Dual AI Roles v1 Progressive Workspace
+  // ----------------------------------------------------------------
+  it('renders right inspector with pauta, findings, profile, recommendations, Dual AI workspace, and actions', () => {
     renderWithProviders(<MedicationReview />)
 
     // Header & Regimen
@@ -436,16 +422,21 @@ describe('MedicationReview — SAMED Visual Baseline v1', () => {
     expect(screen.getByText(/perfil farmacoterapéutico de referencia \(datos demostrativos\)/i)).toBeInTheDocument()
     expect(screen.getByText('Vía de eliminación')).toBeInTheDocument()
     expect(screen.getByText('Monitoreo sugerido')).toBeInTheDocument()
-    expect(screen.getByText(/parámetro de regla: creatinina sérica no registrada en últimos 6 meses/i)).toBeInTheDocument()
+    expect(screen.getByText(/parámetro de regla:.*serum_creatinine/i)).toBeInTheDocument()
 
     // Consultative Considerations
     expect(screen.getByText(/consideraciones de revisión profesional \(consultivo\)/i)).toBeInTheDocument()
-    expect(screen.getByText(/opción de valoración analgésica/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/alerta triple combinación nefrotóxica/i).length).toBeGreaterThan(0)
 
-    // AI Explanation Box
-    expect(screen.getByText('Explicación con IA')).toBeInTheDocument()
-    expect(screen.getByText(/generado con ia/i)).toBeInTheDocument()
-    expect(screen.getByText(/la explicación generada complementa la información del sistema y no sustituye el juicio clínico profesional/i)).toBeInTheDocument()
+    // Dual AI Roles v1 Progressive Workspace
+    expect(screen.getByText('Revisión Dual con IA SAMED')).toBeInTheDocument()
+    expect(screen.getByText('Roles Asistidos v1')).toBeInTheDocument()
+    expect(screen.getByText('SAMED apoya la decisión. El profesional toma la decisión.')).toBeInTheDocument()
+    expect(screen.getByText('Propuesta de Prescripción (Médico Tratante)')).toBeInTheDocument()
+    expect(screen.getByText(/autor: dr-medico-tratante-demo/i)).toBeInTheDocument()
+    expect(screen.getByText(/borrador de autoría médica exclusiva\. la ia no genera ni aprueba recetas\./i)).toBeInTheDocument()
+    expect(screen.getByText(/análisis con ia pendiente/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /ejecutar revisión dual con ia/i })).toBeInTheDocument()
 
     // Action buttons
     expect(screen.getByRole('button', { name: /registrar decisión profesional/i })).toBeInTheDocument()
@@ -454,7 +445,7 @@ describe('MedicationReview — SAMED Visual Baseline v1', () => {
     expect(screen.getByRole('button', { name: /posponer revisión para próxima consulta/i })).toBeInTheDocument()
 
     // Traceability Card
-    expect(screen.getByText('Regla Clínica: DEMO-REN-001 (v0.1)')).toBeInTheDocument()
+    expect(screen.getByText('Regla Clínica: DEMO-REN-001 (v1.0.0)')).toBeInTheDocument()
     expect(screen.getByText('DEMOSTRACIÓN')).toBeInTheDocument()
     expect(screen.getByText('PENDIENTE')).toBeInTheDocument()
   })
@@ -469,5 +460,349 @@ describe('MedicationReview — SAMED Visual Baseline v1', () => {
     fireEvent.change(select, { target: { value: 'scen-syn-002' } })
 
     expect(clinicalData.useScenarioEvaluation).toHaveBeenCalledWith('scen-syn-002')
+  })
+
+  // ----------------------------------------------------------------
+  // 10. PrescriptionDraft Physician Authorship & Editing
+  // ----------------------------------------------------------------
+  it('supports editing and saving the physician-authored PrescriptionDraft', async () => {
+    renderWithProviders(<MedicationReview />)
+
+    expect(screen.getByText('Propuesta de Prescripción (Médico Tratante)')).toBeInTheDocument()
+    expect(screen.getByText(/autor: dr-medico-tratante-demo/i)).toBeInTheDocument()
+    expect(screen.getAllByText('Ibuprofeno').length).toBeGreaterThan(0)
+
+    // Enter edit mode
+    const editBtn = screen.getByRole('button', { name: /editar propuesta/i })
+    fireEvent.click(editBtn)
+
+    // Form inputs should now be visible
+    expect(screen.getByPlaceholderText('Nombre del medicamento')).toBeInTheDocument()
+    const dosageInput = screen.getByPlaceholderText('Ej: 400 mg')
+    expect(dosageInput).toBeInTheDocument()
+
+    // Change dosage
+    fireEvent.change(dosageInput, { target: { value: '400 mg' } })
+
+    // Save changes
+    const saveBtn = screen.getByRole('button', { name: /guardar cambios/i })
+    fireEvent.click(saveBtn)
+
+    // Verified updated draft is displayed
+    await waitFor(() => {
+      expect(screen.queryByPlaceholderText('Ej: 400 mg')).not.toBeInTheDocument()
+      expect(screen.getByText(/400 mg/i)).toBeInTheDocument()
+    })
+    expect(screen.getByText(/autor: dr-medico-tratante-demo/i)).toBeInTheDocument()
+  })
+
+  // ----------------------------------------------------------------
+  // 11. Dual AI Review Blocked When PrescriptionDraft Is Absent
+  // ----------------------------------------------------------------
+  it('prevents Dual AI review execution when PrescriptionDraft is deleted/absent', async () => {
+    renderWithProviders(<MedicationReview />)
+
+    // Clear draft
+    const deleteBtn = screen.getByRole('button', { name: /eliminar propuesta/i })
+    fireEvent.click(deleteBtn)
+
+    // Draft is gone, blocked notice shown
+    expect(screen.getByText(/sin propuesta médica activa/i)).toBeInTheDocument()
+
+    // Dual review button is disabled
+    const runBtn = screen.getByRole('button', { name: /ejecutar revisión dual con ia/i })
+    expect(runBtn).toBeDisabled()
+
+    // Restore draft
+    const createBtn = screen.getByRole('button', { name: /crear propuesta médica inicial/i })
+    fireEvent.click(createBtn)
+
+    expect(screen.getByText('Propuesta de Prescripción (Médico Tratante)')).toBeInTheDocument()
+    expect(runBtn).toBeEnabled()
+  })
+
+  // ----------------------------------------------------------------
+  // 12. Dual AI Review Execution: Clinical Assistant, Pharmacy Assistant, & Neutral Comparison
+  // ----------------------------------------------------------------
+  it('executes Dual AI review and progressively displays Clinical Assistant, Pharmacy Assistant, and neutral Comparison without declaring a winner', async () => {
+    renderWithProviders(<MedicationReview />)
+
+    // Initially downstream review is pending
+    expect(screen.getByText(/análisis con ia pendiente/i)).toBeInTheDocument()
+    expect(screen.queryByRole('tablist', { name: /secciones de revisión dual/i })).not.toBeInTheDocument()
+
+    // Click run button
+    const runBtn = screen.getByRole('button', { name: /ejecutar revisión dual con ia/i })
+    fireEvent.click(runBtn)
+
+    // Clinical Assistant tab panel is active by default
+    await waitFor(() => {
+      expect(screen.getByRole('tabpanel', { name: /asistente clínico samed/i })).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('Síntesis Clínica')).toBeInTheDocument()
+    expect(screen.getByText(/brechas de datos identificadas \(dato faltante ≠ normal\):/i)).toBeInTheDocument()
+    expect(screen.getAllByText('UNAVAILABLE').length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/serum_creatinine/i).length).toBeGreaterThan(0)
+    expect(screen.getByText('finding-001')).toBeInTheDocument()
+
+    // Switch to Pharmacy Assistant tab
+    const pharmacyTab = screen.getByRole('tab', { name: /revisión farmacéutica/i })
+    fireEvent.click(pharmacyTab)
+
+    expect(screen.getByRole('tabpanel', { name: /revisión farmacéutica samed/i })).toBeInTheDocument()
+    expect(screen.getByText('BLOQUEADO POR DATOS FALTANTES')).toBeInTheDocument()
+    expect(screen.getByText(/entrada farmacoterapéutica controlada \(sin acceso directo al contexto clínico crudo\)\./i)).toBeInTheDocument()
+    expect(screen.getByText(/datos requeridos ausentes para validación:/i)).toBeInTheDocument()
+
+    // Switch to Comparison tab
+    const comparisonTab = screen.getByRole('tab', { name: /comparación/i })
+    fireEvent.click(comparisonTab)
+
+    expect(screen.getByRole('tabpanel', { name: /comparación de revisiones/i })).toBeInTheDocument()
+    expect(screen.getByText('Sin Ganador')).toBeInTheDocument()
+    expect(screen.getByText(/evaluación comparativa sin selección de ganador: el profesional médico evalúa las diferencias y retiene la autoridad decisoria\./i)).toBeInTheDocument()
+
+    // Prohibited words check
+    expect(screen.queryByText(/receta segura/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/aprobado por ia/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/la ia médica tiene razón/i)).not.toBeInTheDocument()
+  })
+
+  // ----------------------------------------------------------------
+  // 13. Scenario Switch Clears Stale AI Review Results
+  // ----------------------------------------------------------------
+  it('clears stale Dual AI review results and resets draft when switching scenario', async () => {
+    renderWithProviders(<MedicationReview />)
+
+    // Run AI review
+    const runBtn = screen.getByRole('button', { name: /ejecutar revisión dual con ia/i })
+    fireEvent.click(runBtn)
+
+    await waitFor(() => {
+      expect(screen.getByRole('tabpanel', { name: /asistente clínico samed/i })).toBeInTheDocument()
+    })
+
+    // Switch scenario
+    const select = screen.getByLabelText(/seleccionar escenario sintético activo/i)
+    fireEvent.change(select, { target: { value: 'scen-syn-002' } })
+
+    // Stale review results should be cleared immediately
+    await waitFor(() => {
+      expect(screen.queryByRole('tabpanel', { name: /asistente clínico samed/i })).not.toBeInTheDocument()
+      expect(screen.getByText(/análisis con ia pendiente/i)).toBeInTheDocument()
+    })
+  })
+
+  // ----------------------------------------------------------------
+  // 14. Controlled Pharmacy Input & Deterministic Finding Immutability
+  // ----------------------------------------------------------------
+  it('preserves controlled boundary for pharmacy review and keeps deterministic findings immutable', async () => {
+    const payload = buildEvaluationPayload()
+    const draft = {
+      id: 'draft-test-01',
+      patientId: 'pat-syn-001',
+      authorPhysicianId: 'dr-medico-tratante-demo',
+      status: 'draft' as const,
+      createdAt: '2026-09-25T10:00:00.000Z',
+      items: [
+        {
+          id: 'item-01',
+          medicationCode: 'IBU-600',
+          medicationName: 'Ibuprofeno',
+          dosage: '600 mg',
+          route: 'oral',
+          frequency: 'cada 8 horas',
+        },
+      ],
+    }
+
+    const { executeDualAIRoles } = await import('@/services/ai')
+    const originalFindings = [mockFindingCritical]
+
+    const result = await executeDualAIRoles({
+      context: payload.context,
+      proposedPrescription: draft,
+      deterministicFindings: originalFindings,
+    })
+
+    // Deterministic findings remain identical and untouched
+    expect(result.deterministicFindings).toHaveLength(1)
+    expect(result.deterministicFindings[0].id).toBe('finding-001')
+    expect(result.deterministicFindings[0].severity).toBe('critical')
+
+    // Clinical and Pharmacy reviews are independent
+    expect(result.clinicalSummary.role).toBe('clinical_assistant')
+    expect(result.pharmacyReview.role).toBe('pharmacy_assistant')
+    expect(result.comparison.unresolvedDiscrepancies).toBeDefined()
+  })
+
+  // ----------------------------------------------------------------
+  // 15. Regression: Clinical Consistency & Deterministic Findings as Single Source of Truth
+  // ----------------------------------------------------------------
+  describe('Clinical Consistency & Deterministic Findings as Single Source of Truth', () => {
+    it('handles zero findings cleanly: no false critical badges, no hemodynamic diagram, neutral state', () => {
+      const payload = buildEvaluationPayload([])
+      payload.evaluation.results = [
+        {
+          ruleId: 'RULE-OK',
+          status: 'passed' as const,
+        } as never,
+      ]
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: payload,
+        isLoading: false,
+        error: null,
+      } as never)
+
+      renderWithProviders(<MedicationReview />)
+
+      // 1. Metric card 2 shows neutral state
+      expect(screen.getByText('Sin alertas críticas activas')).toBeInTheDocument()
+
+      // 2. Hemodynamic illustration card is NOT rendered
+      expect(screen.queryByText(/fisiopatología de la triple combinación/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/vasodilatación arteriola aferente/i)).not.toBeInTheDocument()
+
+      // 3. Medication table shows neutral finding state
+      expect(screen.getAllByText('Sin hallazgos activos en esta revisión').length).toBe(3)
+      expect(screen.getByText('Sin hallazgos clínicos directos')).toBeInTheDocument()
+      expect(screen.queryByText('Alerta Triple Combinación Nefrotóxica')).not.toBeInTheDocument()
+
+      // 4. Traceability card is NOT rendered without active findings
+      expect(screen.queryByText(/regla clínica: demo-ren-001/i)).not.toBeInTheDocument()
+    })
+
+    it('renders missing analytical data notice only when evaluation has blocked rules', () => {
+      // With blocked rules
+      const blockedPayload = buildEvaluationPayload([])
+      blockedPayload.evaluation.results = [
+        {
+          ruleId: 'DEMO-REN-001',
+          ruleVersion: '1.0.0',
+          status: 'blocked' as const,
+          gateResult: {
+            canProceed: false,
+            blockedReasons: ['MISSING'],
+            failedRequirements: [
+              { key: 'serum_creatinine', status: 'MISSING', reason: 'NOT_PRESENT' },
+            ],
+          },
+        },
+      ]
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: blockedPayload,
+        isLoading: false,
+        error: null,
+      } as never)
+
+      const { unmount } = renderWithProviders(<MedicationReview />)
+
+      expect(screen.getByText(/información clínica incompleta/i)).toBeInTheDocument()
+      expect(screen.getByText(/parámetro de regla:.*serum_creatinine/i)).toBeInTheDocument()
+      unmount()
+
+      // Without blocked rules
+      const cleanPayload = buildEvaluationPayload([])
+      cleanPayload.evaluation.results = [
+        {
+          ruleId: 'DEMO-REN-001',
+          status: 'not_triggered' as const,
+        } as never,
+      ]
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: cleanPayload,
+        isLoading: false,
+        error: null,
+      } as never)
+
+      renderWithProviders(<MedicationReview />)
+
+      expect(screen.queryByText(/información clínica incompleta/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/parámetro de regla:/i)).not.toBeInTheDocument()
+    })
+
+    it('renders only real context.allergies and does not inject scenario-based fallbacks', () => {
+      // When allergies array is empty
+      const noAllergyPayload = buildEvaluationPayload([])
+      noAllergyPayload.context.allergies = []
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: noAllergyPayload,
+        isLoading: false,
+        error: null,
+      } as never)
+
+      const { unmount } = renderWithProviders(<MedicationReview />)
+
+      expect(screen.queryByText(/penicilina/i)).not.toBeInTheDocument()
+      unmount()
+
+      // When allergies has a specific drug
+      const customAllergyPayload = buildEvaluationPayload([])
+      customAllergyPayload.context.allergies = [
+        {
+          id: 'all-sulfa',
+          patientId: 'pat-syn-001',
+          substance: 'Sulfamidas',
+          criticality: 'high' as const,
+        },
+      ]
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: customAllergyPayload,
+        isLoading: false,
+        error: null,
+      } as never)
+
+      renderWithProviders(<MedicationReview />)
+
+      expect(screen.getByText(/alergia:\s*sulfamidas/i)).toBeInTheDocument()
+      expect(screen.queryByText(/penicilina/i)).not.toBeInTheDocument()
+    })
+
+    it('ensures medication risk badges in table derive solely from actual findings', () => {
+      // Only 1 finding targeting med-002 (Enalapril)
+      const singleMedFinding: ClinicalFinding = {
+        id: 'finding-ena',
+        patientId: 'pat-syn-001',
+        ruleId: 'DEMO-DDI-001',
+        ruleVersion: '1.0.0',
+        severity: 'warning',
+        title: 'Precaución con Enalapril',
+        detail: 'Monitorizar potasio.',
+        supportingDataKeys: ['med-002'],
+        missingDataKeys: [],
+        timestamp: '2026-09-25T10:00:00.000Z',
+        isDeterministic: true,
+      }
+
+      const payload = buildEvaluationPayload([singleMedFinding])
+      vi.mocked(clinicalData.useScenarioEvaluation).mockReturnValue({
+        data: payload,
+        isLoading: false,
+        error: null,
+      } as never)
+
+      renderWithProviders(<MedicationReview />)
+
+      // med-002 has Precaución con Enalapril
+      expect(screen.getByText('Precaución con Enalapril')).toBeInTheDocument()
+
+      // med-001 (Ibuprofeno) and med-003 (HCTZ) have neutral safe status in table
+      expect(screen.getAllByText('Sin hallazgos activos en esta revisión').length).toBe(2)
+    })
+
+    it('never renders the removed unsupported triple-whammy hemodynamic diagram even when DEMO-REN-001 finding is active', () => {
+      renderWithProviders(<MedicationReview />)
+
+      // Confirm default render has DEMO-REN-001 finding active in inspector/table
+      expect(screen.getAllByText(/alerta triple combinación nefrotóxica/i).length).toBeGreaterThan(0)
+
+      // Confirm unsupported triple-whammy diagram elements are not in the DOM
+      expect(screen.queryByRole('heading', { name: /relación considerada por la regla de demostración/i })).not.toBeInTheDocument()
+      expect(screen.queryByText(/contenido clínico ilustrativo · pendiente de validación experta/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/modelo de arteriola aferente/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/modelo de arteriola eferente/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/vasodilatación renal atenuada/i)).not.toBeInTheDocument()
+    })
   })
 })

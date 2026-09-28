@@ -213,18 +213,9 @@ export function Dashboard() {
   const medications = context?.medications ?? []
   const allergies = context?.allergies ?? []
 
-  // Fallback defaults matching Stitch reference for SYN-001 when partial mock is provided
-  const displayConditions =
-    conditions.length > 0
-      ? conditions.map((c) => c.name || c.code)
-      : ['Hipertensión arterial', 'Diabetes mellitus tipo 2', 'Enfermedad renal crónica']
-
-  const displayAllergies =
-    allergies.length > 0
-      ? allergies.map((a) => a.substance)
-      : activeScenario?.scenarioId === 'SYN-001' || activeScenario?.scenarioId === 'SYN-002'
-        ? ['Penicilina']
-        : []
+  // Context facts directly from scenario evaluation
+  const displayConditions = conditions.map((c) => c.name || c.code)
+  const displayAllergies = allergies.map((a) => a.substance)
 
   // Check if medication is involved in alerts
   const isMedicationFlagged = (medName: string) => {
@@ -434,60 +425,56 @@ export function Dashboard() {
               </div>
             </section>
 
-            {/* 4.2. Mandatory Missing Information Banner */}
-            <section
-              className="bg-clinical-missing-surface rounded-xl p-space-md shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md border border-clinical-missing-border"
-              role="region"
-              aria-label="Aviso de información clínica incompleta"
-            >
-              <div className="flex items-start gap-space-md">
-                <div className="w-10 h-10 rounded-lg bg-clinical-warning/20 flex items-center justify-center text-clinical-missing shrink-0 mt-0.5 sm:mt-0" aria-hidden="true">
-                  <HelpCircle size={22} />
+            {/* 4.2. Mandatory Missing Information Banner (rendered only when evaluation is blocked by missing data) */}
+            {blockedResults.length > 0 && (
+              <section
+                className="bg-clinical-missing-surface rounded-xl p-space-md shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md border border-clinical-missing-border"
+                role="region"
+                aria-label="Aviso de información clínica incompleta"
+              >
+                <div className="flex items-start gap-space-md">
+                  <div className="w-10 h-10 rounded-lg bg-clinical-warning/20 flex items-center justify-center text-clinical-missing shrink-0 mt-0.5 sm:mt-0" aria-hidden="true">
+                    <HelpCircle size={22} />
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-space-xs">
+                      <span className="font-section-title text-card-title text-clinical-missing leading-tight">
+                        Información clínica incompleta
+                      </span>
+                      <span className="px-2 py-0.5 rounded font-label text-micro uppercase bg-clinical-warning/20 text-clinical-missing font-body-strong">
+                        Atención requerida
+                      </span>
+                    </div>
+                    <p className="font-body-regular text-small text-text-primary mt-1 leading-snug">
+                      No se encuentra registro de parámetro clínico requerido (
+                      <strong className="text-text-primary">
+                        {blockedResults[0].gateResult?.failedRequirements?.map((r) => r.key).join(' o ') ||
+                          blockedResults[0].gateResult?.blockedReasons?.join(', ') ||
+                          'parámetros analíticos necesarios'}
+                      </strong>
+                      ) en el historial disponible (evaluación detenida por protocolo de datos faltantes para la regla {blockedResults[0].ruleId}).
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-space-xs">
-                    <span className="font-section-title text-card-title text-clinical-missing leading-tight">
-                      Información clínica incompleta
-                    </span>
-                    <span className="px-2 py-0.5 rounded font-label text-micro uppercase bg-clinical-warning/20 text-clinical-missing font-body-strong">
-                      Atención requerida
+
+                <div className="flex items-center gap-space-sm bg-bone-white px-space-md py-2 rounded-lg shrink-0 self-stretch sm:self-auto justify-between sm:justify-start border border-clinical-missing-border/50 shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-clinical-warning shrink-0" aria-hidden="true" />
+                    <span className="font-body-strong text-small text-clinical-missing tracking-tight whitespace-nowrap">
+                      Dato no disponible ≠ normal
                     </span>
                   </div>
-                  <p className="font-body-regular text-small text-text-primary mt-1 leading-snug">
-                    {blockedResults.length > 0 ? (
-                      <>
-                        No se encuentra registro de función renal (
-                        <strong className="text-text-primary">
-                          {blockedResults[0].gateResult.failedRequirements.map((r) => r.key).join(' o ') || 'creatinina sérica o TFGe'}
-                        </strong>
-                        ) en los últimos 6 meses (parámetro de demostración de la regla {blockedResults[0].ruleId}) en el historial disponible.
-                      </>
-                    ) : (
-                      <>
-                        No se encuentra registro de función renal (<strong className="text-text-primary">creatinina sérica o TFGe</strong>) en los últimos 6 meses (parámetro de demostración de la regla CR-REN-001) en el historial disponible.
-                      </>
-                    )}
-                  </p>
+                  <button
+                    type="button"
+                    className="text-clinical-missing hover:text-text-primary transition-colors ml-1 p-0.5"
+                    title="Protocolo de datos no disponibles"
+                    aria-label="Más información sobre el protocolo de datos no disponibles"
+                  >
+                    <Info size={16} />
+                  </button>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-space-sm bg-bone-white px-space-md py-2 rounded-lg shrink-0 self-stretch sm:self-auto justify-between sm:justify-start border border-clinical-missing-border/50 shadow-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-clinical-warning shrink-0" aria-hidden="true" />
-                  <span className="font-body-strong text-small text-clinical-missing tracking-tight whitespace-nowrap">
-                    Dato no disponible ≠ normal
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  className="text-clinical-missing hover:text-text-primary transition-colors ml-1 p-0.5"
-                  title="Protocolo de datos no disponibles"
-                  aria-label="Más información sobre el protocolo de datos no disponibles"
-                >
-                  <Info size={16} />
-                </button>
-              </div>
-            </section>
+              </section>
+            )}
 
             {/* 4.3. Core Medication & Alerts Dual Module (7 cols table + 5 cols alerts) */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
@@ -548,93 +535,13 @@ export function Dashboard() {
                             )
                           })
                         ) : (
-                          // Mock default list from Stitch reference when medications list is empty
-                          <>
-                            <tr className="hover:bg-bone-50/70 transition-colors">
-                              <td className="py-3 px-3 relative">
-                                <span className="absolute left-0 top-2 bottom-2 w-1 bg-clinical-critical rounded-r" aria-hidden="true" />
-                                <div className="flex flex-col">
-                                  <span className="font-body-strong text-text-primary flex items-center gap-1">
-                                    Metformina <AlertTriangle size={14} className="text-clinical-critical" />
-                                  </span>
-                                  <span className="font-micro text-micro text-text-muted">Tableta oral</span>
-                                </div>
-                              </td>
-                              <td className="py-3 px-2 tabular-nums">850 mg</td>
-                              <td className="py-3 px-2 tabular-nums">c/12 h</td>
-                              <td className="py-3 px-2 text-text-secondary truncate max-w-[120px]">Diabetes tipo 2</td>
-                              <td className="py-3 px-3 text-right tabular-nums text-text-muted">12/01/2023</td>
-                            </tr>
-                            <tr className="hover:bg-bone-50/70 transition-colors">
-                              <td className="py-3 px-3 relative">
-                                <span className="absolute left-0 top-2 bottom-2 w-1 bg-clinical-warning rounded-r" aria-hidden="true" />
-                                <div className="flex flex-col">
-                                  <span className="font-body-strong text-text-primary flex items-center gap-1">
-                                    Enalapril <AlertTriangle size={14} className="text-clinical-warning" />
-                                  </span>
-                                  <span className="font-micro text-micro text-text-muted">Comprimido</span>
-                                </div>
-                              </td>
-                              <td className="py-3 px-2 tabular-nums">20 mg</td>
-                              <td className="py-3 px-2 tabular-nums">c/24 h</td>
-                              <td className="py-3 px-2 text-text-secondary truncate max-w-[120px]">Hipertensión</td>
-                              <td className="py-3 px-3 text-right tabular-nums text-text-muted">10/03/2022</td>
-                            </tr>
-                            <tr className="hover:bg-bone-50/70 transition-colors">
-                              <td className="py-3 px-3 relative">
-                                <span className="absolute left-0 top-2 bottom-2 w-1 bg-clinical-warning rounded-r" aria-hidden="true" />
-                                <div className="flex flex-col">
-                                  <span className="font-body-strong text-text-primary flex items-center gap-1">
-                                    Hidroclorotiazida <AlertTriangle size={14} className="text-clinical-warning" />
-                                  </span>
-                                  <span className="font-micro text-micro text-text-muted">Tableta</span>
-                                </div>
-                              </td>
-                              <td className="py-3 px-2 tabular-nums">25 mg</td>
-                              <td className="py-3 px-2 tabular-nums">c/24 h</td>
-                              <td className="py-3 px-2 text-text-secondary truncate max-w-[120px]">Hipertensión</td>
-                              <td className="py-3 px-3 text-right tabular-nums text-text-muted">10/03/2022</td>
-                            </tr>
-                            <tr className="hover:bg-bone-50/70 transition-colors">
-                              <td className="py-3 px-3">
-                                <div className="flex flex-col">
-                                  <span className="font-body-strong text-text-primary">Atorvastatina</span>
-                                  <span className="font-micro text-micro text-text-muted">Tableta recubierta</span>
-                                </div>
-                              </td>
-                              <td className="py-3 px-2 tabular-nums">40 mg</td>
-                              <td className="py-3 px-2 tabular-nums">c/24 h</td>
-                              <td className="py-3 px-2 text-text-secondary">Dislipidemia</td>
-                              <td className="py-3 px-3 text-right tabular-nums text-text-muted">15/06/2023</td>
-                            </tr>
-                            <tr className="hover:bg-bone-50/70 transition-colors">
-                              <td className="py-3 px-3 relative">
-                                <span className="absolute left-0 top-2 bottom-2 w-1 bg-clinical-critical rounded-r" aria-hidden="true" />
-                                <div className="flex flex-col">
-                                  <span className="font-body-strong text-clinical-critical flex items-center gap-1">
-                                    Ibuprofeno <AlertOctagon size={14} className="text-clinical-critical" />
-                                  </span>
-                                  <span className="font-micro text-micro text-text-muted">Cápsula blanda</span>
-                                </div>
-                              </td>
-                              <td className="py-3 px-2 tabular-nums font-body-strong">600 mg</td>
-                              <td className="py-3 px-2 tabular-nums">c/8 h</td>
-                              <td className="py-3 px-2 text-clinical-critical font-body-strong">Según dolor</td>
-                              <td className="py-3 px-3 text-right tabular-nums text-text-muted">01/02/2024</td>
-                            </tr>
-                            <tr className="hover:bg-bone-50/70 transition-colors">
-                              <td className="py-3 px-3">
-                                <div className="flex flex-col">
-                                  <span className="font-body-strong text-text-primary">Omeprazol</span>
-                                  <span className="font-micro text-micro text-text-muted">Cápsula con gránulos</span>
-                                </div>
-                              </td>
-                              <td className="py-3 px-2 tabular-nums">20 mg</td>
-                              <td className="py-3 px-2 tabular-nums">c/24 h</td>
-                              <td className="py-3 px-2 text-text-secondary">Protección gástrica</td>
-                              <td className="py-3 px-3 text-right tabular-nums text-text-muted">01/02/2024</td>
-                            </tr>
-                          </>
+                          <tr>
+                            <td colSpan={5} className="py-8 text-center text-text-muted">
+                              <p className="font-body-regular text-small m-0">
+                                Sin prescripciones registradas en este escenario simulado.
+                              </p>
+                            </td>
+                          </tr>
                         )}
                       </tbody>
                     </table>
@@ -835,128 +742,154 @@ export function Dashboard() {
             </div>
 
             {/* 4.4. Module '¿Por qué se generó esta alerta?' (Analytical Tri-Card Group) */}
-            <section className="stitch-card p-space-lg" aria-label="Justificación clínica de la alerta">
-              <div className="flex items-center justify-between mb-space-md pb-space-xs border-b border-bone-100">
-                <div className="flex items-center gap-2">
-                  <Sparkles size={20} className="text-aubergine-600" aria-hidden="true" />
-                  <h2 className="font-page-title text-section-title text-text-primary m-0">
-                    ¿Por qué se generó esta alerta?
-                  </h2>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-label text-micro px-2 py-0.5 rounded bg-aubergine-100 text-aubergine-700 font-body-strong">
-                    Regla prototipo: {activeFinding?.ruleId ?? 'CR-REN-001'}
-                  </span>
-                  <span className="font-micro text-micro text-text-muted">
-                    v{activeFinding?.ruleVersion ?? '0.1'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
-                {/* Card A: Evidencia */}
-                <div className="bg-bone-50 rounded-xl p-space-md flex flex-col justify-between border border-bone-200 shadow-xs">
-                  <div>
-                    <div className="flex items-center gap-space-xs mb-space-sm text-aubergine-700">
-                      <BookOpen size={18} aria-hidden="true" />
-                      <h3 className="font-body-strong text-body-strong text-text-primary m-0">Evidencia clínica</h3>
-                    </div>
-                    <p className="font-body-regular text-small text-text-secondary leading-relaxed m-0">
-                      La combinación concurrente de un <strong className="text-text-primary">AINE + IECA + diurético</strong> se asocia con un aumento sinérgico del riesgo de lesión renal aguda secundaria a vasoconstricción arteriolar aferente y disminución de la perfusión glomerular (<em className="font-body-strong">"triple whammy"</em>).
-                    </p>
+            {visibleAlerts.length > 0 && activeFinding && (
+              <section className="stitch-card p-space-lg" aria-label="Justificación clínica de la alerta">
+                <div className="flex items-center justify-between mb-space-md pb-space-xs border-b border-bone-100">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={20} className="text-aubergine-600" aria-hidden="true" />
+                    <h2 className="font-page-title text-section-title text-text-primary m-0">
+                      ¿Por qué se generó esta alerta?
+                    </h2>
                   </div>
-                  <div className="mt-space-md pt-space-xs border-t border-bone-200">
-                    <button type="button" className="inline-flex items-center gap-1 font-body-strong text-small text-aubergine-600 hover:text-aubergine-700 transition-colors p-0">
-                      <span>Ver referencias bibliográficas (3)</span>
-                      <ArrowRight size={14} aria-hidden="true" />
-                    </button>
-                    <p className="font-micro text-micro text-text-muted italic mt-1.5 mb-0">
-                      Contenido clínico ilustrativo · pendiente de validación experta
-                    </p>
-                  </div>
-                </div>
-
-                {/* Card B: Datos Faltantes */}
-                <div className="bg-bone-50 rounded-xl p-space-md flex flex-col justify-between border border-bone-200 shadow-xs">
-                  <div>
-                    <div className="flex items-center gap-space-xs mb-space-sm text-clinical-missing">
-                      <HelpCircle size={18} aria-hidden="true" />
-                      <h3 className="font-body-strong text-body-strong text-text-primary m-0">Datos faltantes</h3>
-                    </div>
-                    <p className="font-body-regular text-small text-text-secondary leading-relaxed m-0">
-                      No existe registro en el expediente simulado de <strong className="text-text-primary">creatinina sérica, TFGe ni potasio</strong> en los últimos 6 meses (ventana definida como parámetro de demostración para CR-REN-001).
-                    </p>
-                    <div className="mt-space-sm p-space-xs bg-clinical-missing-surface rounded-lg border border-clinical-missing-border/50">
-                      <span className="font-body-strong text-micro text-clinical-missing block leading-tight">
-                        Dato no disponible ≠ normal
-                      </span>
-                      <span className="font-small text-micro text-text-secondary leading-tight mt-0.5 block">
-                        La ausencia de valores analíticos puede encubrir un deterioro renal no diagnosticado.
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-space-md pt-space-xs border-t border-bone-200">
-                    <span className="font-label text-micro text-text-muted uppercase">
-                      Requiere considerar perfil renal
+                  <div className="flex items-center gap-2">
+                    <span className="font-label text-micro px-2 py-0.5 rounded bg-aubergine-100 text-aubergine-700 font-body-strong">
+                      Regla prototipo: {activeFinding.ruleId}
+                    </span>
+                    <span className="font-micro text-micro text-text-muted font-mono">
+                      v{activeFinding.ruleVersion}
                     </span>
                   </div>
                 </div>
 
-                {/* Card C: Trazabilidad de Regla */}
-                <div className="bg-bone-50 rounded-xl p-space-md flex flex-col justify-between border border-bone-200 shadow-xs">
-                  <div>
-                    <div className="flex items-center gap-space-xs mb-space-sm text-aubergine-700">
-                      <ShieldCheck size={18} aria-hidden="true" />
-                      <h3 className="font-body-strong text-body-strong text-text-primary m-0">Trazabilidad de regla</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+                  {/* Card A: Evidencia */}
+                  <div className="bg-bone-50 rounded-xl p-space-md flex flex-col justify-between border border-bone-200 shadow-xs">
+                    <div>
+                      <div className="flex items-center gap-space-xs mb-space-sm text-aubergine-700">
+                        <BookOpen size={18} aria-hidden="true" />
+                        <h3 className="font-body-strong text-body-strong text-text-primary m-0">Evidencia clínica</h3>
+                      </div>
+                      <p className="font-body-regular text-small text-text-secondary leading-relaxed m-0">
+                        {activeFinding.detail}
+                      </p>
                     </div>
-                    <ul className="space-y-1.5 font-small text-small text-text-secondary m-0 p-0 list-none">
-                      <li className="flex items-center justify-between">
-                        <span className="text-text-muted">Identificador:</span>
-                        <strong className="text-text-primary font-body-strong font-mono text-micro">
-                          {activeFinding?.ruleId ?? 'CR-REN-001'}
-                        </strong>
-                      </li>
-                      <li className="flex items-center justify-between">
-                        <span className="text-text-muted">Versión:</span>
-                        <span className="font-body-strong text-text-primary">
-                          {activeFinding?.ruleVersion ?? '0.1'}
-                        </span>
-                      </li>
-                      <li className="flex items-center justify-between">
-                        <span className="text-text-muted">Estado:</span>
-                        <span className="px-1.5 py-0.5 rounded bg-bone-200 font-body-strong text-text-primary text-micro">
-                          DEMOSTRACIÓN
-                        </span>
-                      </li>
-                      <li className="flex items-center justify-between">
-                        <span className="text-text-muted">Validación clínica:</span>
-                        <span className="px-1.5 py-0.5 rounded bg-clinical-warning/20 font-body-strong text-clinical-warning text-micro">
-                          PENDIENTE
-                        </span>
-                      </li>
-                      <li className="flex items-center justify-between">
-                        <span className="text-text-muted">Base conocimiento:</span>
-                        <span className="text-text-primary text-right text-micro">CDSS-CR Demo</span>
-                      </li>
-                      <li className="flex items-center justify-between">
-                        <span className="text-text-muted">Última revisión:</span>
-                        <span className="text-text-primary tabular-nums text-micro">15/02/2024</span>
-                      </li>
-                      <li className="flex items-center justify-between">
-                        <span className="text-text-muted">Nivel validación:</span>
-                        <span className="text-text-secondary italic text-micro">Demostración</span>
-                      </li>
-                    </ul>
+                    <div className="mt-space-md pt-space-xs border-t border-bone-200">
+                      <button type="button" className="inline-flex items-center gap-1 font-body-strong text-small text-aubergine-600 hover:text-aubergine-700 transition-colors p-0">
+                        <span>Ver ficha de regla ({activeFinding.ruleId})</span>
+                        <ArrowRight size={14} aria-hidden="true" />
+                      </button>
+                      <p className="font-micro text-micro text-text-muted italic mt-1.5 mb-0">
+                        Contenido clínico ilustrativo · pendiente de validación experta
+                      </p>
+                    </div>
                   </div>
-                  <div className="mt-space-md pt-space-xs border-t border-bone-200">
-                    <button type="button" className="inline-flex items-center gap-1 font-body-strong text-small text-aubergine-600 hover:text-aubergine-700 transition-colors p-0">
-                      <span>Ver ficha en base de conocimiento</span>
-                      <ArrowRight size={14} aria-hidden="true" />
-                    </button>
+
+                  {/* Card B: Datos Faltantes */}
+                  <div className="bg-bone-50 rounded-xl p-space-md flex flex-col justify-between border border-bone-200 shadow-xs">
+                    <div>
+                      <div className="flex items-center gap-space-xs mb-space-sm text-clinical-missing">
+                        <HelpCircle size={18} aria-hidden="true" />
+                        <h3 className="font-body-strong text-body-strong text-text-primary m-0">Datos faltantes</h3>
+                      </div>
+                      <p className="font-body-regular text-small text-text-secondary leading-relaxed m-0">
+                        {activeFinding.missingDataKeys.length > 0 ? (
+                          <>
+                            No existe registro en el expediente simulado de{' '}
+                            <strong className="text-text-primary">
+                              {activeFinding.missingDataKeys.join(', ')}
+                            </strong>{' '}
+                            (requerido para la evaluación de la regla {activeFinding.ruleId}).
+                          </>
+                        ) : (
+                          <>
+                            No se identificaron datos clínicos faltantes que bloqueen la evaluación de esta regla.{' '}
+                            {activeFinding.supportingDataKeys.length > 0 && (
+                              <span>
+                                Elementos identificados:{' '}
+                                <strong className="text-text-primary">
+                                  {activeFinding.supportingDataKeys.join(', ')}
+                                </strong>.
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </p>
+                      <div className="mt-space-sm p-space-xs bg-clinical-missing-surface rounded-lg border border-clinical-missing-border/50">
+                        <span className="font-body-strong text-micro text-clinical-missing block leading-tight">
+                          Dato no disponible ≠ normal
+                        </span>
+                        <span className="font-small text-micro text-text-secondary leading-tight mt-0.5 block">
+                          La ausencia de valores analíticos o clínicos no descarta un riesgo no registrado.
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-space-md pt-space-xs border-t border-bone-200">
+                      <span className="font-label text-micro text-text-muted uppercase">
+                        {activeFinding.missingDataKeys.length > 0
+                          ? 'Requiere consideración analítica'
+                          : 'Datos basales disponibles'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Card C: Trazabilidad de Regla */}
+                  <div className="bg-bone-50 rounded-xl p-space-md flex flex-col justify-between border border-bone-200 shadow-xs">
+                    <div>
+                      <div className="flex items-center gap-space-xs mb-space-sm text-aubergine-700">
+                        <ShieldCheck size={18} aria-hidden="true" />
+                        <h3 className="font-body-strong text-body-strong text-text-primary m-0">Trazabilidad de regla</h3>
+                      </div>
+                      <ul className="space-y-1.5 font-small text-small text-text-secondary m-0 p-0 list-none">
+                        <li className="flex items-center justify-between">
+                          <span className="text-text-muted">Identificador:</span>
+                          <strong className="text-text-primary font-body-strong font-mono text-micro">
+                            {activeFinding.ruleId}
+                          </strong>
+                        </li>
+                        <li className="flex items-center justify-between">
+                          <span className="text-text-muted">Versión:</span>
+                          <span className="font-body-strong text-text-primary font-mono text-micro">
+                            {activeFinding.ruleVersion}
+                          </span>
+                        </li>
+                        <li className="flex items-center justify-between">
+                          <span className="text-text-muted">Severidad:</span>
+                          <span className={`px-1.5 py-0.5 rounded font-body-strong text-micro uppercase ${
+                            activeFinding.severity === 'critical'
+                              ? 'bg-clinical-critical-surface text-clinical-critical border border-clinical-critical-border'
+                              : 'bg-clinical-warning-surface text-clinical-warning border border-clinical-warning-border'
+                          }`}>
+                            {activeFinding.severity}
+                          </span>
+                        </li>
+                        <li className="flex items-center justify-between">
+                          <span className="text-text-muted">Estado:</span>
+                          <span className="px-1.5 py-0.5 rounded bg-bone-200 font-body-strong text-text-primary text-micro">
+                            DEMOSTRACIÓN
+                          </span>
+                        </li>
+                        <li className="flex items-center justify-between">
+                          <span className="text-text-muted">Validación clínica:</span>
+                          <span className="px-1.5 py-0.5 rounded bg-clinical-warning/20 font-body-strong text-clinical-warning text-micro">
+                            PENDIENTE
+                          </span>
+                        </li>
+                        <li className="flex items-center justify-between">
+                          <span className="text-text-muted">Base conocimiento:</span>
+                          <span className="text-text-primary text-right text-micro">CDSS-CR Demo</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="mt-space-md pt-space-xs border-t border-bone-200">
+                      <button type="button" className="inline-flex items-center gap-1 font-body-strong text-small text-aubergine-600 hover:text-aubergine-700 transition-colors p-0">
+                        <span>Ver ficha en base de conocimiento</span>
+                        <ArrowRight size={14} aria-hidden="true" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
           </div>
 
           {/* RIGHT CONTEXTUAL INTELLIGENCE PANEL (4 cols, rendered only on demand when isDetailVisible is true and a real alert exists) */}
@@ -1072,22 +1005,63 @@ export function Dashboard() {
                     <span className="font-body-strong text-small text-text-primary">Opciones de manejo sugeridas (Consultivo)</span>
                   </div>
                   <ul className="space-y-1.5 font-body-regular text-small text-text-secondary pl-1 m-0 list-none">
-                    <li className="flex items-start gap-2 leading-snug">
-                      <span className="font-body-strong text-aubergine-700">1.</span>
-                      <span><strong className="text-text-primary">Opción de revisión analgésica:</strong> Valorar clínicamente la pertinencia de mantener o suspender AINE (ibuprofeno), explorando posibles alternativas analgésicas según perfil hemodinámico.</span>
-                    </li>
-                    <li className="flex items-start gap-2 leading-snug">
-                      <span className="font-body-strong text-aubergine-700">2.</span>
-                      <span><strong className="text-text-primary">Consideración de pruebas diagnósticas:</strong> Revisar conveniencia de solicitar perfil de función renal (creatinina sérica, TFGe y electrolitos) si el criterio facultativo lo estima necesario.</span>
-                    </li>
-                    <li className="flex items-start gap-2 leading-snug">
-                      <span className="font-body-strong text-aubergine-700">3.</span>
-                      <span><strong className="text-text-primary">Evaluación hemodinámica general:</strong> Monitorizar el estado volumétrico y cifras tensionales en el contexto del esquema antihipertensivo y diurético concurrente.</span>
-                    </li>
-                    <li className="flex items-start gap-2 leading-snug">
-                      <span className="font-body-strong text-aubergine-700">4.</span>
-                      <span>Planificar seguimiento clínico y analítico a criterio del profesional a cargo.</span>
-                    </li>
+                    {activeFinding.ruleId === 'DEMO-ALG-001' ? (
+                      <>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">1.</span>
+                          <span><strong className="text-text-primary">Revisión de antibióticoterapia:</strong> Valorar clínicamente la pertinencia de suspender o sustituir la prescripción de beta-lactámicos ante el antecedente de hipersensibilidad a penicilina.</span>
+                        </li>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">2.</span>
+                          <span><strong className="text-text-primary">Alternativas terapéuticas:</strong> Evaluar antimicrobianos de familias alternativas acordes al foco sospechado y antecedentes clínicos.</span>
+                        </li>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">3.</span>
+                          <span>Registrar la conducta clínica y decisión final en el expediente.</span>
+                        </li>
+                      </>
+                    ) : activeFinding.ruleId === 'DEMO-DDI-001' ? (
+                      <>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">1.</span>
+                          <span><strong className="text-text-primary">Interacción farmacológica:</strong> Evaluar clínicamente el riesgo de toxicidad y arritmias por coadministración de amiodarona y espironolactona.</span>
+                        </li>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">2.</span>
+                          <span><strong className="text-text-primary">Monitorización analítica:</strong> Vigilar niveles de potasio sérico y trazado electrocardiográfico según criterio facultativo.</span>
+                        </li>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">3.</span>
+                          <span>Planificar seguimiento y ajuste posológico a criterio del profesional a cargo.</span>
+                        </li>
+                      </>
+                    ) : activeFinding.ruleId === 'DEMO-REN-001' ? (
+                      <>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">1.</span>
+                          <span><strong className="text-text-primary">Ajuste por función renal:</strong> Valorar clínicamente la adecuación posológica según el aclaramiento o TFGe registrado.</span>
+                        </li>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">2.</span>
+                          <span><strong className="text-text-primary">Pruebas diagnósticas:</strong> Considerar solicitud de perfil renal actualizado si el intervalo temporal lo justifica.</span>
+                        </li>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">3.</span>
+                          <span>Registrar la decisión médica individualizada.</span>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">1.</span>
+                          <span><strong className="text-text-primary">Evaluación clínica:</strong> {activeFinding.detail}</span>
+                        </li>
+                        <li className="flex items-start gap-2 leading-snug">
+                          <span className="font-body-strong text-aubergine-700">2.</span>
+                          <span>Planificar revisión y seguimiento a criterio del profesional a cargo.</span>
+                        </li>
+                      </>
+                    )}
                   </ul>
                 </div>
 
@@ -1147,7 +1121,27 @@ export function Dashboard() {
                     </span>
                   </div>
                   <p className="font-body-regular text-small text-text-primary leading-relaxed m-0">
-                    Esta alerta se genera porque la paciente tiene prescritos concomitantemente <strong>ibuprofeno, enalapril e hidroclorotiazida</strong>. Dicha combinación puede reducir la filtración glomerular y el flujo renal, con especial relevancia si coexiste deshidratación o enfermedad renal de base. Al no constar registros de creatinina ni TFGe en los últimos seis meses, no es posible descartar una insuficiencia renal encubierta. La explicación resume el hallazgo de la regla CR-REN-001 y la información clínica disponible. Las posibles acciones deben ser evaluadas por el profesional según el contexto del caso.
+                    {activeFinding ? (
+                      <>
+                        Alerta generada por la regla determinística{' '}
+                        <strong className="text-text-primary font-mono">{activeFinding.ruleId}</strong> (v
+                        {activeFinding.ruleVersion}): {activeFinding.detail}
+                        {activeFinding.supportingDataKeys.length > 0 && (
+                          <>
+                            {' '}Elementos clínicos identificados en el contexto:{' '}
+                            <strong>{activeFinding.supportingDataKeys.join(', ')}</strong>.
+                          </>
+                        )}
+                        {activeFinding.missingDataKeys.length > 0 && (
+                          <>
+                            {' '}Parámetros no registrados:{' '}
+                            <strong>{activeFinding.missingDataKeys.join(', ')}</strong>.
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      'Sin alertas clínicas activas para generar síntesis explicativa.'
+                    )}
                   </p>
                   <div className="mt-space-sm pt-space-xs border-t border-aubergine-300/40 flex items-start gap-1.5 text-text-muted font-micro text-micro leading-snug">
                     <Info size={14} className="text-aubergine-600 shrink-0 mt-0.5" aria-hidden="true" />

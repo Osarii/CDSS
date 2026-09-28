@@ -11,11 +11,11 @@
 - **Product Brand:** SAMED — *Sistema de Apoyo Médico para Evaluación y Decisión*
 - **Tagline:** *"SAMED apoya la decisión. El profesional toma la decisión."*
 - **Architecture Role:** Product brand = **SAMED** | Technical project / repository = **CDSS**
-- **Current Work:** SAMED Dual AI Roles v1 implemented: Clinical Assistant (permitted full ClinicalContext + deterministic findings; structured clinical summary; preserves missing/unavailable data explicitly; cannot create/approve prescriptions) + Pharmacy Assistant (controlled medication-relevant PharmacyReviewInput, raw ClinicalContext strictly prevented from leaking, independent medication review: NO_ADDITIONAL_CONCERNS, REVIEW_RECOMMENDED, BLOCKED_BY_MISSING_DATA) + PrescriptionDraft (physician-authored, never fabricated) + deterministic ReviewComparison layer (shared considerations, assistant-only points, unresolved discrepancies, missing-data disagreements, never decides winner) + provider-agnostic interface & mock providers in `src/services/ai/`; 8 focused tests (239 total); DEC-011 recorded; lint & build clean.
+- **Current Work:** Single Source of Truth consistency cleanup complete across Dashboard and Medication Review: eliminated static Stitch/demo fallbacks, scenario-based allergy injection, forced `|| 1` counters, ungrounded consultative recommendations, fabricated AI blocks, parallel table risk derivations, and the unsupported triple-whammy hemodynamic diagram. Deterministic findings (`evaluation.findings`) serve as the single source of clinical truth.
 - **Next Allowed Task:** Next review or next workflow per user direction (Alert Detail, Patient Context, AI/Audit, or new clinical logic halted)
 - **Current Branch:** `main`
 - **Last Important Commit:** `158884b` (tracking policy; dashboard and medication review uncommitted)
-- **Last Update Date:** 2026-09-25
+- **Last Update Date:** 2026-09-28
 
 ## 2. Current Progress
 - COMPLETE: SAMED Product Branding Alignment
@@ -29,7 +29,10 @@
 - COMPLETE: Scenario-driven alert evaluation & removal of static demo alert fallbacks
 - COMPLETE: SAMED Medication Review Visual Baseline v1 (1:1 Stitch reference convergence iteration 1, interactive table, hemodynamic illustration, detail inspector, filter chips, scenario data integration, 12 focused UI tests)
 - COMPLETE: Repository-review locators for targeted fixes (LOCATOR, SOURCE_COMMIT, ISSUE fields, Prompt Gate validation, diff-first workflow)
-- COMPLETE: SAMED Dual AI Roles v1 (Clinical Assistant, Pharmacy Assistant, PrescriptionDraft, ReviewComparison layer, provider boundary, DEC-011)
+- COMPLETE: SAMED Dual AI Roles v1 domain & services (Clinical Assistant, Pharmacy Assistant, PrescriptionDraft, ReviewComparison layer, provider boundary, DEC-011)
+- COMPLETE: SAMED Dual AI Roles v1 UI integration into Medication Review (PrescriptionDraft workspace, progressive disclosure, Clinical Assistant summary, Pharmacy Assistant review with controlled input, neutral ReviewComparison, scenario switch state reset, 17 focused tests)
+- COMPLETE: Dashboard and Medication Review clinical consistency fix (deterministic findings as single source of truth, removal of static fallbacks, allergy injection fix, neutral empty states, 60 focused tests, 251 total)
+- COMPLETE: Removal of unsupported triple-whammy representation from Medication Review & regression test verification
 - PENDING: Patients view
 
 ## 3. Completed Phases (Compacted)
