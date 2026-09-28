@@ -1,0 +1,147 @@
+{
+  "name": "SAMED - Clinical Assistant (Gemini)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "samed-clinical-assistant",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "id": "c1000000-0000-0000-0000-000000000001",
+      "name": "Webhook - Clinical Assistant"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nif (!body || !body.context) {\n  throw new Error('Invalid request payload: missing clinical context snapshot.');\n}\n\nconst context = body.context;\nconst deterministicFindings = body.deterministicFindings || [];\nconst proposedPrescription = body.proposedPrescription || null;\n\nconst systemInstruction = `\nEres el Asistente Clínico de SAMED (Sistema de Apoyo Médico para Evaluación y Decisión).\nTu rol es EXCLUSIVAMENTE CONSULTIVO Y DE SÍNTESIS CLÍNICA para un prototipo con datos sintéticos.\n\nINVARIANTES CRÍTICOS:\n1. Los hallazgos determinísticos (deterministicFindings) proporcionados son hallazgos determinísticos autoritativos dentro del prototipo SAMED. NUNCA los contradigas, descartes, reemplaces ni declares que están equivocados.\n2. La síntesis que generas apoya la decisión; el profesional médico retiene la AUTORIDAD DECISORIA FINAL.\n3. NO puedes crear, autorizar ni aprobar recetas médicas bajo ninguna circunstancia.\n4. Trata los datos clínicos no disponibles con precisión semántica: DATO FALTANTE ≠ NORMAL (MISSING !== NORMAL, UNKNOWN !== NORMAL, STALE !== NORMAL, UNAVAILABLE !== NORMAL).\n5. Si existen brechas de datos o análisis pendientes (por ejemplo, creatinina o función renal no registrada), resáltalos explícitamente en dataAvailabilityGaps.\n6. Genera tu salida ÚNICAMENTE en formato JSON válido conforme al esquema requerido, sin bloques markdown ni texto adicional.\n`;\n\nconst userPrompt = `\nPor favor sintetiza el contexto clínico del paciente y los hallazgos determinísticos observados.\n\nDATOS DEL PACIENTE:\nID: ${context.patient?.id || 'Desconocido'}\nCondiciones activas: ${JSON.stringify(context.conditions || [])}\nAlergias registradas: ${JSON.stringify(context.allergies || [])}\nMedicamentos actuales: ${JSON.stringify(context.medications || [])}\nObservaciones y datos de laboratorio: ${JSON.stringify(context.observations || [])}\nBrechas de datos conocidas: ${JSON.stringify(context.dataPoints || {})}\n\nHALLAZGOS DETERMINÍSTICOS (Evidencia obligatoria):\n${JSON.stringify(deterministicFindings, null, 2)}\n\nPROPUESTA DE PRESCRIPCIÓN MÉDICA (Si existe):\n${JSON.stringify(proposedPrescription, null, 2)}\n\nGenera una síntesis clínica estructurada en JSON con:\n- id: identificador único con prefijo 'ca-summary-'\n- patientId: '${context.patient?.id || 'pat-unknown'}'\n- summary: síntesis narrativa de la situación clínica y las implicaciones de los hallazgos determinísticos\n- clinicalConsiderations: arreglo de cadenas con observaciones clínicas relevantes\n- dataAvailabilityGaps: arreglo de objetos { key: string, status: string, reason?: string }\n- deterministicFindingsReferenced: arreglo con los IDs de los hallazgos determinísticos referenciados\n- generatedAt: marca temporal ISO 8601 actual\n- role: 'clinical_assistant'\n`;\n\nreturn [{\n  json: {\n    patientId: context.patient?.id || 'pat-unknown',\n    systemInstruction,\n    userPrompt,\n    deterministicFindings,\n    originalPayload: body\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ],
+      "id": "c1000000-0000-0000-0000-000000000002",
+      "name": "Validate & Prepare Prompt"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ $env.GEMINI_API_KEY || 'REPLACE_WITH_GEMINI_API_KEY' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": {{ JSON.stringify($json.userPrompt) }}\n        }\n      ]\n    }\n  ],\n  \"systemInstruction\": {\n    \"parts\": [\n      {\n        \"text\": {{ JSON.stringify($json.systemInstruction) }}\n      }\n    ]\n  },\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\",\n    \"responseSchema\": {\n      \"type\": \"OBJECT\",\n      \"properties\": {\n        \"id\": { \"type\": \"STRING\" },\n        \"patientId\": { \"type\": \"STRING\" },\n        \"summary\": { \"type\": \"STRING\" },\n        \"clinicalConsiderations\": {\n          \"type\": \"ARRAY\",\n          \"items\": { \"type\": \"STRING\" }\n        },\n        \"dataAvailabilityGaps\": {\n          \"type\": \"ARRAY\",\n          \"items\": {\n            \"type\": \"OBJECT\",\n            \"properties\": {\n              \"key\": { \"type\": \"STRING\" },\n              \"status\": { \"type\": \"STRING\", \"enum\": [\"AVAILABLE\", \"MISSING\", \"STALE\", \"UNAVAILABLE\", \"UNKNOWN\"] },\n              \"reason\": { \"type\": \"STRING\" }\n            },\n            \"required\": [\"key\", \"status\"]\n          }\n        },\n        \"deterministicFindingsReferenced\": {\n          \"type\": \"ARRAY\",\n          \"items\": { \"type\": \"STRING\" }\n        },\n        \"generatedAt\": { \"type\": \"STRING\" },\n        \"role\": { \"type\": \"STRING\", \"enum\": [\"clinical_assistant\"] }\n      },\n      \"required\": [\"id\", \"patientId\", \"summary\", \"clinicalConsiderations\", \"dataAvailabilityGaps\", \"deterministicFindingsReferenced\", \"generatedAt\", \"role\"]\n    }\n  }\n}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        300
+      ],
+      "id": "c1000000-0000-0000-0000-000000000003",
+      "name": "Gemini API (gemini-3.8-flash)",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst prepData = $('Validate & Prepare Prompt').first().json;\n\nif (item.error) {\n  return [{\n    json: {\n      error: true,\n      code: 'GEMINI_API_ERROR',\n      message: `Gemini API Error: ${typeof item.error === 'object' ? JSON.stringify(item.error) : String(item.error)}`\n    }\n  }];\n}\n\nlet parsed = null;\n\ntry {\n  const candidateText = item.candidates?.[0]?.content?.parts?.[0]?.text;\n  if (candidateText) {\n    parsed = typeof candidateText === 'string' ? JSON.parse(candidateText) : candidateText;\n  } else if (item.summary && item.id) {\n    parsed = item;\n  } else {\n    throw new Error('Gemini API response did not contain valid candidate text or summary.');\n  }\n} catch (err) {\n  return [{\n    json: {\n      error: true,\n      code: 'MALFORMED_PROVIDER_OUTPUT',\n      message: `Failed to parse Gemini provider response: ${err.message}`\n    }\n  }];\n}\n\nif (!parsed || typeof parsed !== 'object' || !parsed.summary || typeof parsed.summary !== 'string') {\n  return [{\n    json: {\n      error: true,\n      code: 'INVALID_CLINICAL_ASSESSMENT_STRUCTURE',\n      message: 'Gemini provider output missing required summary string.'\n    }\n  }];\n}\n\nconst normalized = {\n  id: String(parsed.id || `ca-summary-${prepData.patientId}-${Date.now()}`),\n  patientId: String(parsed.patientId || prepData.patientId),\n  summary: String(parsed.summary),\n  clinicalConsiderations: Array.isArray(parsed.clinicalConsiderations)\n    ? parsed.clinicalConsiderations.map(String)\n    : [],\n  dataAvailabilityGaps: Array.isArray(parsed.dataAvailabilityGaps)\n    ? parsed.dataAvailabilityGaps.map(g => ({\n        key: String(g.key || 'unknown_parameter'),\n        status: ['AVAILABLE', 'MISSING', 'STALE', 'UNAVAILABLE', 'UNKNOWN'].includes(g.status) ? g.status : 'MISSING',\n        reason: g.reason ? String(g.reason) : undefined\n      }))\n    : [],\n  deterministicFindingsReferenced: Array.isArray(parsed.deterministicFindingsReferenced)\n    ? parsed.deterministicFindingsReferenced.map(String)\n    : (prepData.deterministicFindings || []).map(f => f.id),\n  generatedAt: String(parsed.generatedAt || new Date().toISOString()),\n  role: 'clinical_assistant'\n};\n\nreturn [{ json: normalized }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        300
+      ],
+      "id": "c1000000-0000-0000-0000-000000000004",
+      "name": "Normalize Response"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1180,
+        300
+      ],
+      "id": "c1000000-0000-0000-0000-000000000005",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook - Clinical Assistant": {
+      "main": [
+        [
+          {
+            "node": "Validate & Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "Gemini API (gemini-3.8-flash)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini API (gemini-3.8-flash)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

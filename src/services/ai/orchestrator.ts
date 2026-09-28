@@ -17,6 +17,10 @@ import {
   MockClinicalAssistantProvider,
   MockPharmacyAssistantProvider,
 } from './mockProviders'
+import {
+  RemoteClinicalAssistantProvider,
+  RemotePharmacyAssistantProvider,
+} from './remoteProviders'
 
 /**
  * Orchestrator service for executing SAMED Dual AI Roles v1.
@@ -51,11 +55,23 @@ export async function executeDualAIRoles(params: {
     }))
   )
 
+  const mode =
+    options?.mode ??
+    (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AI_PROVIDER_MODE === 'remote'
+      ? 'remote'
+      : 'mock')
+
   const clinicalProvider: ClinicalAssistantProvider =
-    options?.clinicalProvider ?? new MockClinicalAssistantProvider()
+    options?.clinicalProvider ??
+    (mode === 'remote'
+      ? new RemoteClinicalAssistantProvider(options?.remoteConfig)
+      : new MockClinicalAssistantProvider())
 
   const pharmacyProvider: PharmacyAssistantProvider =
-    options?.pharmacyProvider ?? new MockPharmacyAssistantProvider()
+    options?.pharmacyProvider ??
+    (mode === 'remote'
+      ? new RemotePharmacyAssistantProvider(options?.remoteConfig)
+      : new MockPharmacyAssistantProvider())
 
   // 1. Build controlled, medication-relevant PharmacyReviewInput
   // Full raw ClinicalContext is strictly excluded from this payload

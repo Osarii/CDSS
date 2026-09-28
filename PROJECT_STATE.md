@@ -11,10 +11,10 @@
 - **Product Brand:** SAMED — *Sistema de Apoyo Médico para Evaluación y Decisión*
 - **Tagline:** *"SAMED apoya la decisión. El profesional toma la decisión."*
 - **Architecture Role:** Product brand = **SAMED** | Technical project / repository = **CDSS**
-- **Current Work:** Single Source of Truth consistency cleanup complete across Dashboard and Medication Review: eliminated static Stitch/demo fallbacks, scenario-based allergy injection, forced `|| 1` counters, ungrounded consultative recommendations, fabricated AI blocks, parallel table risk derivations, and the unsupported triple-whammy hemodynamic diagram. Deterministic findings (`evaluation.findings`) serve as the single source of clinical truth.
-- **Next Allowed Task:** Next review or next workflow per user direction (Alert Detail, Patient Context, AI/Audit, or new clinical logic halted)
+- **Current Work:** Updated the SAMED Clinical Assistant n8n workflow from legacy `gemini-3-flash-preview` to `gemini-3.8-flash`. Verified compatibility of structured output schema and preserved webhook path and provider boundaries. All tests (275 total) and builds passed successfully.
+- **Next Allowed Task:** Next task per user direction.
 - **Current Branch:** `main`
-- **Last Important Commit:** `158884b` (tracking policy; dashboard and medication review uncommitted)
+- **Last Important Commit:** `5d44aa6` (fix: enforce clinical findings single source of truth)
 - **Last Update Date:** 2026-09-28
 
 ## 2. Current Progress
@@ -33,6 +33,9 @@
 - COMPLETE: SAMED Dual AI Roles v1 UI integration into Medication Review (PrescriptionDraft workspace, progressive disclosure, Clinical Assistant summary, Pharmacy Assistant review with controlled input, neutral ReviewComparison, scenario switch state reset, 17 focused tests)
 - COMPLETE: Dashboard and Medication Review clinical consistency fix (deterministic findings as single source of truth, removal of static fallbacks, allergy injection fix, neutral empty states, 60 focused tests, 251 total)
 - COMPLETE: Removal of unsupported triple-whammy representation from Medication Review & regression test verification
+- COMPLETE: SAMED Remote AI Provider Boundary (Gemini Clinical Assistant + Qwen Pharmacy Assistant via n8n webhooks, Zod domain validation, error/timeout handling, provider boundary isolation, 13 focused tests)
+- COMPLETE: Importable n8n workflows generated for Gemini Clinical Assistant & Qwen Pharmacy Assistant (structured JSON schemas, boundary isolation, 9 focused tests)
+- COMPLETE: Hardened SAMED n8n AI workflow boundary & error handling verification (authoritative findings wording, explicit controlled error responses for malformed model output, Zod rejection boundary, deterministic findings preservation, 11 workflow tests, 275 total across 16 test files)
 - PENDING: Patients view
 
 ## 3. Completed Phases (Compacted)

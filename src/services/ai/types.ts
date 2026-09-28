@@ -30,10 +30,21 @@ export interface PharmacyAssistantProvider {
   reviewPrescription(input: PharmacyReviewInput): Promise<PharmacyReview>
 }
 
+export type AIProviderMode = 'mock' | 'remote'
+
+export interface RemoteAIProviderConfig {
+  geminiWebhookUrl?: string
+  qwenWebhookUrl?: string
+  timeoutMs?: number
+  headers?: Record<string, string>
+}
+
 export interface DualAIOptions {
   clinicalProvider?: ClinicalAssistantProvider
   pharmacyProvider?: PharmacyAssistantProvider
   relevantObservationCodes?: string[]
+  mode?: AIProviderMode
+  remoteConfig?: RemoteAIProviderConfig
 }
 
 export interface DualAIRunResult {
