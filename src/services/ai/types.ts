@@ -8,6 +8,16 @@ import type {
   ReviewComparison,
 } from '../../domain'
 
+export type {
+  ClinicalContext,
+  ClinicalFinding,
+  PrescriptionDraft,
+  ClinicalAssessmentSummary,
+  PharmacyReviewInput,
+  PharmacyReview,
+  ReviewComparison,
+}
+
 /**
  * Provider-agnostic interface for Clinical Assistant AI.
  * Receives permitted ClinicalContext + deterministic findings.
@@ -45,11 +55,18 @@ export interface DualAIOptions {
   relevantObservationCodes?: string[]
   mode?: AIProviderMode
   remoteConfig?: RemoteAIProviderConfig
+  throwOnError?: boolean
+  onClinicalComplete?: (summary: ClinicalAssessmentSummary) => void
+  onClinicalError?: (error: string) => void
+  onPharmacyComplete?: (review: PharmacyReview) => void
+  onPharmacyError?: (error: string) => void
 }
 
 export interface DualAIRunResult {
-  clinicalSummary: ClinicalAssessmentSummary
-  pharmacyReview: PharmacyReview
-  comparison: ReviewComparison
+  clinicalSummary: ClinicalAssessmentSummary | null
+  pharmacyReview: PharmacyReview | null
+  comparison: ReviewComparison | null
   deterministicFindings: ClinicalFinding[]
+  clinicalError?: string | null
+  pharmacyError?: string | null
 }

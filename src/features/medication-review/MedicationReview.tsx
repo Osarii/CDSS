@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import {
+  AlertCircle,
   AlertOctagon,
   AlertTriangle,
   Bell,
@@ -16,6 +17,7 @@ import {
   GitCompare,
   HelpCircle,
   Info,
+  Loader2,
   Lock,
   MoreVertical,
   Pill,
@@ -38,8 +40,12 @@ import type { NormalizedScenario } from '@/domain/scenarios/schema'
 import type { ClinicalFinding } from '@/domain/findings/schema'
 import type { Medication } from '@/domain/medication/schema'
 import type { PrescriptionDraft } from '@/domain/prescription'
+import {
+  compareReviews,
+  type ClinicalAssessmentSummary,
+  type PharmacyReview,
+} from '@/domain'
 import { executeDualAIRoles } from '@/services/ai'
-import type { DualAIRunResult } from '@/services/ai'
 
 
 // ------------------------------------------------------------------
@@ -428,11 +434,27 @@ export function MedicationReview() {
   const [editedInstructions, setEditedInstructions] = useState<string>('')
   const [editedNotes, setEditedNotes] = useState<string>('')
 
-  // Dual AI review states
-  const [dualAIResult, setDualAIResult] = useState<DualAIRunResult | null>(null)
-  const [isRunningAI, setIsRunningAI] = useState<boolean>(false)
-  const [dualAIError, setDualAIError] = useState<string | null>(null)
+  // Independent Dual AI review states
+  const [clinicalData, setClinicalData] = useState<ClinicalAssessmentSummary | null>(null)
+  const [clinicalStatus, setClinicalStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [clinicalError, setClinicalError] = useState<string | null>(null)
+
+  const [pharmacyData, setPharmacyData] = useState<PharmacyReview | null>(null)
+  const [pharmacyStatus, setPharmacyStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [pharmacyError, setPharmacyError] = useState<string | null>(null)
+
+  const [executionError, setExecutionError] = useState<string | null>(null)
   const [activeAITab, setActiveAITab] = useState<'clinical' | 'pharmacy' | 'comparison'>('clinical')
+
+  const comparison = useMemo(() => {
+    if (clinicalData && pharmacyData) {
+      return compareReviews(clinicalData, pharmacyData)
+    }
+    return null
+  }, [clinicalData, pharmacyData])
+
+  const isRunningAI = clinicalStatus === 'loading' || pharmacyStatus === 'loading'
+  const hasStartedAI = clinicalStatus !== 'idle' || pharmacyStatus !== 'idle'
 
   // Synchronize / reset PrescriptionDraft and clear stale AI results when scenario changes
   const [prevScenarioKey, setPrevScenarioKey] = useState<string>('')
@@ -440,9 +462,12 @@ export function MedicationReview() {
 
   if (prevScenarioKey !== currentScenarioKey) {
     setPrevScenarioKey(currentScenarioKey)
-    setDualAIResult(null)
-    setDualAIError(null)
-    setIsRunningAI(false)
+    setClinicalData(null)
+    setClinicalStatus('idle')
+    setClinicalError(null)
+    setPharmacyData(null)
+    setPharmacyStatus('idle')
+    setPharmacyError(null)
     setIsEditingDraft(false)
 
     if (patient?.id && activeSelectedMed) {
@@ -499,7 +524,12 @@ export function MedicationReview() {
     setPrescriptionDraft(updatedDraft)
     setIsEditingDraft(false)
     // Clear downstream review if draft was modified
-    setDualAIResult(null)
+    setClinicalData(null)
+    setClinicalStatus('idle')
+    setClinicalError(null)
+    setPharmacyData(null)
+    setPharmacyStatus('idle')
+    setPharmacyError(null)
   }
 
   const handleCreateDraft = () => {
@@ -542,32 +572,58 @@ export function MedicationReview() {
 
   const handleClearDraft = () => {
     setPrescriptionDraft(null)
-    setDualAIResult(null)
+    setClinicalData(null)
+    setClinicalStatus('idle')
+    setClinicalError(null)
+    setPharmacyData(null)
+    setPharmacyStatus('idle')
+    setPharmacyError(null)
     setIsEditingDraft(false)
   }
 
   const handleRunDualAI = async () => {
     if (!context || !prescriptionDraft) {
-      setDualAIError('Se requiere un borrador de prescripción propuesto por el médico para ejecutar la revisión dual.')
+      setClinicalError('Se requiere un borrador de prescripción propuesto por el médico para ejecutar la revisión dual.')
+      setClinicalStatus('error')
       return
     }
 
-    try {
-      setIsRunningAI(true)
-      setDualAIError(null)
-      const result = await executeDualAIRoles({
-        context,
-        proposedPrescription: prescriptionDraft,
-        deterministicFindings: visibleAlerts,
-      })
-      setDualAIResult(result)
-      setActiveAITab('clinical')
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error inesperado al ejecutar la revisión dual.'
-      setDualAIError(msg)
-    } finally {
-      setIsRunningAI(false)
-    }
+    setClinicalStatus('loading')
+    setClinicalError(null)
+    setClinicalData(null)
+
+    setPharmacyStatus('loading')
+    setPharmacyError(null)
+    setPharmacyData(null)
+    setExecutionError(null)
+
+    // Execute independently: faster provider updates UI immediately without waiting for slower provider
+    executeDualAIRoles({
+      context,
+      proposedPrescription: prescriptionDraft,
+      deterministicFindings: visibleAlerts,
+      options: {
+        throwOnError: false,
+        onClinicalComplete: (summary) => {
+          setClinicalData(summary)
+          setClinicalStatus('success')
+        },
+        onClinicalError: (err) => {
+          setClinicalError(err)
+          setClinicalStatus('error')
+        },
+        onPharmacyComplete: (review) => {
+          setPharmacyData(review)
+          setPharmacyStatus('success')
+        },
+        onPharmacyError: (err) => {
+          setPharmacyError(err)
+          setPharmacyStatus('error')
+        },
+      },
+    }).catch((err: unknown) => {
+      setExecutionError(err instanceof Error ? err.message : String(err))
+    })
   }
 
   // Helper to get exposure for a medication
@@ -1596,16 +1652,16 @@ export function MedicationReview() {
                       )}
                     </button>
 
-                    {dualAIError && (
+                    {executionError && (
                       <div className="p-2 bg-clinical-critical-surface rounded border border-clinical-critical-border text-clinical-critical font-medium text-micro flex items-center gap-1.5">
                         <AlertOctagon size={14} className="shrink-0" aria-hidden="true" />
-                        <span>{dualAIError}</span>
+                        <span>{executionError}</span>
                       </div>
                     )}
                   </div>
 
                   {/* Progressive Disclosure AI Review Workspace */}
-                  {dualAIResult ? (
+                  {hasStartedAI ? (
                     <div className="space-y-space-sm pt-1">
                       {/* Sub-tabs for Progressive Disclosure: Clínico -> Farmacéutico -> Comparación */}
                       <div className="grid grid-cols-3 gap-1 bg-bone-200/70 p-1 rounded-lg border border-bone-300/60" role="tablist" aria-label="Secciones de revisión dual">
@@ -1622,6 +1678,12 @@ export function MedicationReview() {
                         >
                           <Stethoscope size={13} aria-hidden="true" />
                           <span className="truncate">Asistente Clínico</span>
+                          {clinicalStatus === 'loading' && (
+                            <span role="status" aria-label="Cargando asistente clínico">
+                              <Loader2 size={11} className="animate-spin text-aubergine-600 shrink-0" aria-hidden="true" />
+                            </span>
+                          )}
+                          {clinicalStatus === 'error' && <AlertCircle size={11} className="text-clinical-critical shrink-0" aria-hidden="true" />}
                         </button>
                         <button
                           type="button"
@@ -1636,6 +1698,12 @@ export function MedicationReview() {
                         >
                           <Pill size={13} aria-hidden="true" />
                           <span className="truncate">Revisión Farmacéutica</span>
+                          {pharmacyStatus === 'loading' && (
+                            <span role="status" aria-label="Cargando revisión farmacéutica">
+                              <Loader2 size={11} className="animate-spin text-aubergine-600 shrink-0" aria-hidden="true" />
+                            </span>
+                          )}
+                          {pharmacyStatus === 'error' && <AlertCircle size={11} className="text-clinical-critical shrink-0" aria-hidden="true" />}
                         </button>
                         <button
                           type="button"
@@ -1661,66 +1729,106 @@ export function MedicationReview() {
                               <Stethoscope size={16} className="text-aubergine-600" aria-hidden="true" />
                               Asistente Clínico SAMED
                             </span>
-                            <span className="px-2 py-0.5 rounded bg-aubergine-100 text-aubergine-700 font-label text-micro font-semibold uppercase">
-                              Síntesis Clínica
-                            </span>
+                            {clinicalStatus === 'success' && (
+                              <span className="px-2 py-0.5 rounded bg-aubergine-100 text-aubergine-700 font-label text-micro font-semibold uppercase">
+                                Síntesis Clínica
+                              </span>
+                            )}
+                            {clinicalStatus === 'loading' && (
+                              <span className="px-2 py-0.5 rounded bg-bone-100 text-text-secondary font-label text-micro font-medium uppercase flex items-center gap-1">
+                                <Loader2 size={11} className="animate-spin text-aubergine-600" aria-hidden="true" />
+                                En proceso
+                              </span>
+                            )}
+                            {clinicalStatus === 'error' && (
+                              <span className="px-2 py-0.5 rounded bg-clinical-critical-surface text-clinical-critical border border-clinical-critical-border font-label text-micro font-semibold uppercase">
+                                No disponible
+                              </span>
+                            )}
                           </div>
 
-                          <p className="font-small text-small text-text-primary leading-relaxed bg-bone-50 p-2 rounded border border-bone-200/50">
-                            {dualAIResult.clinicalSummary.summary}
-                          </p>
-
-                          {/* Clinical Considerations */}
-                          {dualAIResult.clinicalSummary.clinicalConsiderations.length > 0 && (
-                            <div className="space-y-1">
-                              <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
-                                Consideraciones clínicas identificadas:
-                              </span>
-                              <ul className="space-y-1 text-micro text-text-primary list-none p-0 m-0">
-                                {dualAIResult.clinicalSummary.clinicalConsiderations.map((c, i) => (
-                                  <li key={i} className="flex items-start gap-1.5 bg-bone-50/70 p-1.5 rounded border border-bone-200/40">
-                                    <ChevronRight size={13} className="text-aubergine-600 shrink-0 mt-0.5" aria-hidden="true" />
-                                    <span>{c}</span>
-                                  </li>
-                                ))}
-                              </ul>
+                          {clinicalStatus === 'loading' && (
+                            <div className="p-space-md flex flex-col items-center justify-center gap-2 text-center bg-bone-50 rounded border border-bone-200/50" role="status" aria-label="Cargando síntesis clínica">
+                              <Loader2 size={20} className="animate-spin text-aubergine-600" aria-hidden="true" />
+                              <span className="text-small font-medium text-text-primary">Generando síntesis clínica con Asistente Clínico...</span>
+                              <span className="text-micro text-text-muted">Ejecución independiente en curso sin bloquear otros asistentes.</span>
                             </div>
                           )}
 
-                          {/* Data Availability Gaps */}
-                          {dualAIResult.clinicalSummary.dataAvailabilityGaps.length > 0 && (
-                            <div className="space-y-1">
-                              <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
-                                Brechas de datos identificadas (Dato faltante ≠ normal):
-                              </span>
-                              <div className="space-y-1">
-                                {dualAIResult.clinicalSummary.dataAvailabilityGaps.map((gap, i) => (
-                                  <div key={i} className="p-1.5 bg-clinical-missing-surface/40 rounded border border-clinical-missing-border/60 text-micro flex items-start justify-between gap-2">
-                                    <div>
-                                      <span className="font-mono font-semibold text-text-primary">{gap.key}</span>
-                                      {gap.reason && <p className="text-text-secondary mt-0.5">{gap.reason}</p>}
-                                    </div>
-                                    <span className="px-1.5 py-0.5 rounded bg-clinical-missing-surface text-clinical-missing font-mono text-micro font-bold border border-clinical-missing-border shrink-0">
-                                      {gap.status}
-                                    </span>
-                                  </div>
-                                ))}
+                          {clinicalStatus === 'error' && (
+                            <div className="p-3 bg-clinical-critical-surface rounded border border-clinical-critical-border text-clinical-critical space-y-1.5" role="alert">
+                              <div className="flex items-center gap-1.5 font-semibold text-small">
+                                <AlertOctagon size={16} className="shrink-0" aria-hidden="true" />
+                                <span>Asistente Clínico no disponible</span>
                               </div>
+                              <p className="text-micro text-text-primary leading-relaxed font-mono">
+                                {clinicalError || 'Error inesperado durante la ejecución del Asistente Clínico.'}
+                              </p>
+                              <p className="text-micro text-text-secondary pt-1 border-t border-clinical-critical-border/50">
+                                El profesional retiene la autoridad decisoria. Los hallazgos determinísticos permanecen autoritativos e inalterados.
+                              </p>
                             </div>
                           )}
 
-                          {/* Referenced Deterministic Findings */}
-                          {dualAIResult.clinicalSummary.deterministicFindingsReferenced.length > 0 && (
-                            <div className="pt-1 border-t border-bone-100 flex items-center justify-between text-micro text-text-muted">
-                              <span>Hallazgos de regla referenciados:</span>
-                              <div className="flex gap-1 flex-wrap">
-                                {dualAIResult.clinicalSummary.deterministicFindingsReferenced.map((fId) => (
-                                  <span key={fId} className="px-1.5 py-0.5 rounded bg-bone-100 font-mono text-micro text-text-secondary border border-bone-200">
-                                    {fId}
+                          {clinicalStatus === 'success' && clinicalData && (
+                            <>
+                              <p className="font-small text-small text-text-primary leading-relaxed bg-bone-50 p-2 rounded border border-bone-200/50">
+                                {clinicalData.summary}
+                              </p>
+
+                              {/* Clinical Considerations */}
+                              {(clinicalData.clinicalConsiderations?.length ?? 0) > 0 && (
+                                <div className="space-y-1">
+                                  <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
+                                    Consideraciones clínicas identificadas:
                                   </span>
-                                ))}
-                              </div>
-                            </div>
+                                  <ul className="space-y-1 text-micro text-text-primary list-none p-0 m-0">
+                                    {clinicalData.clinicalConsiderations.map((c, i) => (
+                                      <li key={i} className="flex items-start gap-1.5 bg-bone-50/70 p-1.5 rounded border border-bone-200/40">
+                                        <ChevronRight size={13} className="text-aubergine-600 shrink-0 mt-0.5" aria-hidden="true" />
+                                        <span>{c}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+
+                              {/* Data Availability Gaps */}
+                              {(clinicalData.dataAvailabilityGaps?.length ?? 0) > 0 && (
+                                <div className="space-y-1">
+                                  <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
+                                    Brechas de datos identificadas (Dato faltante ≠ normal):
+                                  </span>
+                                  <div className="space-y-1">
+                                    {clinicalData.dataAvailabilityGaps.map((gap, i) => (
+                                      <div key={i} className="p-1.5 bg-clinical-missing-surface/40 rounded border border-clinical-missing-border/60 text-micro flex items-start justify-between gap-2">
+                                        <div>
+                                          <span className="font-mono font-semibold text-text-primary">{gap.key}</span>
+                                          {gap.reason && <p className="text-text-secondary mt-0.5">{gap.reason}</p>}
+                                        </div>
+                                        <span className="px-1.5 py-0.5 rounded bg-clinical-missing-surface text-clinical-missing font-mono text-micro font-bold border border-clinical-missing-border shrink-0">
+                                          {gap.status}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Referenced Deterministic Findings */}
+                              {(clinicalData.deterministicFindingsReferenced?.length ?? 0) > 0 && (
+                                <div className="pt-1 border-t border-bone-100 flex items-center justify-between text-micro text-text-muted">
+                                  <span>Hallazgos de regla referenciados:</span>
+                                  <div className="flex gap-1 flex-wrap">
+                                    {clinicalData.deterministicFindingsReferenced.map((fId) => (
+                                      <span key={fId} className="px-1.5 py-0.5 rounded bg-bone-100 font-mono text-micro text-text-secondary border border-bone-200">
+                                        {fId}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       )}
@@ -1733,83 +1841,122 @@ export function MedicationReview() {
                               <Pill size={16} className="text-aubergine-600" aria-hidden="true" />
                               Revisión Farmacéutica SAMED
                             </span>
-                            {/* Status badge */}
-                            <span className={`px-2 py-0.5 rounded font-label text-micro font-bold uppercase border ${
-                              dualAIResult.pharmacyReview.status === 'BLOCKED_BY_MISSING_DATA'
-                                ? 'bg-clinical-missing-surface text-clinical-missing border-clinical-missing-border'
-                                : dualAIResult.pharmacyReview.status === 'REVIEW_RECOMMENDED'
-                                  ? 'bg-clinical-warning-surface text-clinical-warning border-clinical-warning-border'
-                                  : 'bg-clinical-safe-surface text-clinical-safe border-clinical-safe-border'
-                            }`}>
-                              {dualAIResult.pharmacyReview.status === 'BLOCKED_BY_MISSING_DATA'
-                                ? 'BLOQUEADO POR DATOS FALTANTES'
-                                : dualAIResult.pharmacyReview.status === 'REVIEW_RECOMMENDED'
-                                  ? 'REVISIÓN RECOMENDADA'
-                                  : 'SIN OBSERVACIONES ADICIONALES'}
-                            </span>
-                          </div>
-
-                          {/* Controlled Input Boundary Banner */}
-                          <div className="p-1.5 bg-bone-100 rounded text-micro text-text-secondary border border-bone-200 flex items-center gap-1.5">
-                            <Lock size={12} className="text-aubergine-600 shrink-0" aria-hidden="true" />
-                            <span>Entrada farmacoterapéutica controlada (sin acceso directo al contexto clínico crudo).</span>
-                          </div>
-
-                          <p className="font-small text-small text-text-primary leading-relaxed bg-bone-50 p-2 rounded border border-bone-200/50">
-                            {dualAIResult.pharmacyReview.summary}
-                          </p>
-
-                          {/* Pharmacological Considerations */}
-                          {dualAIResult.pharmacyReview.pharmacologicalConsiderations.length > 0 && (
-                            <div className="space-y-1">
-                              <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
-                                Consideraciones farmacológicas:
+                            {pharmacyStatus === 'success' && pharmacyData && (
+                              <span className={`px-2 py-0.5 rounded font-label text-micro font-bold uppercase border ${
+                                pharmacyData.status === 'BLOCKED_BY_MISSING_DATA'
+                                  ? 'bg-clinical-missing-surface text-clinical-missing border-clinical-missing-border'
+                                  : pharmacyData.status === 'REVIEW_RECOMMENDED'
+                                    ? 'bg-clinical-warning-surface text-clinical-warning border-clinical-warning-border'
+                                    : 'bg-clinical-safe-surface text-clinical-safe border-clinical-safe-border'
+                              }`}>
+                                {pharmacyData.status === 'BLOCKED_BY_MISSING_DATA'
+                                  ? 'BLOQUEADO POR DATOS FALTANTES'
+                                  : pharmacyData.status === 'REVIEW_RECOMMENDED'
+                                    ? 'REVISIÓN RECOMENDADA'
+                                    : 'SIN OBSERVACIONES ADICIONALES'}
                               </span>
-                              <ul className="space-y-1 text-micro text-text-primary list-none p-0 m-0">
-                                {dualAIResult.pharmacyReview.pharmacologicalConsiderations.map((c, i) => (
-                                  <li key={i} className="flex items-start gap-1.5 bg-bone-50/70 p-1.5 rounded border border-bone-200/40">
-                                    <ChevronRight size={13} className="text-aubergine-600 shrink-0 mt-0.5" aria-hidden="true" />
-                                    <span>{c}</span>
-                                  </li>
-                                ))}
-                              </ul>
+                            )}
+                            {pharmacyStatus === 'loading' && (
+                              <span className="px-2 py-0.5 rounded bg-bone-100 text-text-secondary font-label text-micro font-medium uppercase flex items-center gap-1">
+                                <Loader2 size={11} className="animate-spin text-aubergine-600" aria-hidden="true" />
+                                En proceso
+                              </span>
+                            )}
+                            {pharmacyStatus === 'error' && (
+                              <span className="px-2 py-0.5 rounded bg-clinical-critical-surface text-clinical-critical border border-clinical-critical-border font-label text-micro font-semibold uppercase">
+                                No disponible
+                              </span>
+                            )}
+                          </div>
+
+                          {pharmacyStatus === 'loading' && (
+                            <div className="p-space-md flex flex-col items-center justify-center gap-2 text-center bg-bone-50 rounded border border-bone-200/50" role="status" aria-label="Cargando revisión farmacéutica">
+                              <Loader2 size={20} className="animate-spin text-aubergine-600" aria-hidden="true" />
+                              <span className="text-small font-medium text-text-primary">Analizando borrador farmacológico con Asistente Farmacéutico...</span>
+                              <span className="text-micro text-text-muted">Ejecución independiente en curso sin bloquear otros asistentes.</span>
                             </div>
                           )}
 
-                          {/* Required Data Gaps */}
-                          {dualAIResult.pharmacyReview.requiredDataGaps.length > 0 && (
-                            <div className="space-y-1">
-                              <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
-                                Datos requeridos ausentes para validación:
-                              </span>
-                              <div className="space-y-1">
-                                {dualAIResult.pharmacyReview.requiredDataGaps.map((gap, i) => (
-                                  <div key={i} className="p-1.5 bg-clinical-missing-surface/40 rounded border border-clinical-missing-border/60 text-micro flex items-start justify-between gap-2">
-                                    <div>
-                                      <span className="font-mono font-semibold text-text-primary">{gap.key}</span>
-                                      {gap.reason && <p className="text-text-secondary mt-0.5">{gap.reason}</p>}
-                                    </div>
-                                    <span className="px-1.5 py-0.5 rounded bg-clinical-missing-surface text-clinical-missing font-mono text-micro font-bold border border-clinical-missing-border shrink-0">
-                                      {gap.status}
-                                    </span>
-                                  </div>
-                                ))}
+                          {pharmacyStatus === 'error' && (
+                            <div className="p-3 bg-clinical-critical-surface rounded border border-clinical-critical-border text-clinical-critical space-y-1.5" role="alert">
+                              <div className="flex items-center gap-1.5 font-semibold text-small">
+                                <AlertOctagon size={16} className="shrink-0" aria-hidden="true" />
+                                <span>Revisión Farmacéutica no disponible</span>
                               </div>
+                              <p className="text-micro text-text-primary leading-relaxed font-mono">
+                                {pharmacyError || 'Error inesperado durante la ejecución de la Revisión Farmacéutica.'}
+                              </p>
+                              <p className="text-micro text-text-secondary pt-1 border-t border-clinical-critical-border/50">
+                                El profesional retiene la autoridad decisoria. Los hallazgos determinísticos permanecen autoritativos e inalterados.
+                              </p>
                             </div>
                           )}
 
-                          {/* Referenced Deterministic Findings */}
-                          {dualAIResult.pharmacyReview.deterministicFindingsReferenced.length > 0 && (
-                            <div className="pt-1 border-t border-bone-100 flex items-center justify-between text-micro text-text-muted">
-                              <span>Hallazgos deterministas referenciados:</span>
-                              <div className="flex gap-1 flex-wrap">
-                                {dualAIResult.pharmacyReview.deterministicFindingsReferenced.map((fId) => (
-                                  <span key={fId} className="px-1.5 py-0.5 rounded bg-bone-100 font-mono text-micro text-text-secondary border border-bone-200">
-                                    {fId}
+                          {pharmacyStatus === 'success' && pharmacyData && (
+                            <>
+                              {/* Controlled Input Boundary Banner */}
+                              <div className="p-1.5 bg-bone-100 rounded text-micro text-text-secondary border border-bone-200 flex items-center gap-1.5">
+                                <Lock size={12} className="text-aubergine-600 shrink-0" aria-hidden="true" />
+                                <span>Entrada farmacoterapéutica controlada (sin acceso directo al contexto clínico crudo).</span>
+                              </div>
+
+                              <p className="font-small text-small text-text-primary leading-relaxed bg-bone-50 p-2 rounded border border-bone-200/50">
+                                {pharmacyData.summary}
+                              </p>
+
+                              {/* Pharmacological Considerations */}
+                              {(pharmacyData.pharmacologicalConsiderations?.length ?? 0) > 0 && (
+                                <div className="space-y-1">
+                                  <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
+                                    Consideraciones farmacológicas:
                                   </span>
-                                ))}
-                              </div>
-                            </div>
+                                  <ul className="space-y-1 text-micro text-text-primary list-none p-0 m-0">
+                                    {pharmacyData.pharmacologicalConsiderations.map((c, i) => (
+                                      <li key={i} className="flex items-start gap-1.5 bg-bone-50/70 p-1.5 rounded border border-bone-200/40">
+                                        <ChevronRight size={13} className="text-aubergine-600 shrink-0 mt-0.5" aria-hidden="true" />
+                                        <span>{c}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+
+                              {/* Required Data Gaps */}
+                              {(pharmacyData.requiredDataGaps?.length ?? 0) > 0 && (
+                                <div className="space-y-1">
+                                  <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
+                                    Datos requeridos ausentes para validación:
+                                  </span>
+                                  <div className="space-y-1">
+                                    {pharmacyData.requiredDataGaps.map((gap, i) => (
+                                      <div key={i} className="p-1.5 bg-clinical-missing-surface/40 rounded border border-clinical-missing-border/60 text-micro flex items-start justify-between gap-2">
+                                        <div>
+                                          <span className="font-mono font-semibold text-text-primary">{gap.key}</span>
+                                          {gap.reason && <p className="text-text-secondary mt-0.5">{gap.reason}</p>}
+                                        </div>
+                                        <span className="px-1.5 py-0.5 rounded bg-clinical-missing-surface text-clinical-missing font-mono text-micro font-bold border border-clinical-missing-border shrink-0">
+                                          {gap.status}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Referenced Deterministic Findings */}
+                              {(pharmacyData.deterministicFindingsReferenced?.length ?? 0) > 0 && (
+                                <div className="pt-1 border-t border-bone-100 flex items-center justify-between text-micro text-text-muted">
+                                  <span>Hallazgos deterministas referenciados:</span>
+                                  <div className="flex gap-1 flex-wrap">
+                                    {pharmacyData.deterministicFindingsReferenced.map((fId) => (
+                                      <span key={fId} className="px-1.5 py-0.5 rounded bg-bone-100 font-mono text-micro text-text-secondary border border-bone-200">
+                                        {fId}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       )}
@@ -1823,86 +1970,136 @@ export function MedicationReview() {
                               Comparación de Revisiones Asistidas
                             </span>
                             <span className="px-2 py-0.5 rounded bg-bone-100 text-text-secondary font-label text-micro font-semibold uppercase">
-                              Sin Ganador
+                              {comparison ? 'Sin Ganador' : 'No Disponible'}
                             </span>
                           </div>
 
-                          {/* Safety Credo on Neutral Comparison */}
-                          <p className="font-micro text-micro text-text-secondary bg-bone-50 p-2 rounded border border-bone-200/60 leading-relaxed">
-                            Evaluación comparativa sin selección de ganador: el profesional médico evalúa las diferencias y retiene la autoridad decisoria.
-                          </p>
-
-                          {/* Shared Considerations */}
-                          {dualAIResult.comparison.sharedConsiderations.length > 0 && (
-                            <div className="space-y-1">
-                              <span className="font-micro text-micro text-clinical-safe uppercase block font-semibold">
-                                Consideraciones compartidas por ambos roles:
+                          {/* If either is loading */}
+                          {(clinicalStatus === 'loading' || pharmacyStatus === 'loading') && (
+                            <div className="p-space-md flex flex-col items-center justify-center gap-2 text-center bg-bone-50 rounded border border-bone-200/50" role="status" aria-label="Comparación pendiente">
+                              <Loader2 size={20} className="animate-spin text-aubergine-600" aria-hidden="true" />
+                              <span className="text-small font-medium text-text-primary">Comparación pendiente: esperando finalización de ambos asistentes independientes...</span>
+                              <span className="text-micro text-text-muted">
+                                Asistente Clínico: {clinicalStatus === 'loading' ? 'En ejecución' : clinicalStatus === 'success' ? 'Listo' : 'No disponible'} | Revisión Farmacéutica: {pharmacyStatus === 'loading' ? 'En ejecución' : pharmacyStatus === 'success' ? 'Listo' : 'No disponible'}
                               </span>
-                              <ul className="space-y-1 text-micro text-text-primary list-none p-0 m-0">
-                                {dualAIResult.comparison.sharedConsiderations.map((c, i) => (
-                                  <li key={i} className="flex items-start gap-1.5 bg-clinical-safe-surface/50 p-1.5 rounded border border-clinical-safe-border/50">
-                                    <CheckCircle2 size={13} className="text-clinical-safe shrink-0 mt-0.5" aria-hidden="true" />
-                                    <span>{c}</span>
-                                  </li>
-                                ))}
-                              </ul>
                             </div>
                           )}
 
-                          {/* Clinical-Only Considerations */}
-                          {dualAIResult.comparison.clinicalAssistantOnlyConsiderations.length > 0 && (
-                            <div className="space-y-1">
-                              <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
-                                Consideraciones exclusivas del Asistente Clínico:
-                              </span>
-                              <ul className="space-y-1 text-micro text-text-primary list-none p-0 m-0">
-                                {dualAIResult.comparison.clinicalAssistantOnlyConsiderations.map((c, i) => (
-                                  <li key={i} className="flex items-start gap-1.5 bg-bone-50 p-1.5 rounded border border-bone-200/40">
-                                    <ChevronRight size={13} className="text-aubergine-600 shrink-0 mt-0.5" aria-hidden="true" />
-                                    <span>{c}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {/* Pharmacy-Only Considerations */}
-                          {dualAIResult.comparison.pharmacyAssistantOnlyConsiderations.length > 0 && (
-                            <div className="space-y-1">
-                              <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
-                                Consideraciones exclusivas del Asistente Farmacéutico:
-                              </span>
-                              <ul className="space-y-1 text-micro text-text-primary list-none p-0 m-0">
-                                {dualAIResult.comparison.pharmacyAssistantOnlyConsiderations.map((c, i) => (
-                                  <li key={i} className="flex items-start gap-1.5 bg-bone-50 p-1.5 rounded border border-bone-200/40">
-                                    <ChevronRight size={13} className="text-aubergine-600 shrink-0 mt-0.5" aria-hidden="true" />
-                                    <span>{c}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {/* Discrepancies & Missing Data Disagreements */}
-                          {(dualAIResult.comparison.unresolvedDiscrepancies.length > 0 ||
-                            dualAIResult.comparison.missingDataDisagreements.length > 0) && (
-                            <div className="space-y-1 pt-1 border-t border-bone-100">
-                              <span className="font-micro text-micro text-clinical-warning uppercase block font-semibold">
-                                Discrepancias no resueltas entre asistentes:
-                              </span>
-                              <div className="space-y-1">
-                                {dualAIResult.comparison.unresolvedDiscrepancies.map((d, i) => (
-                                  <div key={i} className="p-1.5 bg-clinical-warning-surface/50 rounded border border-clinical-warning-border/60 text-micro text-text-primary">
-                                    <span className="font-semibold text-clinical-warning">Discrepancia analítica:</span> {d}
-                                  </div>
-                                ))}
-                                {dualAIResult.comparison.missingDataDisagreements.map((d, i) => (
-                                  <div key={i} className="p-1.5 bg-clinical-missing-surface/50 rounded border border-clinical-missing-border/60 text-micro text-text-primary">
-                                    <span className="font-semibold text-clinical-missing">Brecha de datos divergente:</span> {d}
-                                  </div>
-                                ))}
+                          {/* If neither is loading and comparison is null (one or both failed) */}
+                          {clinicalStatus !== 'loading' && pharmacyStatus !== 'loading' && !comparison && (
+                            <div className="p-3 bg-bone-50 rounded border border-bone-200 text-micro space-y-2" role="status">
+                              <div className="flex items-center gap-1.5 font-semibold text-text-primary text-small">
+                                <Info size={16} className="text-aubergine-600 shrink-0" aria-hidden="true" />
+                                <span>Comparación no disponible</span>
                               </div>
+                              <p className="text-text-secondary leading-relaxed">
+                                Se requieren ambas revisiones independientes para generar el análisis comparativo cruzado. No se fabrica una comparación cuando alguno de los asistentes no está disponible.
+                              </p>
+                              <div className="p-2 bg-bone-white rounded border border-bone-200/60 space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="font-medium text-text-primary">Asistente Clínico:</span>
+                                  <span className={`px-1.5 py-0.5 rounded font-mono text-micro font-semibold ${
+                                    clinicalStatus === 'success' ? 'bg-clinical-safe-surface text-clinical-safe' : 'bg-clinical-critical-surface text-clinical-critical'
+                                  }`}>
+                                    {clinicalStatus === 'success' ? 'DISPONIBLE' : 'NO DISPONIBLE'}
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="font-medium text-text-primary">Revisión Farmacéutica:</span>
+                                  <span className={`px-1.5 py-0.5 rounded font-mono text-micro font-semibold ${
+                                    pharmacyStatus === 'success' ? 'bg-clinical-safe-surface text-clinical-safe' : 'bg-clinical-critical-surface text-clinical-critical'
+                                  }`}>
+                                    {pharmacyStatus === 'success' ? 'DISPONIBLE' : 'NO DISPONIBLE'}
+                                  </span>
+                                </div>
+                              </div>
+                              <p className="text-text-muted text-micro">
+                                Evaluación comparativa sin selección de ganador: el profesional médico evalúa la revisión disponible y retiene la autoridad decisoria.
+                              </p>
                             </div>
+                          )}
+
+                          {/* When both succeeded */}
+                          {comparison && (
+                            <>
+                              {/* Safety Credo on Neutral Comparison */}
+                              <p className="font-micro text-micro text-text-secondary bg-bone-50 p-2 rounded border border-bone-200/60 leading-relaxed">
+                                Evaluación comparativa sin selección de ganador: el profesional médico evalúa las diferencias y retiene la autoridad decisoria.
+                              </p>
+
+                              {/* Shared Considerations */}
+                              {comparison.sharedConsiderations.length > 0 && (
+                                <div className="space-y-1">
+                                  <span className="font-micro text-micro text-clinical-safe uppercase block font-semibold">
+                                    Consideraciones compartidas por ambos roles:
+                                  </span>
+                                  <ul className="space-y-1 text-micro text-text-primary list-none p-0 m-0">
+                                    {comparison.sharedConsiderations.map((c, i) => (
+                                      <li key={i} className="flex items-start gap-1.5 bg-clinical-safe-surface/50 p-1.5 rounded border border-clinical-safe-border/50">
+                                        <CheckCircle2 size={13} className="text-clinical-safe shrink-0 mt-0.5" aria-hidden="true" />
+                                        <span>{c}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+
+                              {/* Clinical-Only Considerations */}
+                              {comparison.clinicalAssistantOnlyConsiderations.length > 0 && (
+                                <div className="space-y-1">
+                                  <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
+                                    Consideraciones exclusivas del Asistente Clínico:
+                                  </span>
+                                  <ul className="space-y-1 text-micro text-text-primary list-none p-0 m-0">
+                                    {comparison.clinicalAssistantOnlyConsiderations.map((c, i) => (
+                                      <li key={i} className="flex items-start gap-1.5 bg-bone-50 p-1.5 rounded border border-bone-200/40">
+                                        <ChevronRight size={13} className="text-aubergine-600 shrink-0 mt-0.5" aria-hidden="true" />
+                                        <span>{c}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+
+                              {/* Pharmacy-Only Considerations */}
+                              {comparison.pharmacyAssistantOnlyConsiderations.length > 0 && (
+                                <div className="space-y-1">
+                                  <span className="font-micro text-micro text-text-muted uppercase block font-semibold">
+                                    Consideraciones exclusivas del Asistente Farmacéutico:
+                                  </span>
+                                  <ul className="space-y-1 text-micro text-text-primary list-none p-0 m-0">
+                                    {comparison.pharmacyAssistantOnlyConsiderations.map((c, i) => (
+                                      <li key={i} className="flex items-start gap-1.5 bg-bone-50 p-1.5 rounded border border-bone-200/40">
+                                        <ChevronRight size={13} className="text-aubergine-600 shrink-0 mt-0.5" aria-hidden="true" />
+                                        <span>{c}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+
+                              {/* Discrepancies & Missing Data Disagreements */}
+                              {(comparison.unresolvedDiscrepancies.length > 0 ||
+                                comparison.missingDataDisagreements.length > 0) && (
+                                <div className="space-y-1 pt-1 border-t border-bone-100">
+                                  <span className="font-micro text-micro text-clinical-warning uppercase block font-semibold">
+                                    Discrepancias no resueltas entre asistentes:
+                                  </span>
+                                  <div className="space-y-1">
+                                    {comparison.unresolvedDiscrepancies.map((d, i) => (
+                                      <div key={i} className="p-1.5 bg-clinical-warning-surface/50 rounded border border-clinical-warning-border/60 text-micro text-text-primary">
+                                        <span className="font-semibold text-clinical-warning">Discrepancia analítica:</span> {d}
+                                      </div>
+                                    ))}
+                                    {comparison.missingDataDisagreements.map((d, i) => (
+                                      <div key={i} className="p-1.5 bg-clinical-missing-surface/50 rounded border border-clinical-missing-border/60 text-micro text-text-primary">
+                                        <span className="font-semibold text-clinical-missing">Brecha de datos divergente:</span> {d}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       )}

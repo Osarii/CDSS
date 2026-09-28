@@ -289,9 +289,9 @@ describe('Remote AI Provider Boundary & n8n Webhook Integration', () => {
         deterministicFindings: dummyFindings,
       })
 
-      expect(result.clinicalSummary.role).toBe('clinical_assistant')
-      expect(result.pharmacyReview.role).toBe('pharmacy_assistant')
-      expect(result.comparison.unresolvedDiscrepancies).toBeDefined()
+      expect(result.clinicalSummary!.role).toBe('clinical_assistant')
+      expect(result.pharmacyReview!.role).toBe('pharmacy_assistant')
+      expect(result.comparison!.unresolvedDiscrepancies).toBeDefined()
       expect(global.fetch).not.toHaveBeenCalled()
     })
 
@@ -324,8 +324,8 @@ describe('Remote AI Provider Boundary & n8n Webhook Integration', () => {
       expect(result.pharmacyReview).toEqual(validQwenResponse)
 
       // Comparison layer remains deterministic
-      expect(result.comparison.clinicalSummaryId).toBe('ca-rem-01')
-      expect(result.comparison.pharmacyReviewId).toBe('pr-rem-01')
+      expect(result.comparison!.clinicalSummaryId).toBe('ca-rem-01')
+      expect(result.comparison!.pharmacyReviewId).toBe('pr-rem-01')
 
       // Deterministic findings remain untouched
       expect(result.deterministicFindings).toHaveLength(1)

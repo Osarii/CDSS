@@ -140,14 +140,14 @@ describe('SAMED Dual AI Roles v1', () => {
       })
 
       // Clinical Assistant explicitly retains the gap
-      const clinicalGaps = result.clinicalSummary.dataAvailabilityGaps
-      expect(clinicalGaps.some((g) => g.key === 'serum_creatinine' && g.status === 'MISSING')).toBe(true)
+      const clinicalGaps = result.clinicalSummary!.dataAvailabilityGaps
+      expect(clinicalGaps.some((g: { key: string; status: string }) => g.key === 'serum_creatinine' && g.status === 'MISSING')).toBe(true)
 
       // Pharmacy Assistant marks evaluation as BLOCKED_BY_MISSING_DATA due to missing renal labs
-      expect(result.pharmacyReview.status).toBe('BLOCKED_BY_MISSING_DATA')
+      expect(result.pharmacyReview!.status).toBe('BLOCKED_BY_MISSING_DATA')
       expect(
-        result.pharmacyReview.requiredDataGaps.some(
-          (g) => g.key === 'serum_creatinine' && g.status === 'MISSING'
+        result.pharmacyReview!.requiredDataGaps.some(
+          (g: { key: string; status: string }) => g.key === 'serum_creatinine' && g.status === 'MISSING'
         )
       ).toBe(true)
     })
@@ -183,12 +183,12 @@ describe('SAMED Dual AI Roles v1', () => {
       })
 
       // Confirm independent outputs
-      expect(result.clinicalSummary.role).toBe('clinical_assistant')
-      expect(result.pharmacyReview.role).toBe('pharmacy_assistant')
-      expect(result.pharmacyReview.status).toBe('REVIEW_RECOMMENDED')
+      expect(result.clinicalSummary!.role).toBe('clinical_assistant')
+      expect(result.pharmacyReview!.role).toBe('pharmacy_assistant')
+      expect(result.pharmacyReview!.status).toBe('REVIEW_RECOMMENDED')
 
       // Check comparison layer
-      const comparison = result.comparison
+      const comparison = result.comparison!
       const parsedComparison = reviewComparisonSchema.parse(comparison)
       expect(parsedComparison).toBeDefined()
 
@@ -287,7 +287,7 @@ describe('SAMED Dual AI Roles v1', () => {
       expect(result.deterministicFindings[0].isDeterministic).toBe(true)
 
       // Even though pharmacy AI reported NO_ADDITIONAL_CONCERNS, it cannot alter deterministic truth
-      expect(result.pharmacyReview.status).toBe('NO_ADDITIONAL_CONCERNS')
+      expect(result.pharmacyReview!.status).toBe('NO_ADDITIONAL_CONCERNS')
       expect(result.deterministicFindings[0].severity).toBe('critical')
     })
   })

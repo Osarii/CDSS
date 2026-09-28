@@ -11,7 +11,7 @@
 - **Product Brand:** SAMED — *Sistema de Apoyo Médico para Evaluación y Decisión*
 - **Tagline:** *"SAMED apoya la decisión. El profesional toma la decisión."*
 - **Architecture Role:** Product brand = **SAMED** | Technical project / repository = **CDSS**
-- **Current Work:** Fixed final strict-output validation defects in Gemini and Qwen n8n workflows. Made Qwen JSON schema fully compliant with Groq `strict: true` (all properties required, `additionalProperties: false`, `reason` as nullable string in `requiredDataGaps`). Removed all fabrication/repair fallbacks from `Normalize Response` nodes in both workflows, returning explicit controlled error responses (`error: true`) when required contract fields or types are missing. Added comprehensive regression tests. 15 workflow tests (279 total across 16 suites), 0 linter errors, production build clean, `git diff --check` clean.
+- **Current Work:** Made SAMED Dual AI execution independent and non-blocking so Clinical Assistant (Gemini) and Pharmacy Assistant (Qwen) execute in parallel without blocking each other. Each provider has independent loading, success, and error states in the UI. If one provider fails or times out, the valid review from the other provider is preserved and displayed; deterministic findings remain authoritative and unchanged. ReviewComparison is generated only when both valid reviews are available (never fabricated). Added progressive disclosure callbacks in orchestrator (`onClinicalComplete`, `onClinicalError`, `onPharmacyComplete`, `onPharmacyError`) and independent helper functions. Added full regression test suites in orchestrator unit tests (`src/services/ai/orchestrator.test.ts`, 7 tests) and MedicationReview UI tests (`src/features/medication-review/MedicationReview.test.tsx`, 25 tests, total 297 tests across 17 test files). Full tests pass, lint 0 errors, build clean, `git diff --check` clean.
 - **Next Allowed Task:** Next task per user direction.
 - **Current Branch:** `main`
 - **Last Important Commit:** `5d44aa6` (fix: enforce clinical findings single source of truth)
@@ -37,6 +37,8 @@
 - COMPLETE: Importable n8n workflows generated for Gemini Clinical Assistant & Qwen Pharmacy Assistant (structured JSON schemas, boundary isolation, 9 focused tests)
 - COMPLETE: Hardened SAMED n8n AI workflow boundary & error handling verification (authoritative findings wording, explicit controlled error responses for malformed model output, Zod rejection boundary, deterministic findings preservation, 11 workflow tests, 275 total across 16 test files)
 - COMPLETE: Strict-output schema & validation defects fix in n8n workflows (Groq strict:true compatibility with nullable required properties, zero fallback fabrication in normalization nodes, 15 workflow tests, 279 total tests)
+- COMPLETE: Bounded transient-error resilience for Gemini Clinical Assistant n8n request (45000ms timeout, max 2 retries, 2000ms delay, transient error policy, 22 workflow tests, 286 total tests)
+- COMPLETE: Independent, non-blocking Dual AI execution & UI fault isolation (parallel non-blocking execution, immediate display of faster provider, independent status badges, single-provider failure isolation, non-fabrication of comparison, 7 orchestrator tests, 25 MedicationReview tests, 297 total across 17 test files)
 - PENDING: Patients view
 
 ## 3. Completed Phases (Compacted)
@@ -66,7 +68,7 @@
 - **Prompt Gate:** `PROMPT_CONTRACT.md` is the only file read permitted before validation. Invalid prompts (including malformed `LOCATOR` syntax) immediately cancel all execution.
 - **Token Efficiency:** Serena for symbol navigation, RTK for shell compression, Ponytail/YAGNI for abstractions. Targeted fixes follow `locator -> smallest relevant read -> incremental expansion`. Never preload all rules.
 - **Finding Identity (v1):** `patientId` + `ruleId` + `ruleVersion` + `timestamp` defines one automatic `ClinicalFinding` identity. The deterministic loop emits at most one finding for that identity. Multiple findings for the same rule/evaluation require explicit discriminators or caller-supplied IDs.
-- **Dual AI Invariants:** Clinical Assistant cannot author or approve prescriptions. Pharmacy Assistant receives strictly controlled medication input, never raw ClinicalContext. ReviewComparison exposes discrepancies neutrally and never declares a winner. Deterministic findings remain unalterable single source of truth.
+- **Dual AI Invariants:** Clinical Assistant cannot author or approve prescriptions. Pharmacy Assistant receives strictly controlled medication input, never raw ClinicalContext. Providers execute independently and non-blockingly (faster provider displays immediately without waiting for slower). Failure or timeout of one provider never discards the valid review of the other. ReviewComparison is generated only when both valid reviews are available and exposes discrepancies neutrally without ever declaring a winner. Deterministic findings remain unalterable single source of truth.
 
 ## 5. Canonical File Locations
 - **Prompt Gate & Router:** [PROMPT_CONTRACT.md](./PROMPT_CONTRACT.md), [.agents/rules/00-rule-router.md](./.agents/rules/00-rule-router.md), [.agents/rules/01-prompt-gate.md](./.agents/rules/01-prompt-gate.md)

@@ -21,7 +21,7 @@ Este directorio contiene los flujos de trabajo importables de **n8n** diseñados
 
 | Archivo | Rol | Modelo | Proveedor | Ruta Webhook por Defecto |
 | :--- | :--- | :--- | :--- | :--- |
-| `clinical-assistant-workflow.json` | Asistente Clínico | `gemini-3.8-flash` | Google Gemini API | `POST /webhook/samed-clinical-assistant` |
+| `clinical-assistant-workflow.json` | Asistente Clínico | `gemini-3.5-flash-lite` | Google Gemini API | `POST /webhook/samed-clinical-assistant` |
 | `pharmacy-assistant-workflow.json` | Asistente Farmacéutico | `qwen/qwen3.8-27b` | Groq API | `POST /webhook/samed-pharmacy-assistant` |
 
 ---

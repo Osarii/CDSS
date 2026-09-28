@@ -1,10 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, within, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, fireEvent, within, waitFor, act } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
 import { MedicationReview } from '@/features/medication-review/MedicationReview'
 import type { Medication, MedicationExposure } from '@/domain/medication/schema'
 import type { ClinicalFinding } from '@/domain/findings/schema'
+import * as aiModule from '@/services/ai'
+import type { ClinicalAssessmentSummary, PharmacyReview } from '@/services/ai'
 
 // ------------------------------------------------------------------
 // Helpers
@@ -632,9 +634,9 @@ describe('MedicationReview — SAMED Visual Baseline v1', () => {
     expect(result.deterministicFindings[0].severity).toBe('critical')
 
     // Clinical and Pharmacy reviews are independent
-    expect(result.clinicalSummary.role).toBe('clinical_assistant')
-    expect(result.pharmacyReview.role).toBe('pharmacy_assistant')
-    expect(result.comparison.unresolvedDiscrepancies).toBeDefined()
+    expect(result.clinicalSummary!.role).toBe('clinical_assistant')
+    expect(result.pharmacyReview!.role).toBe('pharmacy_assistant')
+    expect(result.comparison!.unresolvedDiscrepancies).toBeDefined()
   })
 
   // ----------------------------------------------------------------
@@ -803,6 +805,239 @@ describe('MedicationReview — SAMED Visual Baseline v1', () => {
       expect(screen.queryByText(/modelo de arteriola aferente/i)).not.toBeInTheDocument()
       expect(screen.queryByText(/modelo de arteriola eferente/i)).not.toBeInTheDocument()
       expect(screen.queryByText(/vasodilatación renal atenuada/i)).not.toBeInTheDocument()
+    })
+  })
+
+  // ----------------------------------------------------------------
+  // 16. Regression: Independent Non-Blocking Dual AI Execution & Fault Isolation
+  // ----------------------------------------------------------------
+  describe('Independent Non-Blocking Dual AI Execution & Fault Isolation in UI', () => {
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    const mockClinicalSummary: ClinicalAssessmentSummary = {
+      id: 'clin-summary-ui-001',
+      role: 'clinical_assistant',
+      patientId: 'pat-syn-001',
+      summary: 'Evaluación clínica independiente por Gemini.',
+      clinicalConsiderations: ['Riesgo nefrotóxico potencial'],
+      deterministicFindingsReferenced: ['finding-001'],
+      dataAvailabilityGaps: [],
+      generatedAt: '2026-09-28T12:00:00.000Z',
+    }
+
+    const mockPharmacyReview: PharmacyReview = {
+      id: 'pharm-review-ui-001',
+      role: 'pharmacy_assistant',
+      prescriptionDraftId: 'draft-test-01',
+      patientId: 'pat-syn-001',
+      status: 'REVIEW_RECOMMENDED',
+      summary: 'Ajuste posológico requerido por Qwen.',
+      pharmacologicalConsiderations: ['Posible interacción con IECA'],
+      requiredDataGaps: [],
+      deterministicFindingsReferenced: ['finding-001'],
+      reviewedAt: '2026-09-28T12:00:00.000Z',
+    }
+
+    it('displays faster provider immediately without waiting for slower provider', async () => {
+      let completePharmacy: (() => void) | undefined
+
+      vi.spyOn(aiModule, 'executeDualAIRoles').mockImplementation(async ({ deterministicFindings, options }) => {
+        // Clinical completes immediately
+        options?.onClinicalComplete?.(mockClinicalSummary)
+
+        // Pharmacy completes only when deferred
+        await new Promise<void>((resolve) => {
+          completePharmacy = () => {
+            options?.onPharmacyComplete?.(mockPharmacyReview)
+            resolve()
+          }
+        })
+
+        return {
+          clinicalSummary: mockClinicalSummary,
+          pharmacyReview: mockPharmacyReview,
+          comparison: {
+            id: 'comp-ui-001',
+            patientId: 'pat-syn-001',
+            clinicalSummaryId: 'clin-summary-ui-001',
+            pharmacyReviewId: 'pharm-review-ui-001',
+            sharedConsiderations: ['Ambos asistentes identifican riesgo'],
+            clinicalAssistantOnlyConsiderations: [],
+            pharmacyAssistantOnlyConsiderations: [],
+            unresolvedDiscrepancies: [],
+            missingDataDisagreements: [],
+            comparedAt: '2026-09-28T12:00:00.000Z',
+          },
+          deterministicFindings,
+          executedRoles: ['clinical_assistant', 'pharmacy_assistant'],
+        }
+      })
+
+      renderWithProviders(<MedicationReview />)
+
+      const runBtn = screen.getByRole('button', { name: /ejecutar revisión dual con ia/i })
+      fireEvent.click(runBtn)
+
+      // Fast clinical assistant result is displayed right away
+      await waitFor(() => {
+        expect(screen.getByText('Evaluación clínica independiente por Gemini.')).toBeInTheDocument()
+      })
+
+      // Pharmacy tab should indicate loading
+      expect(screen.getByRole('tab', { name: /revisión farmacéutica/i })).toBeInTheDocument()
+      expect(screen.getByLabelText('Cargando revisión farmacéutica')).toBeInTheDocument()
+
+      // Comparison tab shows pending state because pharmacy is not yet ready
+      const compTab = screen.getByRole('tab', { name: /comparación/i })
+      fireEvent.click(compTab)
+      expect(screen.getByText(/comparación pendiente/i)).toBeInTheDocument()
+      expect(screen.getByText(/revisión farmacéutica:\s*en ejecución/i)).toBeInTheDocument()
+
+      // Now slower pharmacy completes
+      await act(async () => {
+        completePharmacy!()
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText('Sin Ganador')).toBeInTheDocument()
+      })
+
+      // Comparison is now available without declaring a winner
+      expect(screen.getByText(/evaluación comparativa sin selección de ganador/i)).toBeInTheDocument()
+    })
+
+    it('isolates Clinical Assistant failure, preserves valid Pharmacy Review, and shows unavailable state in Comparison without fabricating', async () => {
+      vi.spyOn(aiModule, 'executeDualAIRoles').mockImplementation(async ({ deterministicFindings, options }) => {
+        options?.onClinicalError?.('Gemini API 504 Gateway Timeout')
+        options?.onPharmacyComplete?.(mockPharmacyReview)
+
+        return {
+          clinicalSummary: null,
+          clinicalError: 'Gemini API 504 Gateway Timeout',
+          pharmacyReview: mockPharmacyReview,
+          comparison: null,
+          deterministicFindings,
+          executedRoles: ['pharmacy_assistant'],
+        }
+      })
+
+      renderWithProviders(<MedicationReview />)
+
+      const runBtn = screen.getByRole('button', { name: /ejecutar revisión dual con ia/i })
+      fireEvent.click(runBtn)
+
+      // Clinical tab shows error
+      await waitFor(() => {
+        expect(screen.getByText(/asistente clínico no disponible/i)).toBeInTheDocument()
+        expect(screen.getByText(/gemini api 504 gateway timeout/i)).toBeInTheDocument()
+      })
+
+      // Deterministic findings remain intact and authoritative
+      expect(screen.getAllByText(/alerta triple combinación nefrotóxica/i).length).toBeGreaterThan(0)
+
+      // Pharmacy tab shows success
+      const pharmTab = screen.getByRole('tab', { name: /revisión farmacéutica/i })
+      fireEvent.click(pharmTab)
+      expect(screen.getByText(/ajuste posológico requerido por qwen/i)).toBeInTheDocument()
+
+      // Comparison tab shows clear unavailable state with reason, never fabricating
+      const compTab = screen.getByRole('tab', { name: /comparación/i })
+      fireEvent.click(compTab)
+      expect(screen.getByText('Comparación no disponible')).toBeInTheDocument()
+      expect(screen.getByText(/no se fabrica una comparación cuando alguno de los asistentes no está disponible/i)).toBeInTheDocument()
+      expect(screen.getByText('DISPONIBLE')).toBeInTheDocument()
+      expect(screen.getByText('NO DISPONIBLE')).toBeInTheDocument()
+      expect(screen.queryByText('Sin Ganador')).not.toBeInTheDocument()
+    })
+
+    it('isolates Pharmacy Assistant failure, preserves valid Clinical Summary, and shows unavailable state in Comparison without fabricating', async () => {
+      vi.spyOn(aiModule, 'executeDualAIRoles').mockImplementation(async ({ deterministicFindings, options }) => {
+        options?.onClinicalComplete?.(mockClinicalSummary)
+        options?.onPharmacyError?.('Groq Qwen 429 Rate Limit Exceeded')
+
+        return {
+          clinicalSummary: mockClinicalSummary,
+          pharmacyReview: null,
+          pharmacyError: 'Groq Qwen 429 Rate Limit Exceeded',
+          comparison: null,
+          deterministicFindings,
+          executedRoles: ['clinical_assistant'],
+        }
+      })
+
+      renderWithProviders(<MedicationReview />)
+
+      const runBtn = screen.getByRole('button', { name: /ejecutar revisión dual con ia/i })
+      fireEvent.click(runBtn)
+
+      // Clinical tab displays valid summary
+      await waitFor(() => {
+        expect(screen.getByText('Evaluación clínica independiente por Gemini.')).toBeInTheDocument()
+      })
+
+      // Deterministic findings remain intact
+      expect(screen.getAllByText(/alerta triple combinación nefrotóxica/i).length).toBeGreaterThan(0)
+
+      // Pharmacy tab displays error
+      const pharmTab = screen.getByRole('tab', { name: /revisión farmacéutica/i })
+      fireEvent.click(pharmTab)
+      expect(screen.getByText(/revisión farmacéutica no disponible/i)).toBeInTheDocument()
+      expect(screen.getByText(/groq qwen 429 rate limit exceeded/i)).toBeInTheDocument()
+
+      // Comparison tab shows clear unavailable state
+      const compTab = screen.getByRole('tab', { name: /comparación/i })
+      fireEvent.click(compTab)
+      expect(screen.getByText('Comparación no disponible')).toBeInTheDocument()
+      expect(screen.getByText(/no se fabrica una comparación cuando alguno de los asistentes no está disponible/i)).toBeInTheDocument()
+      expect(screen.getByText('DISPONIBLE')).toBeInTheDocument()
+      expect(screen.getByText('NO DISPONIBLE')).toBeInTheDocument()
+      expect(screen.queryByText('Sin Ganador')).not.toBeInTheDocument()
+    })
+
+    it('displays error states for both providers on dual failure while keeping deterministic findings authoritative', async () => {
+      vi.spyOn(aiModule, 'executeDualAIRoles').mockImplementation(async ({ deterministicFindings, options }) => {
+        options?.onClinicalError?.('Gemini network connection reset')
+        options?.onPharmacyError?.('Qwen upstream unreachable')
+
+        return {
+          clinicalSummary: null,
+          clinicalError: 'Gemini network connection reset',
+          pharmacyReview: null,
+          pharmacyError: 'Qwen upstream unreachable',
+          comparison: null,
+          deterministicFindings,
+          executedRoles: [],
+        }
+      })
+
+      renderWithProviders(<MedicationReview />)
+
+      const runBtn = screen.getByRole('button', { name: /ejecutar revisión dual con ia/i })
+      fireEvent.click(runBtn)
+
+      // Clinical tab displays error
+      await waitFor(() => {
+        expect(screen.getByText(/asistente clínico no disponible/i)).toBeInTheDocument()
+        expect(screen.getByText(/gemini network connection reset/i)).toBeInTheDocument()
+      })
+
+      // Pharmacy tab displays error
+      const pharmTab = screen.getByRole('tab', { name: /revisión farmacéutica/i })
+      fireEvent.click(pharmTab)
+      expect(screen.getByText(/revisión farmacéutica no disponible/i)).toBeInTheDocument()
+      expect(screen.getByText(/qwen upstream unreachable/i)).toBeInTheDocument()
+
+      // Comparison tab displays unavailable
+      const compTab = screen.getByRole('tab', { name: /comparación/i })
+      fireEvent.click(compTab)
+      expect(screen.getByText('Comparación no disponible')).toBeInTheDocument()
+      expect(screen.getByText(/no se fabrica una comparación cuando alguno de los asistentes no está disponible/i)).toBeInTheDocument()
+      expect(screen.getAllByText('NO DISPONIBLE').length).toBe(2)
+
+      // Deterministic findings remain untouched and visible
+      expect(screen.getAllByText(/alerta triple combinación nefrotóxica/i).length).toBeGreaterThan(0)
     })
   })
 })

@@ -2,6 +2,8 @@ import type {
   ClinicalContext,
   ClinicalFinding,
   PrescriptionDraft,
+  ClinicalAssessmentSummary,
+  PharmacyReview,
 } from '../../domain'
 import {
   buildPharmacyReviewInput,
@@ -12,6 +14,8 @@ import type {
   PharmacyAssistantProvider,
   DualAIOptions,
   DualAIRunResult,
+  AIProviderMode,
+  RemoteAIProviderConfig,
 } from './types'
 import {
   MockClinicalAssistantProvider,
@@ -23,6 +27,88 @@ import {
 } from './remoteProviders'
 
 /**
+ * Executes the Clinical Assistant role independently.
+ */
+export async function executeClinicalAssistantRole(params: {
+  context: ClinicalContext
+  deterministicFindings: ClinicalFinding[]
+  proposedPrescription?: PrescriptionDraft
+  provider?: ClinicalAssistantProvider
+  mode?: AIProviderMode
+  remoteConfig?: RemoteAIProviderConfig
+}): Promise<ClinicalAssessmentSummary> {
+  const { context, deterministicFindings, proposedPrescription, provider, mode, remoteConfig } = params
+
+  const effectiveMode =
+    mode ??
+    (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AI_PROVIDER_MODE === 'remote'
+      ? 'remote'
+      : 'mock')
+
+  const effectiveProvider =
+    provider ??
+    (effectiveMode === 'remote'
+      ? new RemoteClinicalAssistantProvider(remoteConfig)
+      : new MockClinicalAssistantProvider())
+
+  return effectiveProvider.generateAssessment(
+    context,
+    deterministicFindings,
+    proposedPrescription
+  )
+}
+
+/**
+ * Executes the Pharmacy Assistant role independently.
+ */
+export async function executePharmacyAssistantRole(params: {
+  context: ClinicalContext
+  proposedPrescription: PrescriptionDraft
+  deterministicFindings: ClinicalFinding[]
+  relevantObservationCodes?: string[]
+  provider?: PharmacyAssistantProvider
+  mode?: AIProviderMode
+  remoteConfig?: RemoteAIProviderConfig
+}): Promise<PharmacyReview> {
+  const {
+    context,
+    proposedPrescription,
+    deterministicFindings,
+    relevantObservationCodes,
+    provider,
+    mode,
+    remoteConfig,
+  } = params
+
+  if (!proposedPrescription) {
+    throw new Error(
+      'Execution of Pharmacy Assistant review requires a valid physician-authored PrescriptionDraft.'
+    )
+  }
+
+  const effectiveMode =
+    mode ??
+    (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AI_PROVIDER_MODE === 'remote'
+      ? 'remote'
+      : 'mock')
+
+  const effectiveProvider =
+    provider ??
+    (effectiveMode === 'remote'
+      ? new RemotePharmacyAssistantProvider(remoteConfig)
+      : new MockPharmacyAssistantProvider())
+
+  const pharmacyInput = buildPharmacyReviewInput({
+    context,
+    proposedPrescription,
+    deterministicFindings,
+    relevantObservationCodes,
+  })
+
+  return effectiveProvider.reviewPrescription(pharmacyInput)
+}
+
+/**
  * Orchestrator service for executing SAMED Dual AI Roles v1.
  *
  * Invariants:
@@ -30,7 +116,9 @@ import {
  * 2. Full ClinicalContext must NEVER leak into the Pharmacy Assistant.
  * 3. The proposed prescription must be an authentic physician-authored PrescriptionDraft; it must never be invented when absent.
  * 4. Clinical Assistant cannot create or approve a prescription.
- * 5. ReviewComparison exposes discrepancies and shared points but never declares a winner.
+ * 5. Clinical Assistant and Pharmacy Assistant execute independently and non-blockingly.
+ * 6. Slower provider does not block display of faster provider; failure of one does not discard the other.
+ * 7. ReviewComparison is generated ONLY when both valid reviews are available (never fabricated).
  */
 export async function executeDualAIRoles(params: {
   context: ClinicalContext
@@ -82,23 +170,59 @@ export async function executeDualAIRoles(params: {
     relevantObservationCodes: options?.relevantObservationCodes,
   })
 
-  // 2. Execute both independent assistant roles
-  const [clinicalSummary, pharmacyReview] = await Promise.all([
-    clinicalProvider.generateAssessment(
+  // 2. Execute both independent assistant roles non-blockingly
+  const clinicalPromise = clinicalProvider
+    .generateAssessment(
       context,
       immutableFindings as unknown as ClinicalFinding[],
       proposedPrescription
-    ),
-    pharmacyProvider.reviewPrescription(pharmacyInput),
-  ])
+    )
+    .then((summary) => {
+      options?.onClinicalComplete?.(summary)
+      return { ok: true as const, value: summary }
+    })
+    .catch((err: unknown) => {
+      const errMsg = err instanceof Error ? err.message : String(err)
+      options?.onClinicalError?.(errMsg)
+      return { ok: false as const, error: errMsg }
+    })
 
-  // 3. Deterministic comparison layer (never picks a winner)
-  const comparison = compareReviews(clinicalSummary, pharmacyReview)
+  const pharmacyPromise = pharmacyProvider
+    .reviewPrescription(pharmacyInput)
+    .then((review) => {
+      options?.onPharmacyComplete?.(review)
+      return { ok: true as const, value: review }
+    })
+    .catch((err: unknown) => {
+      const errMsg = err instanceof Error ? err.message : String(err)
+      options?.onPharmacyError?.(errMsg)
+      return { ok: false as const, error: errMsg }
+    })
+
+  const [clinicalResult, pharmacyResult] = await Promise.all([clinicalPromise, pharmacyPromise])
+
+  // If both failed and throwOnError was not disabled, throw to preserve callers expecting rejection on total failure
+  if (options?.throwOnError !== false && !clinicalResult.ok && !pharmacyResult.ok) {
+    throw new Error(
+      `Dual AI execution failed: Clinical Assistant (${clinicalResult.error}) | Pharmacy Assistant (${pharmacyResult.error})`
+    )
+  }
+
+  const clinicalSummary = clinicalResult.ok ? clinicalResult.value : null
+  const pharmacyReview = pharmacyResult.ok ? pharmacyResult.value : null
+
+  // 3. Deterministic comparison layer: generated ONLY when both valid reviews are available
+  const comparison =
+    clinicalSummary && pharmacyReview
+      ? compareReviews(clinicalSummary, pharmacyReview)
+      : null
 
   return {
     clinicalSummary,
     pharmacyReview,
     comparison,
     deterministicFindings: immutableFindings as unknown as ClinicalFinding[],
+    clinicalError: clinicalResult.ok ? null : clinicalResult.error,
+    pharmacyError: pharmacyResult.ok ? null : pharmacyResult.error,
   }
 }
